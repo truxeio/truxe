@@ -1,0 +1,79 @@
+{
+  "name": "@truxe/cli",
+  "version": "0.1.0",
+  "description": "Truxe CLI - Set up authentication in 5 minutes",
+  "main": "./dist/index.js",
+  "bin": {
+    "truxe": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup && npm run build:copy-templates",
+    "build:copy-templates": "cp -r src/templates templates",
+    "dev": "tsx src/index.ts",
+    "watch": "tsup --watch",
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint . --ext ts",
+    "lint:fix": "eslint . --ext ts --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist coverage templates",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "authentication",
+    "auth",
+    "cli",
+    "truxe",
+    "magic-links",
+    "jwt",
+    "multi-tenant"
+  ],
+  "author": "Truxe Team",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
+    "execa": "^8.0.1",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^9.2.12",
+    "ora": "^7.0.1",
+    "pg": "^8.11.0",
+    "redis": "^4.6.0",
+    "update-notifier": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.10.5",
+    "@types/pg": "^8.10.9",
+    "@types/update-notifier": "^6.0.8",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vitest/coverage-v8": "^1.6.1",
+    "eslint": "^8.56.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/truxeio/truxe.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/truxeio/truxe/issues"
+  },
+  "homepage": "https://truxe.io"
+}

@@ -9,6 +9,15 @@ export function statusCommand(program: Command): void {
   program
     .command('status')
     .description('Check Truxe system health and status')
+    .addHelpText('after', `
+Examples:
+  $ truxe status
+  $ truxe status --check-all
+  $ truxe status --check-db --check-email
+  $ truxe status --format=json
+
+For more information, visit: https://docs.truxe.io/cli/status
+    `)
     .option('--check-all', 'Run all health checks')
     .option('--check-db', 'Check database connection')
     .option('--check-email', 'Check email service')

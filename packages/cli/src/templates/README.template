@@ -1,0 +1,135 @@
+# {{PROJECT_NAME}}
+
+Truxe authentication server initialized with `@truxe/cli`
+
+## Quick Start
+
+```bash
+# Start development server with Docker
+npm run dev
+
+# Or start Docker services manually
+docker-compose up -d
+
+# Run database migrations
+npm run migrate
+
+# Generate JWT keys (if not already done)
+npm run keys:generate
+```
+
+## Project Structure
+
+```
+{{PROJECT_NAME}}/
+├── .env                  # Environment configuration
+├── docker-compose.yml    # PostgreSQL + Redis services
+├── keys/                 # JWT RSA keys (gitignored)
+│   ├── private.pem
+│   └── public.pem
+└── README.md            # This file
+```
+
+## Environment Variables
+
+See `.env` file for all available configuration options.
+
+### Required Variables
+
+- `DATABASE_URL` - PostgreSQL connection string
+- `REDIS_URL` - Redis connection string
+- `JWT_PRIVATE_KEY_PATH` - Path to RSA private key
+- `JWT_PUBLIC_KEY_PATH` - Path to RSA public key
+- `COOKIE_SECRET` - Secure random string for cookies
+- `SESSION_SECRET` - Secure random string for sessions
+
+### Optional Variables
+
+- `EMAIL_PROVIDER` - Email service (smtp, brevo, sendgrid, none)
+- `GITHUB_CLIENT_ID` - GitHub OAuth app client ID
+- `GOOGLE_CLIENT_ID` - Google OAuth app client ID
+- `FRONTEND_URL` - Your frontend application URL
+- `API_URL` - This API server URL
+
+## Available Scripts
+
+```bash
+# Development
+npm run dev          # Start development server with Docker
+
+# Database
+npm run migrate      # Run pending migrations
+npm run migrate:down # Rollback last migration
+npm run migrate:status # Show migration status
+
+# Keys
+npm run keys:generate # Generate new JWT RSA keys
+
+# Health Check
+npm run health       # Check system dependencies
+
+# Docker
+docker-compose up -d     # Start services
+docker-compose down      # Stop services
+docker-compose logs -f   # View logs
+```
+
+## API Endpoints
+
+Once running, your API will be available at `http://localhost:3456`
+
+### Authentication Endpoints
+
+- `POST /auth/signup` - Create new account
+- `POST /auth/login` - Login with email/password
+- `POST /auth/magic-link` - Request magic link
+- `POST /auth/logout` - Logout
+- `POST /auth/refresh` - Refresh access token
+
+### OAuth Endpoints
+
+{{#if OAUTH_GITHUB}}
+- `GET /auth/oauth/github` - Initiate GitHub OAuth
+- `GET /auth/oauth/callback/github` - GitHub OAuth callback
+{{/if}}
+{{#if OAUTH_GOOGLE}}
+- `GET /auth/oauth/google` - Initiate Google OAuth
+- `GET /auth/oauth/callback/google` - Google OAuth callback
+{{/if}}
+
+### User Endpoints
+
+- `GET /api/user/me` - Get current user
+- `PATCH /api/user/me` - Update current user
+- `DELETE /api/user/me` - Delete account
+
+### Session Endpoints
+
+- `GET /api/sessions` - List active sessions
+- `DELETE /api/sessions/:id` - Revoke session
+
+## Documentation
+
+- [Truxe Documentation](https://truxe.io/docs)
+- [API Reference](https://truxe.io/docs/api)
+- [GitHub](https://github.com/truxeio/truxe)
+
+## Support
+
+- [GitHub Issues](https://github.com/truxeio/truxe/issues)
+- [GitHub Discussions](https://github.com/truxeio/truxe/discussions)
+
+## License
+
+This project uses Truxe, which is licensed under the Business Source License 1.1 (BSL).
+
+- ✅ Free for self-hosted production use
+- ✅ Free for development and testing
+- ❌ Cannot offer as managed service without authorization
+- 🔄 Converts to MIT license after 4 years
+
+See [Truxe License](https://github.com/truxeio/truxe/blob/main/LICENSE) for details.
+
+---
+
+Generated with [@truxe/cli](https://npmjs.com/package/@truxe/cli)

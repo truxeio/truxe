@@ -28,6 +28,31 @@ Truxe is an **open-source authentication platform** that gives you complete cont
 
 ## Quick Start
 
+### Using the CLI (Recommended)
+
+The fastest way to get started with Truxe:
+
+```bash
+# Install CLI globally
+npm install -g @truxe/cli
+
+# Create a new project
+truxe init my-app --template=nextjs
+
+# Navigate to project
+cd my-app
+
+# Generate JWT keys
+truxe keys generate
+
+# Start development server
+truxe dev
+```
+
+Your authentication server will be running at `http://localhost:3001` and your app at `http://localhost:3000`.
+
+**[→ Full CLI Documentation](cli/README.md)** • **[→ Quick Start Guide](docs/02-guides/quickstart.md)**
+
 ### Self-Hosted (Docker)
 
 ```bash
@@ -104,6 +129,7 @@ function Dashboard() {
 - 📚 **RESTful API** - Simple, well-documented endpoints
 - 🧪 **Testing Suite** - 199+ tests with K6 load testing
 - 📊 **Admin Dashboard** - Manage users, roles, and settings
+- 🛠️ **CLI Tool** - Set up authentication in 5 minutes with `@truxe/cli`
 
 ### Self-Hosting & Cloud
 - 🏠 **Self-Host** - Docker, Kubernetes, VPS—your infrastructure

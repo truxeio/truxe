@@ -15,7 +15,22 @@ export function initCommand(program: Command): void {
     .command('init')
     .argument('[project-name]', 'Name of the project to create')
     .description('Initialize a new Truxe project with authentication')
-    .option('-t, --template <template>', 'Framework template (nextjs|nuxt|sveltekit)')
+    .addHelpText('after', `
+Examples:
+  $ truxe init my-app
+  $ truxe init my-app --template=nextjs --yes
+  $ truxe init my-app --template=nextjs --db=postgresql --multi-tenant
+  $ truxe init --template=nuxt
+
+Available Templates:
+  nextjs      Next.js 14+ with App Router (recommended)
+  nuxt        Nuxt 3 with SSR support
+  sveltekit   SvelteKit with TypeScript
+  express     Express.js API protection
+
+For more information, visit: https://docs.truxe.io/cli
+    `)
+    .option('-t, --template <template>', 'Framework template (nextjs|nuxt|sveltekit|express)')
     .option('--db <database>', 'Database type (sqlite|postgresql)', 'sqlite')
     .option('--multi-tenant', 'Enable multi-tenant mode')
     .option('--skip-install', 'Skip dependency installation')

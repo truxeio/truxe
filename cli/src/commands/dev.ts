@@ -10,7 +10,24 @@ import { DevOptions } from '../types';
 export function devCommand(program: Command): void {
   program
     .command('dev')
-    .description('Start Truxe development server')
+    .description('Start Truxe development server with hot reload')
+    .addHelpText('after', `
+Examples:
+  $ truxe dev
+  $ truxe dev --port=8080
+  $ truxe dev --db=postgresql
+  $ truxe dev --open
+  $ truxe dev --port=3001 --host=localhost
+
+The development server will:
+  - Start on http://localhost:3001 (or specified port)
+  - Enable hot reload for code changes
+  - Validate environment variables
+  - Check database connections
+  - Display helpful error messages
+
+For more information, visit: https://docs.truxe.io/cli/dev
+    `)
     .option('-p, --port <port>', 'Port for Truxe API', '3001')
     .option('--api-port <port>', 'Alternative port specification', '3001')
     .option('--db <database>', 'Database type (sqlite|postgresql)', 'sqlite')

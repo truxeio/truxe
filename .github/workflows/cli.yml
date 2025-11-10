@@ -1,0 +1,72 @@
+name: CLI
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'packages/cli/**'
+      - '.github/workflows/cli.yml'
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - 'packages/cli/**'
+      - '.github/workflows/cli.yml'
+
+jobs:
+  test:
+    name: Test CLI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI (required for integration tests)
+        run: pnpm --filter @truxe/cli build
+
+      - name: Run linter
+        run: pnpm --filter @truxe/cli lint
+
+      - name: Run tests
+        run: pnpm --filter @truxe/cli test
+        env:
+          NODE_ENV: test
+
+  build:
+    name: Build CLI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm --filter @truxe/cli build
+
+      - name: Check build artifacts
+        run: |
+          test -d packages/cli/dist || exit 1
+          test -f packages/cli/dist/index.js || exit 1
+          test -d packages/cli/templates || exit 1

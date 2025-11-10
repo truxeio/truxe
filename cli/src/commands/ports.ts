@@ -15,12 +15,30 @@ export function portsCommand(program: Command): void {
   const ports = program
     .command('ports')
     .description('Port management utilities for development environment')
+    .addHelpText('after', `
+Examples:
+  $ truxe ports check
+  $ truxe ports status --detailed
+  $ truxe ports kill 3000 8080
+  $ truxe ports suggest 3000 --service api
+  $ truxe ports monitor --duration 300
+  $ truxe ports resolve
+
+For more information, visit: https://docs.truxe.io/cli/ports
+    `)
     .option('--verbose', 'Enable verbose output');
 
   // truxe ports check - Check port availability
   ports
     .command('check')
     .description('Check port availability and conflicts')
+    .addHelpText('after', `
+Examples:
+  $ truxe ports check
+  $ truxe ports check 3000 8080
+  $ truxe ports check --all
+  $ truxe ports check --env=production --json
+    `)
     .argument('[ports...]', 'Specific ports to check (optional)')
     .option('-e, --env <environment>', 'Environment to check', 'development')
     .option('--all', 'Check all configured ports')

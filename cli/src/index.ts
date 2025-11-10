@@ -8,6 +8,8 @@ import { join } from 'path';
 import { initCommand } from './commands/init';
 import { devCommand } from './commands/dev';
 import { migrateCommand } from './commands/migrate';
+import { keysCommand } from './commands/keys';
+import { healthCommand } from './commands/health';
 import { configCommand } from './commands/config';
 import { statusCommand } from './commands/status';
 import { portsCommand } from './commands/ports';
@@ -35,6 +37,26 @@ program
   .name('truxe')
   .description('Truxe CLI - Set up authentication in 5 minutes')
   .version(packageJson.version)
+  .addHelpText('after', `
+Examples:
+  $ truxe init my-app --template=nextjs
+  $ truxe dev
+  $ truxe keys generate
+  $ truxe migrate up
+  $ truxe health
+
+Common Commands:
+  init      Initialize a new Truxe project
+  dev       Start development server
+  keys      Manage JWT signing keys
+  migrate   Run database migrations
+  health    Check system health
+  config    Manage configuration
+  status    Show project status
+  ports     Manage port conflicts
+
+For more information, visit: https://docs.truxe.io/cli
+  `)
   .option('-v, --verbose', 'Enable verbose logging')
   .option('--no-color', 'Disable colored output')
   .hook('preAction', (thisCommand) => {
@@ -49,7 +71,9 @@ program
 // Register commands
 initCommand(program);
 devCommand(program);
+keysCommand(program);
 migrateCommand(program);
+healthCommand(program);
 configCommand(program);
 statusCommand(program);
 portsCommand(program);

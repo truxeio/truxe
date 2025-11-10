@@ -7,12 +7,29 @@ import { ConfigManager } from '../utils/config';
 export function configCommand(program: Command): void {
   const config = program
     .command('config')
-    .description('Manage Truxe configuration');
+    .description('Manage Truxe configuration')
+    .addHelpText('after', `
+Examples:
+  $ truxe config set database.url "postgresql://localhost:5432/mydb"
+  $ truxe config set multiTenant.enabled true
+  $ truxe config get database.url
+  $ truxe config get --all
+  $ truxe config validate
+  $ truxe config show
+
+For more information, visit: https://docs.truxe.io/cli/config
+    `);
 
   // Set configuration value
   config
     .command('set <key> <value>')
     .description('Set a configuration value')
+    .addHelpText('after', `
+Examples:
+  $ truxe config set database.url "postgresql://localhost:5432/mydb"
+  $ truxe config set multiTenant.enabled true
+  $ truxe config set server.port 8080
+    `)
     .action(async (key: string, value: string) => {
       const logger = new Logger();
       
@@ -39,6 +56,12 @@ export function configCommand(program: Command): void {
   config
     .command('get [key]')
     .description('Get configuration value(s)')
+    .addHelpText('after', `
+Examples:
+  $ truxe config get database.url
+  $ truxe config get --all
+  $ truxe config get multiTenant.enabled
+    `)
     .option('-a, --all', 'Show all configuration values')
     .action(async (key: string | undefined, options: { all?: boolean }) => {
       const logger = new Logger();

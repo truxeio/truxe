@@ -16,11 +16,35 @@ import { MigrationProgressTracker } from '../utils/migration-progress-tracker';
 export function migrateCommand(program: Command): void {
   const migrate = program
     .command('migrate')
-    .description('Run database migrations');
+    .description('Run database migrations')
+    .addHelpText('after', `
+Examples:
+  $ truxe migrate up
+  $ truxe migrate up --env=production
+  $ truxe migrate down --steps=2
+  $ truxe migrate status
+  $ truxe migrate create add_user_preferences
+  $ truxe migrate up --dry-run
+
+Actions:
+  up       Apply pending migrations (default)
+  down     Rollback migrations
+  status   Show migration status
+  create   Create new migration file
+
+For more information, visit: https://docs.truxe.io/cli/migrate
+    `);
 
   // Main migrate command (defaults to up)
   migrate
     .argument('[action]', 'Migration action (up|down|status)', 'up')
+    .addHelpText('after', `
+Examples:
+  $ truxe migrate up
+  $ truxe migrate up --env=production --steps=5
+  $ truxe migrate down --steps=1
+  $ truxe migrate status --env=staging
+    `)
     .option('--env <environment>', 'Environment (development|production|staging)', 'development')
     .option('--steps <number>', 'Number of migration steps', '1')
     .option('--create <name>', 'Create a new migration file')
@@ -71,6 +95,12 @@ export function migrateCommand(program: Command): void {
   migrate
     .command('up')
     .description('Apply pending migrations')
+    .addHelpText('after', `
+Examples:
+  $ truxe migrate up
+  $ truxe migrate up --env=production
+  $ truxe migrate up --dry-run
+    `)
     .option('--env <environment>', 'Environment', 'development')
     .option('--dry-run', 'Show what would be migrated')
     .action(async (options) => {
@@ -80,6 +110,12 @@ export function migrateCommand(program: Command): void {
   migrate
     .command('down')
     .description('Rollback migrations')
+    .addHelpText('after', `
+Examples:
+  $ truxe migrate down
+  $ truxe migrate down --steps=2
+  $ truxe migrate down --env=production --dry-run
+    `)
     .option('--env <environment>', 'Environment', 'development')
     .option('--steps <number>', 'Number of steps to rollback', '1')
     .option('--dry-run', 'Show what would be rolled back')
@@ -90,6 +126,11 @@ export function migrateCommand(program: Command): void {
   migrate
     .command('status')
     .description('Show migration status')
+    .addHelpText('after', `
+Examples:
+  $ truxe migrate status
+  $ truxe migrate status --env=production
+    `)
     .option('--env <environment>', 'Environment', 'development')
     .action(async (options) => {
       await showMigrationStatus(options);
@@ -98,6 +139,11 @@ export function migrateCommand(program: Command): void {
   migrate
     .command('create <name>')
     .description('Create a new migration file')
+    .addHelpText('after', `
+Examples:
+  $ truxe migrate create add_user_preferences
+  $ truxe migrate create update_sessions_table
+    `)
     .action(async (name: string) => {
       await createMigration(name, {});
     });

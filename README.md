@@ -229,8 +229,8 @@ Need to offer Truxe as a hosted service? Contact us via [GitHub Issues](https://
 - [x] React SDK with 16 UI components
 - [x] Self-hosting documentation
 - [x] Production deployment guides
-- [ ] CLI tool for local development
-- [ ] Interactive API playground
+- [x] CLI tool for local development - [@truxe/cli@0.1.0](https://www.npmjs.com/package/@truxe/cli) 🎉
+- [ ] Interactive API playground - [Issue #6](https://github.com/Wundam/truxe/issues/6)
 
 ### v0.5 - Cloud Launch (Q1 2026)
 - [ ] Managed cloud offering ($79/month)

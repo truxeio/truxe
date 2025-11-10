@@ -225,24 +225,55 @@ Need to offer Truxe as a hosted service? Contact us via [GitHub Issues](https://
 
 ## Roadmap
 
-### v0.4 - Developer Experience (Current - November 2025)
-- [x] React SDK with 16 UI components
-- [x] Self-hosting documentation
-- [x] Production deployment guides
-- [x] CLI tool for local development - [@truxe/cli@0.1.0](https://www.npmjs.com/package/@truxe/cli) 🎉
-- [ ] Interactive API playground - [Issue #6](https://github.com/Wundam/truxe/issues/6)
+### ✅ Completed Releases
 
-### v0.5 - Cloud Launch (Q1 2026)
-- [ ] Managed cloud offering ($79/month)
-- [ ] Usage-based billing (10k MAU included)
+**v0.4.1 - React SDK** (Published)
+- ✅ 16 production-ready React components
+- ✅ OAuth 2.0 integration (GitHub, Google, custom providers)
+- ✅ MFA support (TOTP, backup codes)
+- ✅ Session management hooks
+- ✅ [Published: @truxe/react@0.4.1](https://www.npmjs.com/package/@truxe/react)
+
+**v0.1.0 - CLI Tool** (Published - Nov 2025)
+- ✅ Project initialization (`truxe init`)
+- ✅ JWT key management (`truxe keys generate/verify`)
+- ✅ Health checks (`truxe health`)
+- ✅ Development server (`truxe dev`)
+- ✅ [Published: @truxe/cli@0.1.0](https://www.npmjs.com/package/@truxe/cli)
+
+### 🚀 Current Sprint: v0.5 - Developer Experience (Q4 2025)
+
+**In Progress:**
+- ⏳ Interactive API Playground - [Issue #6](https://github.com/Wundam/truxe/issues/6)
+  - Web-based API testing interface
+  - Code generation (6+ languages)
+  - Guided authentication workflows
+  - OpenAPI 3.0 specification
+  - **ETA**: 4-5 weeks
+
+**Planned:**
+- [ ] Enhanced CLI features (templates, migrations)
+- [ ] Comprehensive API documentation site
+- [ ] Video tutorials and quickstart guides
+- [ ] Improved error messages and debugging tools
+
+### 📅 Upcoming Releases
+
+**v0.6 - Cloud Launch (Q1 2026)**
+- [ ] Managed cloud offering ($79/month, 10k MAU included)
+- [ ] Usage-based billing system
 - [ ] Web dashboard for cloud customers
 - [ ] One-click deployment from dashboard
+- [ ] Multi-region support
+- [ ] Automated backups and monitoring
 
-### v1.0 - Enterprise Ready (Q2 2026)
+**v1.0 - Enterprise Ready (Q2 2026)**
 - [ ] SAML 2.0 support
-- [ ] SCIM 2.0 provisioning
-- [ ] Audit log streaming
+- [ ] SCIM 2.0 user provisioning
+- [ ] Advanced audit log streaming
+- [ ] Role-based access control (RBAC) v2
 - [ ] SOC 2 Type II compliance
+- [ ] 99.99% SLA guarantee
 
 ---
 

@@ -436,7 +436,7 @@ export class MonitoringService {
         id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         ...alertData,
         timestamp: Date.now(),
-        service: 'heimdall-api',
+        service: 'truxe-api',
         environment: config.app.environment
       }
       
@@ -476,7 +476,7 @@ export class MonitoringService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'Heimdall-Monitoring/1.0'
+          'User-Agent': 'Truxe-Monitoring/1.0'
         },
         body: JSON.stringify(alert)
       })
@@ -503,7 +503,7 @@ export class MonitoringService {
       }[alert.severity] || '#36a64f'
       
       const slackPayload = {
-        username: 'Heimdall Monitor',
+        username: 'Truxe Monitor',
         icon_emoji: ':shield:',
         attachments: [{
           color,

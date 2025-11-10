@@ -7,7 +7,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { Logger } from './logger';
-import { HeimdallError } from './error-handler';
+import { TruxeError } from './error-handler';
 
 export interface MigrationRecord {
   id: string;
@@ -73,7 +73,7 @@ export class MigrationProgressTracker {
 
   constructor() {
     this.logger = new Logger();
-    this.migrationsDir = join(process.cwd(), '.heimdall', 'migrations');
+    this.migrationsDir = join(process.cwd(), '.truxe', 'migrations');
     this.migrationsFile = join(this.migrationsDir, 'migrations.json');
     
     // Ensure migrations directory exists
@@ -103,7 +103,7 @@ export class MigrationProgressTracker {
         cliVersion: this.getCLIVersion(),
         nodeVersion: process.version,
         platform: process.platform,
-        userAgent: `Heimdall CLI/${this.getCLIVersion()}`,
+        userAgent: `Truxe CLI/${this.getCLIVersion()}`,
       },
     };
 
@@ -121,7 +121,7 @@ export class MigrationProgressTracker {
     const migration = migrations.find(m => m.id === migrationId);
     
     if (!migration) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Migration not found: ${migrationId}`,
         'MIGRATION_NOT_FOUND'
       );
@@ -266,7 +266,7 @@ export class MigrationProgressTracker {
       migrations,
     };
 
-    const exportPath = outputPath || join(process.cwd(), `heimdall-migrations-export-${Date.now()}.json`);
+    const exportPath = outputPath || join(process.cwd(), `truxe-migrations-export-${Date.now()}.json`);
     writeFileSync(exportPath, JSON.stringify(exportData, null, 2));
     
     this.logger.info(`Exported ${migrations.length} migration records to: ${exportPath}`);
@@ -278,7 +278,7 @@ export class MigrationProgressTracker {
    */
   async importMigrations(importPath: string, merge: boolean = true): Promise<number> {
     if (!existsSync(importPath)) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Import file not found: ${importPath}`,
         'IMPORT_FILE_NOT_FOUND'
       );
@@ -287,7 +287,7 @@ export class MigrationProgressTracker {
     const importData = JSON.parse(readFileSync(importPath, 'utf-8'));
     
     if (!importData.migrations || !Array.isArray(importData.migrations)) {
-      throw new HeimdallError(
+      throw new TruxeError(
         'Invalid import file format',
         'INVALID_IMPORT_FORMAT'
       );
@@ -372,7 +372,7 @@ export class MigrationProgressTracker {
 
       writeFileSync(this.migrationsFile, JSON.stringify(data, null, 2));
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Failed to save migrations: ${error.message}`,
         'MIGRATION_SAVE_FAILED'
       );
@@ -403,7 +403,7 @@ export class MigrationProgressTracker {
         mkdirSync(this.migrationsDir, { recursive: true });
       }
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Failed to create migrations directory: ${error.message}`,
         'MIGRATIONS_DIR_CREATE_FAILED'
       );

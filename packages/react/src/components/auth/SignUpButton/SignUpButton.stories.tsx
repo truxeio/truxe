@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { SignUpButton } from './SignUpButton';
-import { MockHeimdallProvider } from '../../../storybook/MockHeimdallProvider';
+import { MockTruxeProvider } from '../../../storybook/MockTruxeProvider';
 
 const meta = {
   title: 'Auth/SignUpButton',
@@ -11,9 +11,9 @@ const meta = {
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <MockHeimdallProvider>
+      <MockTruxeProvider>
         <Story />
-      </MockHeimdallProvider>
+      </MockTruxeProvider>
     ),
   ],
 } satisfies Meta<typeof SignUpButton>;

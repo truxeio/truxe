@@ -1,5 +1,5 @@
 /**
- * Heimdall Security Hardening Middleware
+ * Truxe Security Hardening Middleware
  * 
  * Enterprise-grade security hardening for production environments including
  * security headers, CORS policies, DDoS protection, input validation,
@@ -50,7 +50,7 @@ const getCorsConfig = (environment = 'production') => {
         'https://staging.truxe.io',
         'https://staging-api.truxe.io',
         'https://preview.truxe.io',
-        /^https:\/\/.*\.heimdall\.dev$/,
+        /^https:\/\/.*\.truxe\.dev$/,
         /^https:\/\/.*\.vercel\.app$/,
         /^https:\/\/.*\.netlify\.app$/
       ],
@@ -593,7 +593,7 @@ function addSecurityHeaders(request, reply, environment) {
   // Add custom security headers
   reply.header('X-Request-ID', request.id);
   reply.header('X-Environment', environment);
-  reply.header('X-Powered-By', 'Heimdall'); // Override default
+  reply.header('X-Powered-By', 'Truxe'); // Override default
   
   // Add security policy headers
   if (environment === 'production') {

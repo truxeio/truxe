@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UserButton } from './UserButton';
-import { HeimdallProvider } from '../../../context/HeimdallProvider';
+import { TruxeProvider } from '../../../context/TruxeProvider';
 import type { User } from '../../../types';
 
 const mockUser: User = {

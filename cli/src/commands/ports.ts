@@ -17,7 +17,7 @@ export function portsCommand(program: Command): void {
     .description('Port management utilities for development environment')
     .option('--verbose', 'Enable verbose output');
 
-  // heimdall ports check - Check port availability
+  // truxe ports check - Check port availability
   ports
     .command('check')
     .description('Check port availability and conflicts')
@@ -60,7 +60,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports status - Show current port usage
+  // truxe ports status - Show current port usage
   ports
     .command('status')
     .description('Show current port usage and system status')
@@ -88,7 +88,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports suggest - Intelligent port suggestions
+  // truxe ports suggest - Intelligent port suggestions
   ports
     .command('suggest')
     .description('Get intelligent port suggestions with AI-powered optimization')
@@ -108,8 +108,8 @@ export function portsCommand(program: Command): void {
         
         if (!service && !options.port) {
           logger.error('Either service name or port number must be provided');
-          logger.info('Usage: heimdall ports suggest <service> [options]');
-          logger.info('   or: heimdall ports suggest --port <port> [options]');
+          logger.info('Usage: truxe ports suggest <service> [options]');
+          logger.info('   or: truxe ports suggest --port <port> [options]');
           process.exit(1);
         }
         
@@ -188,7 +188,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports kill - Kill process using port
+  // truxe ports kill - Kill process using port
   ports
     .command('kill')
     .description('Kill processes using specific ports')
@@ -246,7 +246,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports scan - Scan for available port ranges
+  // truxe ports scan - Scan for available port ranges
   ports
     .command('scan')
     .description('Scan for available port ranges')
@@ -281,7 +281,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports reset - Reset to default port configuration
+  // truxe ports reset - Reset to default port configuration
   ports
     .command('reset')
     .description('Reset to default port configuration')
@@ -326,7 +326,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports monitor - Real-time port monitoring
+  // truxe ports monitor - Real-time port monitoring
   ports
     .command('monitor')
     .description('Start real-time port monitoring')
@@ -370,7 +370,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports resolve - Interactive conflict resolution
+  // truxe ports resolve - Interactive conflict resolution
   ports
     .command('resolve')
     .description('Interactively resolve port conflicts')
@@ -397,7 +397,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports analyze - Analyze port usage patterns
+  // truxe ports analyze - Analyze port usage patterns
   ports
     .command('analyze')
     .description('Analyze port usage patterns and generate insights')
@@ -436,7 +436,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports optimize - Optimize port configuration
+  // truxe ports optimize - Optimize port configuration
   ports
     .command('optimize')
     .description('Optimize port configuration for better performance')
@@ -496,7 +496,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports health - Get port system health report
+  // truxe ports health - Get port system health report
   ports
     .command('health')
     .description('Generate comprehensive port system health report')
@@ -535,7 +535,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports dashboard - Real-time dashboard
+  // truxe ports dashboard - Real-time dashboard
   ports
     .command('dashboard')
     .description('Start real-time port monitoring dashboard')
@@ -599,7 +599,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports error - Enhanced error analysis and resolution
+  // truxe ports error - Enhanced error analysis and resolution
   ports
     .command('error')
     .description('Analyze and resolve port-related errors with intelligent guidance')
@@ -657,7 +657,7 @@ export function portsCommand(program: Command): void {
       }
     });
 
-  // heimdall ports validate - Validate port configuration
+  // truxe ports validate - Validate port configuration
   ports
     .command('validate')
     .description('Validate port configuration and detect issues')

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, render } from '@testing-library/react';
 import { performance } from 'perf_hooks';
-import { HeimdallProvider } from '../../context/HeimdallProvider';
+import { TruxeProvider } from '../../context/TruxeProvider';
 import { useAuth } from '../../hooks/useAuth';
 import { useUser } from '../../hooks/useUser';
 import { useOrganization } from '../../hooks/useOrganization';
@@ -21,12 +21,12 @@ describe('Performance Tests', () => {
   describe('Hook Performance', () => {
     it('useAuth hook should initialize in < 20ms', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           {children}
-        </HeimdallProvider>
+        </TruxeProvider>
       );
 
       const start = performance.now();
@@ -39,12 +39,12 @@ describe('Performance Tests', () => {
 
     it('useUser hook should initialize in < 10ms', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           {children}
-        </HeimdallProvider>
+        </TruxeProvider>
       );
 
       const start = performance.now();
@@ -57,12 +57,12 @@ describe('Performance Tests', () => {
 
     it('useOrganization hook should initialize in < 10ms', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           {children}
-        </HeimdallProvider>
+        </TruxeProvider>
       );
 
       const start = performance.now();
@@ -75,12 +75,12 @@ describe('Performance Tests', () => {
 
     it('useSession hook should initialize in < 10ms', () => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           {children}
-        </HeimdallProvider>
+        </TruxeProvider>
       );
 
       const start = performance.now();
@@ -97,12 +97,12 @@ describe('Performance Tests', () => {
       const start = performance.now();
       
       render(
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           <UserButton />
-        </HeimdallProvider>
+        </TruxeProvider>
       );
       
       const duration = performance.now() - start;
@@ -124,12 +124,12 @@ describe('Performance Tests', () => {
       const start = performance.now();
       
       render(
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           <UserAvatar user={mockUser} />
-        </HeimdallProvider>
+        </TruxeProvider>
       );
       
       const duration = performance.now() - start;
@@ -140,12 +140,12 @@ describe('Performance Tests', () => {
       const start = performance.now();
       
       render(
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           <OrganizationSwitcher />
-        </HeimdallProvider>
+        </TruxeProvider>
       );
       
       const duration = performance.now() - start;
@@ -172,12 +172,12 @@ describe('Performance Tests', () => {
       const start = performance.now();
       
       render(
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           <OrganizationSwitcher />
-        </HeimdallProvider>
+        </TruxeProvider>
       );
       
       const duration = performance.now() - start;
@@ -190,23 +190,23 @@ describe('Performance Tests', () => {
   describe('Memory Usage', () => {
     it('should not leak memory on repeated renders', () => {
       const { rerender, unmount } = render(
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           <UserButton />
-        </HeimdallProvider>
+        </TruxeProvider>
       );
 
       // Render multiple times
       for (let i = 0; i < 10; i++) {
         rerender(
-          <HeimdallProvider
+          <TruxeProvider
             apiUrl={mockApiUrl}
             publishableKey={mockPublishableKey}
           >
             <UserButton />
-          </HeimdallProvider>
+          </TruxeProvider>
         );
       }
 
@@ -229,24 +229,24 @@ describe('Performance Tests', () => {
       }
 
       const { rerender } = render(
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           <TestComponent />
-        </HeimdallProvider>
+        </TruxeProvider>
       );
 
       const initialRenderCount = renderCount;
 
       // Rerender with same props
       rerender(
-        <HeimdallProvider
+        <TruxeProvider
           apiUrl={mockApiUrl}
           publishableKey={mockPublishableKey}
         >
           <TestComponent />
-        </HeimdallProvider>
+        </TruxeProvider>
       );
 
       // Should not cause unnecessary re-renders

@@ -573,7 +573,7 @@ export class EnhancedErrorMessaging {
           step_number: 1,
           title: 'Validate configuration',
           description: 'Check configuration file syntax and values',
-          command: 'heimdall config validate',
+          command: 'truxe config validate',
           success_criteria: 'Configuration issues identified',
           risk_level: 'low',
           estimated_time: '1 minute'
@@ -590,7 +590,7 @@ export class EnhancedErrorMessaging {
           step_number: 3,
           title: 'Restart services',
           description: 'Restart services with new configuration',
-          command: 'heimdall restart',
+          command: 'truxe restart',
           success_criteria: 'Services start successfully',
           risk_level: 'low',
           estimated_time: '1 minute'
@@ -624,7 +624,7 @@ export class EnhancedErrorMessaging {
           step_number: 1,
           title: 'Gather error details',
           description: 'Collect detailed error information',
-          command: 'heimdall logs --tail 50',
+          command: 'truxe logs --tail 50',
           success_criteria: 'Error details collected',
           risk_level: 'low',
           estimated_time: '1 minute'
@@ -633,7 +633,7 @@ export class EnhancedErrorMessaging {
           step_number: 2,
           title: 'Check system status',
           description: 'Verify overall system health',
-          command: 'heimdall status',
+          command: 'truxe status',
           success_criteria: 'System status verified',
           risk_level: 'low',
           estimated_time: '1 minute'

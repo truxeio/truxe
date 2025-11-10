@@ -144,7 +144,7 @@ export function DashboardPage() {
       }}>
         <h3 style={{ marginTop: 0 }}>🎉 Authentication Successful!</h3>
         <p style={{ marginBottom: 0 }}>
-          You've successfully authenticated with Heimdall using OAuth 2.0 with PKCE.
+          You've successfully authenticated with Truxe using OAuth 2.0 with PKCE.
           Your tokens are securely stored in memory and will automatically refresh when needed.
         </p>
       </div>

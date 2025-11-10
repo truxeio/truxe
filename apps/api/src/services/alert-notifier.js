@@ -535,7 +535,7 @@ export class AlertNotifierService {
 
     return {
       summary: `${severity.toUpperCase()} | ${alert.type || 'Alert'} - ${alert.message}`,
-      source: this.config.channels?.pagerDuty?.source || 'heimdall-api',
+      source: this.config.channels?.pagerDuty?.source || 'truxe-api',
       severity,
       component: alert.source || 'queue-monitoring',
       group: alert.queueName || 'queues',
@@ -780,7 +780,7 @@ export class AlertNotifierService {
       id: `alert-test-${Date.now()}`,
       type: 'alert.notifier.test',
       severity,
-      message: options.message || 'Test alert notification from Heimdall',
+      message: options.message || 'Test alert notification from Truxe',
       source: options.source || 'alert-notifier',
       queueName: options.queueName || 'diagnostics',
       metrics: {

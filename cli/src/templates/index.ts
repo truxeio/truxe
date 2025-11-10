@@ -4,7 +4,7 @@ export const FRAMEWORK_TEMPLATES: Record<string, FrameworkTemplate> = {
   nextjs: {
     name: 'nextjs',
     displayName: 'Next.js',
-    description: 'Production-ready React framework with complete Heimdall authentication integration',
+    description: 'Production-ready React framework with complete Truxe authentication integration',
     supportedFeatures: [
       'Magic link authentication with organization support',
       'Protected routes with role-based access control',
@@ -52,7 +52,7 @@ export const FRAMEWORK_TEMPLATES: Record<string, FrameworkTemplate> = {
       'type-check': 'tsc --noEmit',
       'format': 'prettier --write "**/*.{js,jsx,ts,tsx,json,md}"',
       'truxe.io': 'truxe.io',
-      'heimdall:status': 'heimdall status'
+      'truxe:status': 'truxe status'
     }
   },
 
@@ -72,9 +72,9 @@ export const FRAMEWORK_TEMPLATES: Record<string, FrameworkTemplate> = {
     dependencies: {
       'nuxt': '^3.8.0',
       'vue': '^3.3.0',
-      '@heimdall/nuxt': 'latest',
-      '@heimdall/vue': 'latest',
-      '@heimdall/ui': 'latest'
+      '@truxe/nuxt': 'latest',
+      '@truxe/vue': 'latest',
+      '@truxe/ui': 'latest'
     },
     devDependencies: {
       '@nuxt/devtools': 'latest',
@@ -107,9 +107,9 @@ export const FRAMEWORK_TEMPLATES: Record<string, FrameworkTemplate> = {
     dependencies: {
       '@sveltejs/kit': '^1.27.0',
       'svelte': '^4.2.0',
-      '@heimdall/sveltekit': 'latest',
-      '@heimdall/svelte': 'latest',
-      '@heimdall/ui': 'latest'
+      '@truxe/sveltekit': 'latest',
+      '@truxe/svelte': 'latest',
+      '@truxe/ui': 'latest'
     },
     devDependencies: {
       '@sveltejs/adapter-auto': '^2.1.0',

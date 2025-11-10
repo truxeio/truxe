@@ -1,13 +1,13 @@
 import { Logger } from './logger';
 
-export class HeimdallError extends Error {
+export class TruxeError extends Error {
   constructor(
     message: string,
     public code: string = 'TRUXE_ERROR',
     public suggestions: string[] = []
   ) {
     super(message);
-    this.name = 'HeimdallError';
+    this.name = 'TruxeError';
   }
 }
 
@@ -15,14 +15,14 @@ export class ErrorHandler {
   private static logger = new Logger();
 
   static handle(error: Error, context?: string): void {
-    if (error instanceof HeimdallError) {
-      this.handleHeimdallError(error, context);
+    if (error instanceof TruxeError) {
+      this.handleTruxeError(error, context);
     } else {
       this.handleGenericError(error, context);
     }
   }
 
-  static handleHeimdallError(error: HeimdallError, context?: string): void {
+  static handleTruxeError(error: TruxeError, context?: string): void {
     this.logger.error(context ? `[${context}] ${error.message}` : error.message);
     
     if (error.suggestions.length > 0) {
@@ -46,8 +46,8 @@ export class ErrorHandler {
 
     this.logger.info('\n💡 Need help? Check out:');
     this.logger.info('   • Documentation: https://docs.truxe.io');
-    this.logger.info('   • GitHub Issues: https://github.com/heimdall-auth/heimdall/issues');
-    this.logger.info('   • Discord: https://discord.gg/heimdall');
+    this.logger.info('   • GitHub Issues: https://github.com/truxe-auth/truxe/issues');
+    this.logger.info('   • Discord: https://discord.gg/truxe');
 
     process.exit(1);
   }
@@ -60,27 +60,27 @@ export class ErrorHandler {
     }
 
     this.logger.info('\n🚨 This is an unexpected error. Please report it:');
-    this.logger.info('   • GitHub Issues: https://github.com/heimdall-auth/heimdall/issues/new');
+    this.logger.info('   • GitHub Issues: https://github.com/truxe-auth/truxe/issues/new');
     this.logger.info('   • Include the error message and steps to reproduce');
 
     process.exit(1);
   }
 
   // Common error factories
-  static invalidProject(suggestions: string[] = []): HeimdallError {
-    return new HeimdallError(
-      'Not a Heimdall project. Run this command from a project root or initialize a new project.',
+  static invalidProject(suggestions: string[] = []): TruxeError {
+    return new TruxeError(
+      'Not a Truxe project. Run this command from a project root or initialize a new project.',
       'INVALID_PROJECT',
       [
-        'Run `heimdall init` to create a new project',
+        'Run `truxe init` to create a new project',
         'Make sure you\'re in the correct directory',
         ...suggestions
       ]
     );
   }
 
-  static missingDependency(dependency: string, installCommand: string): HeimdallError {
-    return new HeimdallError(
+  static missingDependency(dependency: string, installCommand: string): TruxeError {
+    return new TruxeError(
       `Missing dependency: ${dependency}`,
       'MISSING_DEPENDENCY',
       [
@@ -91,35 +91,35 @@ export class ErrorHandler {
     );
   }
 
-  static configurationError(message: string, suggestions: string[] = []): HeimdallError {
-    return new HeimdallError(
+  static configurationError(message: string, suggestions: string[] = []): TruxeError {
+    return new TruxeError(
       `Configuration error: ${message}`,
       'CONFIGURATION_ERROR',
       [
-        'Check your heimdall.config.js file',
+        'Check your truxe.config.js file',
         'Verify environment variables are set',
-        'Run `heimdall status` to check configuration',
+        'Run `truxe status` to check configuration',
         ...suggestions
       ]
     );
   }
 
-  static databaseError(message: string, suggestions: string[] = []): HeimdallError {
-    return new HeimdallError(
+  static databaseError(message: string, suggestions: string[] = []): TruxeError {
+    return new TruxeError(
       `Database error: ${message}`,
       'DATABASE_ERROR',
       [
         'Check your DATABASE_URL environment variable',
         'Ensure your database server is running',
-        'Run `heimdall migrate` to apply migrations',
-        'Run `heimdall status --check-db` to test connection',
+        'Run `truxe migrate` to apply migrations',
+        'Run `truxe status --check-db` to test connection',
         ...suggestions
       ]
     );
   }
 
-  static networkError(message: string, suggestions: string[] = []): HeimdallError {
-    return new HeimdallError(
+  static networkError(message: string, suggestions: string[] = []): TruxeError {
+    return new TruxeError(
       `Network error: ${message}`,
       'NETWORK_ERROR',
       [

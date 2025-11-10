@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from '@heimdall/ui';
+import { Button } from '@truxe/ui';
 
 export default function HomePage() {
   return (
@@ -7,11 +7,11 @@ export default function HomePage() {
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-8">
-            Welcome to your Heimdall App
+            Welcome to your Truxe App
           </h1>
           
           <p className="text-xl mb-8 text-gray-600">
-            Your Next.js application is ready with authentication powered by Heimdall
+            Your Next.js application is ready with authentication powered by Truxe
           </p>
           
           <div className="flex gap-4 justify-center">

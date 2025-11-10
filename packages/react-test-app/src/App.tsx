@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  HeimdallProvider,
+  TruxeProvider,
   useAuth,
   SignInButton,
   SignUpButton,
@@ -9,7 +9,7 @@ import {
   UserProfile,
   SignIn,
   SignUp,
-} from '@heimdall/react';
+} from '@truxe/react';
 
 // Test publishable key
 const HEIMDALL_PUBLISHABLE_KEY = 'test-publishable-key';
@@ -27,7 +27,7 @@ function TestDashboard() {
   if (!isLoaded) {
     return (
       <div style={{ padding: '20px', textAlign: 'center' }}>
-        <h2>Loading Heimdall...</h2>
+        <h2>Loading Truxe...</h2>
       </div>
     );
   }
@@ -35,7 +35,7 @@ function TestDashboard() {
   if (!isSignedIn) {
     return (
       <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
-        <h1 style={{ marginBottom: '30px' }}>Heimdall React Test App</h1>
+        <h1 style={{ marginBottom: '30px' }}>Truxe React Test App</h1>
 
         <div style={{
           display: 'grid',
@@ -154,7 +154,7 @@ function TestDashboard() {
         borderRadius: '8px',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
-        <h1>Heimdall React Test App</h1>
+        <h1>Truxe React Test App</h1>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <UserButton showName={true} />
           <SignOutButton>
@@ -295,7 +295,7 @@ function TestDashboard() {
 
 export default function App() {
   return (
-    <HeimdallProvider
+    <TruxeProvider
       publishableKey={HEIMDALL_PUBLISHABLE_KEY}
       apiUrl={HEIMDALL_API_URL}
       onTokenRefresh={(tokens) => {
@@ -306,6 +306,6 @@ export default function App() {
       }}
     >
       <TestDashboard />
-    </HeimdallProvider>
+    </TruxeProvider>
   );
 }

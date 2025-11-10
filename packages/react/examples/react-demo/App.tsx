@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  HeimdallProvider,
+  TruxeProvider,
   SignInButton,
   SignUpButton,
   UserButton,
@@ -12,7 +12,7 @@ import {
   useUser,
   useOrganization,
   useAuth,
-} from '@heimdall/react';
+} from '@truxe/react';
 
 // Mock publishable key for demo
 const DEMO_PUBLISHABLE_KEY = 'pk_test_demo_key_123';
@@ -20,11 +20,11 @@ const DEMO_API_URL = 'http://localhost:87001';
 
 /**
  * Main Application Component
- * Demonstrates complete Heimdall integration
+ * Demonstrates complete Truxe integration
  */
 function App() {
   return (
-    <HeimdallProvider
+    <TruxeProvider
       publishableKey={DEMO_PUBLISHABLE_KEY}
       apiUrl={DEMO_API_URL}
       appearance={{
@@ -47,7 +47,7 @@ function App() {
           <Router />
         </main>
       </div>
-    </HeimdallProvider>
+    </TruxeProvider>
   );
 }
 
@@ -65,7 +65,7 @@ function Navigation() {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4">
             <h1 className="text-2xl font-bold text-blue-600">
-              🛡️ Heimdall Demo
+              🛡️ Truxe Demo
             </h1>
             <div className="hidden md:flex gap-4 text-sm text-gray-600">
               <a href="/" className="hover:text-blue-600">Home</a>
@@ -186,7 +186,7 @@ function HomePage({ navigate }: { navigate: (path: string) => void }) {
               Welcome, {user?.firstName}! 👋
             </h2>
             <p className="text-gray-600 mb-6">
-              You're successfully signed in to the Heimdall React Demo.
+              You're successfully signed in to the Truxe React Demo.
             </p>
             {organization && (
               <div className="bg-blue-50 border border-blue-200 rounded p-4 mb-6">
@@ -210,7 +210,7 @@ function HomePage({ navigate }: { navigate: (path: string) => void }) {
             />
             <DemoCard
               title="🎨 Customization"
-              description="See how Heimdall components can be styled and customized for your brand."
+              description="See how Truxe components can be styled and customized for your brand."
             />
           </div>
 
@@ -231,7 +231,7 @@ function HomePage({ navigate }: { navigate: (path: string) => void }) {
       ) : (
         <div className="text-center py-16">
           <h1 className="text-5xl font-bold mb-6">
-            🛡️ Heimdall React Demo
+            🛡️ Truxe React Demo
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Experience Clerk-like authentication for React applications.

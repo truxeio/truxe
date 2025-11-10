@@ -1,5 +1,5 @@
 /**
- * OAuth Client for Heimdall (Browser/SPA)
+ * OAuth Client for Truxe (Browser/SPA)
  *
  * Implements OAuth 2.0 Authorization Code Flow with PKCE
  * - PKCE (Proof Key for Code Exchange) for security
@@ -9,7 +9,7 @@
  */
 
 export interface OAuthConfig {
-  heimdallUrl: string;
+  truxeUrl: string;
   clientId: string;
   redirectUri: string;
   scopes?: string[];
@@ -35,7 +35,7 @@ export interface UserInfo {
   updated_at?: number;
 }
 
-export class HeimdallOAuthClient {
+export class TruxeOAuthClient {
   private config: OAuthConfig;
   private tokens: OAuthTokens | null = null;
   private tokenExpiresAt: number | null = null;
@@ -49,7 +49,7 @@ export class HeimdallOAuthClient {
 
   /**
    * Initiate OAuth authorization flow
-   * Redirects user to Heimdall authorization page
+   * Redirects user to Truxe authorization page
    */
   login(): void {
     const { url, state, codeVerifier } = this.generateAuthorizationUrl();
@@ -114,7 +114,7 @@ export class HeimdallOAuthClient {
   async getUserInfo(): Promise<UserInfo> {
     const accessToken = await this.getValidAccessToken();
 
-    const response = await fetch(`${this.config.heimdallUrl}/oauth-provider/userinfo`, {
+    const response = await fetch(`${this.config.truxeUrl}/oauth-provider/userinfo`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }
@@ -175,7 +175,7 @@ export class HeimdallOAuthClient {
   // ========================================================================
 
   private generateAuthorizationUrl(): { url: string; state: string; codeVerifier: string } {
-    const authUrl = new URL(`${this.config.heimdallUrl}/oauth-provider/authorize`);
+    const authUrl = new URL(`${this.config.truxeUrl}/oauth-provider/authorize`);
 
     // Required parameters
     authUrl.searchParams.set('client_id', this.config.clientId);
@@ -201,7 +201,7 @@ export class HeimdallOAuthClient {
   }
 
   private async exchangeCodeForToken(code: string, codeVerifier: string): Promise<OAuthTokens> {
-    const response = await fetch(`${this.config.heimdallUrl}/oauth-provider/token`, {
+    const response = await fetch(`${this.config.truxeUrl}/oauth-provider/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -228,7 +228,7 @@ export class HeimdallOAuthClient {
       throw new Error('No refresh token available');
     }
 
-    const response = await fetch(`${this.config.heimdallUrl}/oauth-provider/token`, {
+    const response = await fetch(`${this.config.truxeUrl}/oauth-provider/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -249,7 +249,7 @@ export class HeimdallOAuthClient {
   }
 
   private async revokeToken(token: string): Promise<void> {
-    await fetch(`${this.config.heimdallUrl}/oauth-provider/revoke`, {
+    await fetch(`${this.config.truxeUrl}/oauth-provider/revoke`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -314,16 +314,16 @@ export class HeimdallOAuthClient {
 }
 
 // Singleton instance
-let oauthClient: HeimdallOAuthClient | null = null;
+let oauthClient: TruxeOAuthClient | null = null;
 
-export function initializeOAuthClient(config: OAuthConfig): HeimdallOAuthClient {
+export function initializeOAuthClient(config: OAuthConfig): TruxeOAuthClient {
   if (!oauthClient) {
-    oauthClient = new HeimdallOAuthClient(config);
+    oauthClient = new TruxeOAuthClient(config);
   }
   return oauthClient;
 }
 
-export function getOAuthClient(): HeimdallOAuthClient {
+export function getOAuthClient(): TruxeOAuthClient {
   if (!oauthClient) {
     throw new Error('OAuth client not initialized. Call initializeOAuthClient first.');
   }

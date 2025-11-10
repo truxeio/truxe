@@ -9,7 +9,7 @@
 import config from './src/config/index.js'
 import alertNotifier from './src/services/alert-notifier.js'
 
-console.log('📧 Heimdall Email Alert Test\n')
+console.log('📧 Truxe Email Alert Test\n')
 console.log('=' .repeat(60))
 
 // Display email configuration

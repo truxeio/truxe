@@ -281,8 +281,8 @@ export class ErrorMessagingService {
         
       case ERROR_CATEGORIES.PORT_CONFLICT:
         steps.push('Check what process is using the port: `lsof -i :{port}`')
-        steps.push('Kill the conflicting process: `heimdall ports kill {port}`')
-        steps.push('Use an alternative port: `heimdall ports suggest --port {port}`')
+        steps.push('Kill the conflicting process: `truxe ports kill {port}`')
+        steps.push('Use an alternative port: `truxe ports suggest --port {port}`')
         break
         
       case ERROR_CATEGORIES.PERMISSION:
@@ -501,8 +501,8 @@ export class ErrorMessagingService {
           description: 'The requested port is already being used by another process',
           steps: [
             'Identify the process using the port: `lsof -i :{port}`',
-            'Kill the conflicting process: `heimdall ports kill {port}`',
-            'Use an alternative port: `heimdall ports suggest --port {port}`',
+            'Kill the conflicting process: `truxe ports kill {port}`',
+            'Use an alternative port: `truxe ports suggest --port {port}`',
             'Check if the port is reserved by the system',
           ],
           prevention: [

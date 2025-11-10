@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { HeimdallContext } from '../context/HeimdallProvider';
+import { TruxeContext } from '../context/TruxeProvider';
 
 /**
  * Access session information.
@@ -22,10 +22,10 @@ import { HeimdallContext } from '../context/HeimdallProvider';
  * ```
  */
 export function useSession() {
-  const context = useContext(HeimdallContext);
+  const context = useContext(TruxeContext);
 
   if (!context) {
-    throw new Error('useSession must be used within HeimdallProvider');
+    throw new Error('useSession must be used within TruxeProvider');
   }
 
   const { isLoaded, session } = context;

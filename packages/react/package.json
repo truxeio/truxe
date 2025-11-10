@@ -1,7 +1,7 @@
 {
   "name": "@truxe/react",
   "version": "0.1.0",
-  "description": "React components and hooks for Heimdall authentication",
+  "description": "React components and hooks for Truxe authentication",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -56,15 +56,16 @@
     "vitest": "^1.0.4"
   },
   "keywords": [
-    "heimdall",
+    "truxe",
     "auth",
     "authentication",
     "react",
     "oauth",
     "session",
-    "user-management"
+    "user-management",
+    "mfa",
+    "rbac"
   ],
-  "author": "Heimdall Team",
   "license": "MIT",
   "homepage": "https://github.com/truxeio/truxe/tree/main/packages/react#readme",
   "repository": {

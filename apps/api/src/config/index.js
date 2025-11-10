@@ -1,5 +1,5 @@
 /**
- * Heimdall API Configuration
+ * Truxe API Configuration
  * 
  * Centralized configuration management with validation and type safety.
  * Supports environment-specific settings and secure secret management.
@@ -313,7 +313,7 @@ function loadConfig() {
           tokenUrl: process.env.GITHUB_OAUTH_TOKEN_URL || 'https://github.com/login/oauth/access_token',
           userInfoUrl: process.env.GITHUB_OAUTH_USERINFO_URL || 'https://api.github.com/user',
           apiVersion: process.env.GITHUB_API_VERSION || '2022-11-28',
-          userAgent: process.env.GITHUB_USER_AGENT || 'Heimdall-Auth',
+          userAgent: process.env.GITHUB_USER_AGENT || 'Truxe-Auth',
           enterpriseUrl: process.env.GITHUB_ENTERPRISE_URL || null,
         },
         apple: {
@@ -417,8 +417,8 @@ function loadConfig() {
       bcryptRounds: parseInteger(process.env.BCRYPT_ROUNDS, SECURITY_CONSTANTS.DEFAULT_BCRYPT_ROUNDS),
       corsOrigin: parseList(process.env.CORS_ORIGIN, [SECURITY_CONSTANTS.DEFAULT_CORS_ORIGIN]),
       corsCredentials: parseBoolean(process.env.CORS_CREDENTIALS, SECURITY_CONSTANTS.DEFAULT_CORS_CREDENTIALS),
-      cookieSecret: process.env.COOKIE_SECRET || 'heimdall-cookie-secret-change-in-production',
-      sessionSecret: process.env.SESSION_SECRET || 'heimdall-session-secret-change-in-production',
+      cookieSecret: process.env.COOKIE_SECRET || 'truxe-cookie-secret-change-in-production',
+      sessionSecret: process.env.SESSION_SECRET || 'truxe-session-secret-change-in-production',
     },
 
     // Password Policy Configuration
@@ -626,7 +626,7 @@ function loadConfig() {
         pagerDuty: {
           enabled: parseBoolean(process.env.ALERT_PAGERDUTY_ENABLED, ALERT_NOTIFICATION_CONSTANTS.DEFAULT_PAGERDUTY_ENABLED),
           integrationKey: process.env.ALERT_PAGERDUTY_INTEGRATION_KEY || null,
-          source: process.env.ALERT_PAGERDUTY_SOURCE || APP_CONSTANTS.NAME || 'Heimdall API',
+          source: process.env.ALERT_PAGERDUTY_SOURCE || APP_CONSTANTS.NAME || 'Truxe API',
           service: process.env.ALERT_PAGERDUTY_SERVICE || 'alert-notifications',
         },
       },
@@ -721,8 +721,8 @@ const config = mergeConfig(baseConfig, environmentConfig)
 // Validate final configuration
 if (config.app.environment === 'production') {
   const productionChecks = [
-    { name: 'COOKIE_SECRET', check: () => config.security.cookieSecret !== 'heimdall-cookie-secret-change-in-production', required: true },
-    { name: 'SESSION_SECRET', check: () => config.security.sessionSecret !== 'heimdall-session-secret-change-in-production', required: true },
+    { name: 'COOKIE_SECRET', check: () => config.security.cookieSecret !== 'truxe-cookie-secret-change-in-production', required: true },
+    { name: 'SESSION_SECRET', check: () => config.security.sessionSecret !== 'truxe-session-secret-change-in-production', required: true },
     { name: 'DATABASE_SSL', check: () => config.database.ssl === true, required: false }, // Optional for internal databases
     { name: 'HELMET', check: () => config.features.helmet === true, required: true },
     { name: 'RATE_LIMITING', check: () => config.features.rateLimiting === true, required: true },

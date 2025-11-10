@@ -30,14 +30,14 @@ export async function apiKeyAuthMiddleware(fastify, options) {
         return reply.code(401).send({
           error: 'Unauthorized',
           message: 'Missing or invalid Authorization header',
-          hint: 'Use: Authorization: Bearer heimdall_pk_live_...'
+          hint: 'Use: Authorization: Bearer truxe_pk_live_...'
         });
       }
 
       const apiKey = authHeader.substring(7); // Remove 'Bearer '
 
       // Verify API key format
-      if (!apiKey.startsWith('heimdall_')) {
+      if (!apiKey.startsWith('truxe_')) {
         return reply.code(401).send({
           error: 'Unauthorized',
           message: 'Invalid API key format'

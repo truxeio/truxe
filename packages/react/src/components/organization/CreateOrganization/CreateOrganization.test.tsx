@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { CreateOrganization } from './CreateOrganization';
-import { HeimdallProvider } from '../../../context/HeimdallProvider';
+import { TruxeProvider } from '../../../context/TruxeProvider';
 
 // Mock the useOrganization hook
 const mockCreate = vi.fn();
@@ -17,9 +17,9 @@ vi.mock('../../../hooks/useOrganization', () => ({
 
 const renderWithProvider = (ui: React.ReactElement) => {
   return render(
-    <HeimdallProvider publishableKey="test_key">
+    <TruxeProvider publishableKey="test_key">
       {ui}
-    </HeimdallProvider>
+    </TruxeProvider>
   );
 };
 

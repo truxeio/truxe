@@ -309,7 +309,7 @@ class ConfigMigrator {
   migrateRedisConfigs(content, filePath) {
     const redisMappings = {
       'process.env.REDIS_URL || \'redis://localhost:6379\'': 'process.env.REDIS_URL || REDIS_CONSTANTS.DEFAULT_URL',
-      'process.env.REDIS_KEY_PREFIX || \'heimdall:\'': 'process.env.REDIS_KEY_PREFIX || REDIS_CONSTANTS.DEFAULT_KEY_PREFIX',
+      'process.env.REDIS_KEY_PREFIX || \'truxe:\'': 'process.env.REDIS_KEY_PREFIX || REDIS_CONSTANTS.DEFAULT_KEY_PREFIX',
       'parseInteger(process.env.REDIS_RETRY_DELAY, 100)': 'parseInteger(process.env.REDIS_RETRY_DELAY, REDIS_CONSTANTS.DEFAULT_RETRY_DELAY)',
       'parseInteger(process.env.REDIS_MAX_RETRIES, 3)': 'parseInteger(process.env.REDIS_MAX_RETRIES, REDIS_CONSTANTS.DEFAULT_MAX_RETRIES)'
     }
@@ -365,7 +365,7 @@ class ConfigMigrator {
     const emailMappings = {
       'process.env.EMAIL_PROVIDER || \'resend\'': 'process.env.EMAIL_PROVIDER || EMAIL_CONSTANTS.DEFAULT_PROVIDER',
       'process.env.EMAIL_FROM || \'noreply@truxe.io\'': 'process.env.EMAIL_FROM || EMAIL_CONSTANTS.DEFAULT_FROM',
-      'process.env.EMAIL_FROM_NAME || \'Heimdall Auth\'': 'process.env.EMAIL_FROM_NAME || EMAIL_CONSTANTS.DEFAULT_FROM_NAME',
+      'process.env.EMAIL_FROM_NAME || \'Truxe Auth\'': 'process.env.EMAIL_FROM_NAME || EMAIL_CONSTANTS.DEFAULT_FROM_NAME',
       'parseInteger(process.env.SMTP_PORT, 587)': 'parseInteger(process.env.SMTP_PORT, EMAIL_CONSTANTS.DEFAULT_SMTP_PORT)',
       'parseBoolean(process.env.SMTP_SECURE, false)': 'parseBoolean(process.env.SMTP_SECURE, EMAIL_CONSTANTS.DEFAULT_SMTP_SECURE)',
       'process.env.AWS_REGION || \'us-east-1\'': 'process.env.AWS_REGION || EMAIL_CONSTANTS.DEFAULT_AWS_REGION'
@@ -569,7 +569,7 @@ async function main() {
 
     case 'help':
       console.log(`
-Heimdall Configuration Migrator
+Truxe Configuration Migrator
 
 Usage: node migrate-config.js [command] [options]
 

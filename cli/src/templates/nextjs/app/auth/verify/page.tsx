@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { LoadingSpinner } from '@heimdall/ui';
+import { LoadingSpinner } from '@truxe/ui';
 
 export default function VerifyPage() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function VerifyPage() {
           return;
         }
 
-        // Call Heimdall API to verify the magic link
+        // Call Truxe API to verify the magic link
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_HEIMDALL_URL || 'http://localhost:3001'}/auth/verify?token=${token}&email=${email || ''}`,
           {

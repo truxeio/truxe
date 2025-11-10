@@ -1,5 +1,5 @@
 /**
- * Heimdall Production Error Handler
+ * Truxe Production Error Handler
  * 
  * Enterprise-grade error handling and recovery system for production environments.
  * Provides comprehensive error tracking, automated recovery, circuit breaker patterns,

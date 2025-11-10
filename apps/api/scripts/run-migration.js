@@ -19,7 +19,7 @@ const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || '21432',
   database: process.env.DB_NAME || 'truxe.io',
-  user: process.env.DB_USER || 'heimdall',
+  user: process.env.DB_USER || 'truxe',
   password: process.env.DB_PASSWORD || 'dev_password_change_me'
 }
 
@@ -135,7 +135,7 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
   console.log('  DB_HOST       Database host (default: localhost)')
   console.log('  DB_PORT       Database port (default: 21432)')
   console.log('  DB_NAME       Database name (default: truxe.io)')
-  console.log('  DB_USER       Database user (default: heimdall)')
+  console.log('  DB_USER       Database user (default: truxe)')
   console.log('  DB_PASSWORD   Database password (default: dev_password_change_me)')
   process.exit(0)
 }

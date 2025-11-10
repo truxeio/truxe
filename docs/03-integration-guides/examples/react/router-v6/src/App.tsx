@@ -8,7 +8,7 @@ import { DashboardPage } from './components/DashboardPage';
 function HomePage() {
     return (
         <div>
-            <h1>Heimdall React Router v6 Example</h1>
+            <h1>Truxe React Router v6 Example</h1>
             <p>Welcome to the public homepage.</p>
             <a href="/login">Login</a>
         </div>

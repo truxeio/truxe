@@ -1,14 +1,14 @@
 /**
  * Setup OAuth Test Client for Performance Testing
  *
- * This script registers an OAuth client application in Heimdall
+ * This script registers an OAuth client application in Truxe
  * for use in k6 performance testing.
  *
  * Usage:
  *   node setup-test-client.js
  *
  * Environment Variables:
- *   API_URL - Heimdall API URL (default: http://localhost:3001)
+ *   API_URL - Truxe API URL (default: http://localhost:3001)
  *   ADMIN_TOKEN - Admin authentication token (required)
  */
 
@@ -157,7 +157,7 @@ async function registerClient() {
  * Main execution
  */
 async function main() {
-  console.log('🚀 Heimdall OAuth Client Setup for Performance Testing\n');
+  console.log('🚀 Truxe OAuth Client Setup for Performance Testing\n');
   console.log(`   API URL: ${API_URL}`);
   console.log(`   Admin Token: ${ADMIN_TOKEN ? '✓ Set' : '✗ Not set'}`);
   console.log('');

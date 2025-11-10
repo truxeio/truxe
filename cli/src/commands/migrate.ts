@@ -5,7 +5,7 @@ import { spawn } from 'child_process';
 import chalk from 'chalk';
 import ora from 'ora';
 import { Logger } from '../utils/logger';
-import { ErrorHandler, HeimdallError } from '../utils/error-handler';
+import { ErrorHandler, TruxeError } from '../utils/error-handler';
 import { ConfigManager } from '../utils/config';
 import { MigrateOptions } from '../types';
 import { Auth0Migrator } from '../utils/auth0-migrator';
@@ -29,11 +29,11 @@ export function migrateCommand(program: Command): void {
       const logger = new Logger();
       
       try {
-        logger.header('🗄️  Heimdall Database Migrations');
+        logger.header('🗄️  Truxe Database Migrations');
         logger.blank();
         
         // Validate project
-        if (!ConfigManager.isHeimdallProject()) {
+        if (!ConfigManager.isTruxeProject()) {
           throw ErrorHandler.invalidProject();
         }
         
@@ -55,7 +55,7 @@ export function migrateCommand(program: Command): void {
             await showMigrationStatus(options);
             break;
           default:
-            throw new HeimdallError(
+            throw new TruxeError(
               `Unknown migration action: ${action}`,
               'INVALID_MIGRATION_ACTION',
               ['Valid actions: up, down, status']
@@ -105,7 +105,7 @@ export function migrateCommand(program: Command): void {
   // Auth0/Clerk Migration Commands
   migrate
     .command('from-auth0')
-    .description('Migrate from Auth0 to Heimdall')
+    .description('Migrate from Auth0 to Truxe')
     .option('--config <path>', 'Path to Auth0 export configuration file')
     .option('--data <path>', 'Path to Auth0 exported data file')
     .option('--dry-run', 'Preview migration without making changes')
@@ -117,7 +117,7 @@ export function migrateCommand(program: Command): void {
 
   migrate
     .command('from-clerk')
-    .description('Migrate from Clerk to Heimdall')
+    .description('Migrate from Clerk to Truxe')
     .option('--data <path>', 'Path to Clerk exported data file')
     .option('--api-key <key>', 'Clerk API key for live data export')
     .option('--dry-run', 'Preview migration without making changes')
@@ -168,7 +168,7 @@ async function runMigrations(direction: 'up' | 'down', options: MigrateOptions &
   if (!migrationRunner) {
     throw ErrorHandler.missingDependency(
       'Database migration system',
-      'npm install @heimdall/database'
+      'npm install @truxe/database'
     );
   }
   
@@ -200,7 +200,7 @@ async function runMigrations(direction: 'up' | 'down', options: MigrateOptions &
         'Check your database connection',
         'Verify migration files are not corrupted',
         'Check database permissions',
-        'Run `heimdall status --check-db` to diagnose'
+        'Run `truxe status --check-db` to diagnose'
       ]
     );
   }
@@ -218,7 +218,7 @@ async function showMigrationStatus(_options: MigrateOptions): Promise<void> {
   if (!migrationRunner) {
     throw ErrorHandler.missingDependency(
       'Database migration system',
-      'npm install @heimdall/database'
+      'npm install @truxe/database'
     );
   }
   
@@ -262,7 +262,7 @@ async function createMigration(name: string, _options: MigrateOptions): Promise<
   
   // Validate migration name
   if (!/^[a-zA-Z0-9_-]+$/.test(name)) {
-    throw new HeimdallError(
+    throw new TruxeError(
       'Invalid migration name',
       'INVALID_MIGRATION_NAME',
       [
@@ -277,13 +277,13 @@ async function createMigration(name: string, _options: MigrateOptions): Promise<
   const migrationDir = findMigrationDirectory();
   
   if (!migrationDir) {
-    throw new HeimdallError(
+    throw new TruxeError(
       'Migration directory not found',
       'MIGRATION_DIR_NOT_FOUND',
       [
-        'Make sure you\'re in a Heimdall project directory',
+        'Make sure you\'re in a Truxe project directory',
         'Check if database migrations are set up',
-        'Run `heimdall init` to create a new project'
+        'Run `truxe init` to create a new project'
       ]
     );
   }
@@ -328,10 +328,10 @@ async function createMigration(name: string, _options: MigrateOptions): Promise<
     
     logger.info('💡 Next steps:');
     logger.bullet('Edit the migration files with your SQL');
-    logger.bullet('Run `heimdall migrate up` to apply the migration');
+    logger.bullet('Run `truxe migrate up` to apply the migration');
     
   } catch (error) {
-    throw new HeimdallError(
+    throw new TruxeError(
       `Failed to create migration files: ${(error as Error).message}`,
       'MIGRATION_CREATE_FAILED'
     );
@@ -340,7 +340,7 @@ async function createMigration(name: string, _options: MigrateOptions): Promise<
 
 async function findMigrationRunner(): Promise<string | null> {
   const possiblePaths = [
-    join(process.cwd(), 'node_modules', '@heimdall', 'database', 'migrate.js'),
+    join(process.cwd(), 'node_modules', '@truxe', 'database', 'migrate.js'),
     join(process.cwd(), '..', 'database', 'migrate.js'), // Monorepo
     join(__dirname, '..', '..', '..', 'database', 'migrate.js') // CLI dev
   ];
@@ -484,11 +484,11 @@ async function migrateFromAuth0(options: any): Promise<void> {
   const logger = new Logger();
   
   try {
-    logger.header('🔄 Auth0 to Heimdall Migration');
+    logger.header('🔄 Auth0 to Truxe Migration');
     logger.blank();
     
     // Validate project
-    if (!ConfigManager.isHeimdallProject()) {
+    if (!ConfigManager.isTruxeProject()) {
       throw ErrorHandler.invalidProject();
     }
     
@@ -517,7 +517,7 @@ async function migrateFromAuth0(options: any): Promise<void> {
       // Load from file
       if (!existsSync(options.data)) {
         spinner.fail();
-        throw new HeimdallError(
+        throw new TruxeError(
           `Data file not found: ${options.data}`,
           'DATA_FILE_NOT_FOUND',
           ['Check the file path', 'Ensure the file exists and is readable']
@@ -528,7 +528,7 @@ async function migrateFromAuth0(options: any): Promise<void> {
       // Export from Auth0 API
       if (!existsSync(options.config)) {
         spinner.fail();
-        throw new HeimdallError(
+        throw new TruxeError(
           `Config file not found: ${options.config}`,
           'CONFIG_FILE_NOT_FOUND',
           ['Check the file path', 'Ensure the config file exists']
@@ -543,7 +543,7 @@ async function migrateFromAuth0(options: any): Promise<void> {
       logger.info(`Data exported to: ${chalk.cyan(exportPath)}`);
     } else {
       spinner.fail();
-      throw new HeimdallError(
+      throw new TruxeError(
         'Either --data or --config must be provided',
         'MISSING_DATA_SOURCE',
         ['Use --data to provide exported data file', 'Use --config to export from Auth0 API']
@@ -570,7 +570,7 @@ async function migrateFromAuth0(options: any): Promise<void> {
         logger.bullet(`${error.field}: ${error.message}`);
       });
       
-      throw new HeimdallError('Migration data validation failed', 'VALIDATION_FAILED');
+      throw new TruxeError('Migration data validation failed', 'VALIDATION_FAILED');
     }
     
     validationSpinner.succeed(`Validation passed (${validationResult.stats.totalUsers} users, ${validationResult.stats.totalOrganizations} organizations)`);
@@ -670,7 +670,7 @@ async function migrateFromAuth0(options: any): Promise<void> {
     
     logger.blank();
     logger.info('💡 Next steps:');
-    logger.bullet('Update your application code to use Heimdall');
+    logger.bullet('Update your application code to use Truxe');
     logger.bullet('Test authentication flows');
     logger.bullet('Update webhook configurations');
     logger.bullet('Notify users of the migration');
@@ -684,11 +684,11 @@ async function migrateFromClerk(options: any): Promise<void> {
   const logger = new Logger();
   
   try {
-    logger.header('🔄 Clerk to Heimdall Migration');
+    logger.header('🔄 Clerk to Truxe Migration');
     logger.blank();
     
     // Validate project
-    if (!ConfigManager.isHeimdallProject()) {
+    if (!ConfigManager.isTruxeProject()) {
       throw ErrorHandler.invalidProject();
     }
     
@@ -717,7 +717,7 @@ async function migrateFromClerk(options: any): Promise<void> {
       // Load from file
       if (!existsSync(options.data)) {
         spinner.fail();
-        throw new HeimdallError(
+        throw new TruxeError(
           `Data file not found: ${options.data}`,
           'DATA_FILE_NOT_FOUND',
           ['Check the file path', 'Ensure the file exists and is readable']
@@ -734,7 +734,7 @@ async function migrateFromClerk(options: any): Promise<void> {
       logger.info(`Data exported to: ${chalk.cyan(exportPath)}`);
     } else {
       spinner.fail();
-      throw new HeimdallError(
+      throw new TruxeError(
         'Either --data or --api-key must be provided',
         'MISSING_DATA_SOURCE',
         ['Use --data to provide exported data file', 'Use --api-key to export from Clerk API']
@@ -761,7 +761,7 @@ async function migrateFromClerk(options: any): Promise<void> {
         logger.bullet(`${error.field}: ${error.message}`);
       });
       
-      throw new HeimdallError('Migration data validation failed', 'VALIDATION_FAILED');
+      throw new TruxeError('Migration data validation failed', 'VALIDATION_FAILED');
     }
     
     validationSpinner.succeed(`Validation passed (${validationResult.stats.totalUsers} users, ${validationResult.stats.totalOrganizations} organizations)`);
@@ -860,7 +860,7 @@ async function migrateFromClerk(options: any): Promise<void> {
     
     logger.blank();
     logger.info('💡 Next steps:');
-    logger.bullet('Update your application code to use Heimdall');
+    logger.bullet('Update your application code to use Truxe');
     logger.bullet('Test authentication flows');
     logger.bullet('Update webhook configurations');
     logger.bullet('Notify users of the migration');
@@ -881,7 +881,7 @@ async function validateMigration(options: any): Promise<void> {
     
     // Load data
     if (!options.data) {
-      throw new HeimdallError(
+      throw new TruxeError(
         'Data file path is required for validation',
         'MISSING_DATA_PATH',
         ['Use --data to specify the path to your exported data file']
@@ -889,7 +889,7 @@ async function validateMigration(options: any): Promise<void> {
     }
     
     if (!existsSync(options.data)) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Data file not found: ${options.data}`,
         'DATA_FILE_NOT_FOUND',
         ['Check the file path', 'Ensure the file exists and is readable']
@@ -910,7 +910,7 @@ async function validateMigration(options: any): Promise<void> {
       validationResult = await validator.validateClerkData(migrationData);
     } else {
       validationSpinner.fail();
-      throw new HeimdallError(
+      throw new TruxeError(
         `Unsupported source system: ${options.source}`,
         'UNSUPPORTED_SOURCE',
         ['Supported sources: auth0, clerk']
@@ -948,7 +948,7 @@ async function validateMigration(options: any): Promise<void> {
         logger.bullet(`${chalk.red(error.field)}: ${error.message}`);
       });
       
-      throw new HeimdallError('Migration data validation failed', 'VALIDATION_FAILED');
+      throw new TruxeError('Migration data validation failed', 'VALIDATION_FAILED');
     }
     
   } catch (error) {
@@ -970,7 +970,7 @@ async function showMigrationStatus(options: any): Promise<void> {
       const migration = await progressTracker.getMigration(options.migrationId);
       
       if (!migration) {
-        throw new HeimdallError(
+        throw new TruxeError(
           `Migration not found: ${options.migrationId}`,
           'MIGRATION_NOT_FOUND',
           ['Check the migration ID', 'Use --all to see all migrations']
@@ -1040,7 +1040,7 @@ async function rollbackMigration(options: any): Promise<void> {
     logger.blank();
     
     if (!options.migrationId) {
-      throw new HeimdallError(
+      throw new TruxeError(
         'Migration ID is required for rollback',
         'MISSING_MIGRATION_ID',
         ['Use --migration-id to specify which migration to rollback']
@@ -1051,15 +1051,15 @@ async function rollbackMigration(options: any): Promise<void> {
     const migration = await progressTracker.getMigration(options.migrationId);
     
     if (!migration) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Migration not found: ${options.migrationId}`,
         'MIGRATION_NOT_FOUND',
-        ['Check the migration ID', 'Use `heimdall migrate status --all` to see all migrations']
+        ['Check the migration ID', 'Use `truxe migrate status --all` to see all migrations']
       );
     }
     
     if (migration.status !== 'completed') {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Cannot rollback migration with status: ${migration.status}`,
         'INVALID_MIGRATION_STATUS',
         ['Only completed migrations can be rolled back']
@@ -1101,7 +1101,7 @@ async function rollbackMigration(options: any): Promise<void> {
     } else if (migration.source === 'clerk') {
       migrator = new ClerkMigrator(config);
     } else {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Unsupported migration source: ${migration.source}`,
         'UNSUPPORTED_MIGRATION_SOURCE'
       );

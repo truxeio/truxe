@@ -16,13 +16,13 @@ function validateCSRFToken(request: NextRequest): boolean {
 // Verify authentication token
 async function verifyAuthToken(request: NextRequest): Promise<any> {
   try {
-    const accessToken = request.cookies.get('heimdall_access_token')?.value;
+    const accessToken = request.cookies.get('truxe_access_token')?.value;
     
     if (!accessToken) {
       return null;
     }
 
-    // Verify token with Heimdall API
+    // Verify token with Truxe API
     const response = await fetch(
       `${process.env.TRUXE_URL || 'http://localhost:3001'}/auth/me`,
       {

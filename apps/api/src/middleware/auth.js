@@ -39,7 +39,7 @@ async function authMiddleware(fastify, options) {
 
       // Fallback to cookie - temporarily disabled
       // if (!token) {
-      //   token = request.cookies?.heimdall_access_token
+      //   token = request.cookies?.truxe_access_token
       // }
 
       if (!token) {

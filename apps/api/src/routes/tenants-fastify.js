@@ -1,7 +1,7 @@
 /**
  * Tenant API Routes - Fastify Implementation
  * 
- * Fastify-compatible version of the tenant routes for the Heimdall API.
+ * Fastify-compatible version of the tenant routes for the Truxe API.
  * Provides RESTful endpoints for hierarchical tenant management.
  */
 

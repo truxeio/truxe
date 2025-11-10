@@ -57,7 +57,7 @@ function DashboardContent() {
                   Welcome back, {user.email.split('@')[0]}!
                 </h2>
                 <p className="text-gray-600">
-                  You're successfully authenticated with Heimdall. Last login: {formatRelativeTime(user.createdAt)}
+                  You're successfully authenticated with Truxe. Last login: {formatRelativeTime(user.createdAt)}
                 </p>
               </div>
               <div className="hidden sm:block">

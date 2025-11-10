@@ -3,15 +3,15 @@ import { spawn, ChildProcess } from 'child_process';
 import { join } from 'path';
 import chalk from 'chalk';
 import { Logger } from '../utils/logger';
-import { ErrorHandler, HeimdallError } from '../utils/error-handler';
+import { ErrorHandler, TruxeError } from '../utils/error-handler';
 import { ConfigManager } from '../utils/config';
 import { DevOptions } from '../types';
 
 export function devCommand(program: Command): void {
   program
     .command('dev')
-    .description('Start Heimdall development server')
-    .option('-p, --port <port>', 'Port for Heimdall API', '3001')
+    .description('Start Truxe development server')
+    .option('-p, --port <port>', 'Port for Truxe API', '3001')
     .option('--api-port <port>', 'Alternative port specification', '3001')
     .option('--db <database>', 'Database type (sqlite|postgresql)', 'sqlite')
     .option('--host <host>', 'Host to bind to', '0.0.0.0')
@@ -21,14 +21,14 @@ export function devCommand(program: Command): void {
       const logger = new Logger();
       
       try {
-        logger.header('🛡️  Heimdall Development Server');
+        logger.header('🛡️  Truxe Development Server');
         logger.blank();
         
         // Validate project
-        if (!ConfigManager.isHeimdallProject()) {
+        if (!ConfigManager.isTruxeProject()) {
           throw ErrorHandler.invalidProject([
-            'Run this command from a Heimdall project directory',
-            'Use `heimdall init` to create a new project'
+            'Run this command from a Truxe project directory',
+            'Use `truxe init` to create a new project'
           ]);
         }
         
@@ -53,8 +53,8 @@ export function devCommand(program: Command): void {
 async function startDevelopmentServer(options: DevOptions & { port: number; host: string }, config: any): Promise<void> {
   // const logger = new Logger();
   
-  // Check if Heimdall API source exists
-  const apiPath = findHeimdallApiPath();
+  // Check if Truxe API source exists
+  const apiPath = findTruxeApiPath();
   
   if (!apiPath) {
     // Start standalone development server
@@ -65,9 +65,9 @@ async function startDevelopmentServer(options: DevOptions & { port: number; host
   }
 }
 
-function findHeimdallApiPath(): string | null {
+function findTruxeApiPath(): string | null {
   const possiblePaths = [
-    join(process.cwd(), 'node_modules', '@heimdall', 'api'),
+    join(process.cwd(), 'node_modules', '@truxe', 'api'),
     join(process.cwd(), '..', 'api'), // For monorepo development
     join(__dirname, '..', '..', '..', 'api') // For CLI development
   ];
@@ -89,7 +89,7 @@ function findHeimdallApiPath(): string | null {
 async function startStandaloneServer(options: DevOptions & { port: number; host: string }, config: any): Promise<void> {
   const logger = new Logger();
   
-  logger.info('Starting Heimdall development server...');
+  logger.info('Starting Truxe development server...');
   logger.blank();
   
   // Create development server
@@ -107,18 +107,18 @@ async function startStandaloneServer(options: DevOptions & { port: number; host:
   // Start server
   server.listen({ port: options.port, host: options.host }, (err: Error | null, address: string) => {
     if (err) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Failed to start server: ${err.message}`,
         'SERVER_START_FAILED',
         [
           `Check if port ${options.port} is available`,
           'Try using a different port with --port flag',
-          'Make sure no other Heimdall instance is running'
+          'Make sure no other Truxe instance is running'
         ]
       );
     }
     
-    logger.success(`🚀 Heimdall API running at ${chalk.cyan(address)}`);
+    logger.success(`🚀 Truxe API running at ${chalk.cyan(address)}`);
     logger.blank();
     
     showDevelopmentInfo(options.port);
@@ -138,8 +138,8 @@ async function startFullEnvironment(options: DevOptions & { port: number; host: 
   const processes: ChildProcess[] = [];
   
   try {
-    // Start Heimdall API
-    logger.info('📡 Starting Heimdall API...');
+    // Start Truxe API
+    logger.info('📡 Starting Truxe API...');
     const apiProcess = await startApiProcess(apiPath, options);
     processes.push(apiProcess);
     
@@ -249,7 +249,7 @@ async function createDevelopmentServer(options: DevOptions & { port: number; hos
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Heimdall Admin</title>
+    <title>Truxe Admin</title>
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; margin: 40px; }
         .header { color: #0066cc; margin-bottom: 20px; }
@@ -258,7 +258,7 @@ async function createDevelopmentServer(options: DevOptions & { port: number; hos
     </style>
 </head>
 <body>
-    <h1 class="header">🛡️ Heimdall Development Server</h1>
+    <h1 class="header">🛡️ Truxe Development Server</h1>
     <div class="status">
         <h2>Status: Running</h2>
         <p><strong>API:</strong> http://localhost:${options.port}</p>
@@ -310,7 +310,7 @@ async function startApiProcess(apiPath: string, options: DevOptions & { port: nu
   });
   
   apiProcess.on('error', (error) => {
-    throw new HeimdallError(
+    throw new TruxeError(
       `Failed to start API process: ${error.message}`,
       'API_START_FAILED',
       [
@@ -342,7 +342,7 @@ async function waitForServer(url: string, timeout: number = 30000): Promise<void
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
   
-  throw new HeimdallError(
+  throw new TruxeError(
     'Server failed to start within timeout period',
     'SERVER_TIMEOUT',
     [

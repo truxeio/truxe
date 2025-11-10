@@ -52,7 +52,7 @@ export class GitHubOAuthProvider extends OAuthProviderInterface {
 
     // GitHub API configuration
     this.apiVersion = options.apiVersion || process.env.GITHUB_API_VERSION || '2022-11-28';
-    this.userAgent = options.userAgent || process.env.GITHUB_USER_AGENT || 'Heimdall-Auth';
+    this.userAgent = options.userAgent || process.env.GITHUB_USER_AGENT || 'Truxe-Auth';
 
     // Logger (use provided logger or console)
     this.logger = options.logger || console;

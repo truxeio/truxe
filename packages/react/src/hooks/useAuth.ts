@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { HeimdallContext } from '../context/HeimdallProvider';
+import { TruxeContext } from '../context/TruxeProvider';
 
 /**
  * Access authentication state and methods.
@@ -23,10 +23,10 @@ import { HeimdallContext } from '../context/HeimdallProvider';
  * ```
  */
 export function useAuth() {
-  const context = useContext(HeimdallContext);
+  const context = useContext(TruxeContext);
 
   if (!context) {
-    throw new Error('useAuth must be used within HeimdallProvider');
+    throw new Error('useAuth must be used within TruxeProvider');
   }
 
   const {

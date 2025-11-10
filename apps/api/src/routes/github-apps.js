@@ -204,7 +204,7 @@ export default async function githubAppRoutes(fastify, options) {
           organization_id: { 
             type: 'string', 
             format: 'uuid',
-            description: 'Heimdall organization ID to link installation'
+            description: 'Truxe organization ID to link installation'
           }
         }
       }

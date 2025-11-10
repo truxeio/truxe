@@ -1,6 +1,6 @@
 {
-  "title": "Heimdall Alpha - Week 1 Feedback",
-  "description": "Help us improve Heimdall by sharing your first week experience",
+  "title": "Truxe Alpha - Week 1 Feedback",
+  "description": "Help us improve Truxe by sharing your first week experience",
   "version": "1.0",
   "sections": [
     {
@@ -11,7 +11,7 @@
         {
           "id": "setup_time",
           "type": "multiple_choice",
-          "question": "How long did it take you to get Heimdall running?",
+          "question": "How long did it take you to get Truxe running?",
           "required": true,
           "options": [
             "Less than 5 minutes",
@@ -160,7 +160,7 @@
           "question": "What features are you missing most?",
           "required": false,
           "multiline": true,
-          "placeholder": "Features that would make Heimdall perfect for your use case"
+          "placeholder": "Features that would make Truxe perfect for your use case"
         },
         {
           "id": "feature_priority",
@@ -187,12 +187,12 @@
     {
       "id": "performance",
       "title": "Performance & Reliability",
-      "description": "How is Heimdall performing for you?",
+      "description": "How is Truxe performing for you?",
       "questions": [
         {
           "id": "performance_rating",
           "type": "scale",
-          "question": "How would you rate Heimdall's performance?",
+          "question": "How would you rate Truxe's performance?",
           "required": true,
           "scale": {
             "min": 1,
@@ -204,7 +204,7 @@
         {
           "id": "reliability_rating",
           "type": "scale",
-          "question": "How reliable has Heimdall been?",
+          "question": "How reliable has Truxe been?",
           "required": true,
           "scale": {
             "min": 1,
@@ -248,7 +248,7 @@
     {
       "id": "comparison",
       "title": "Competitive Comparison",
-      "description": "How does Heimdall compare to alternatives?",
+      "description": "How does Truxe compare to alternatives?",
       "questions": [
         {
           "id": "current_solution",
@@ -268,25 +268,25 @@
           ]
         },
         {
-          "id": "heimdall_advantages",
+          "id": "truxe_advantages",
           "type": "text",
-          "question": "What are Heimdall's main advantages over alternatives?",
+          "question": "What are Truxe's main advantages over alternatives?",
           "required": false,
           "multiline": true,
-          "placeholder": "What makes Heimdall better for your use case?"
+          "placeholder": "What makes Truxe better for your use case?"
         },
         {
-          "id": "heimdall_disadvantages",
+          "id": "truxe_disadvantages",
           "type": "text",
-          "question": "What are Heimdall's main disadvantages compared to alternatives?",
+          "question": "What are Truxe's main disadvantages compared to alternatives?",
           "required": false,
           "multiline": true,
-          "placeholder": "Where do other solutions excel over Heimdall?"
+          "placeholder": "Where do other solutions excel over Truxe?"
         },
         {
           "id": "migration_likelihood",
           "type": "scale",
-          "question": "How likely are you to migrate to Heimdall for production use?",
+          "question": "How likely are you to migrate to Truxe for production use?",
           "required": true,
           "scale": {
             "min": 1,
@@ -305,7 +305,7 @@
         {
           "id": "nps_score",
           "type": "scale",
-          "question": "How likely are you to recommend Heimdall to a colleague?",
+          "question": "How likely are you to recommend Truxe to a colleague?",
           "required": true,
           "scale": {
             "min": 0,
@@ -317,7 +317,7 @@
         {
           "id": "biggest_concern",
           "type": "text",
-          "question": "What's your biggest concern about using Heimdall?",
+          "question": "What's your biggest concern about using Truxe?",
           "required": false,
           "multiline": true,
           "placeholder": "Security, performance, support, features, etc."
@@ -325,7 +325,7 @@
         {
           "id": "most_excited",
           "type": "text",
-          "question": "What are you most excited about with Heimdall?",
+          "question": "What are you most excited about with Truxe?",
           "required": false,
           "multiline": true,
           "placeholder": "What potential do you see?"
@@ -352,6 +352,6 @@
     "anonymous": false,
     "save_progress": true,
     "thank_you_message": "Thank you for your valuable feedback! Your insights help us build a better authentication platform. We'll be in touch with updates and may reach out for follow-up questions.",
-    "incentive": "All alpha users who complete this survey will receive a special Heimdall t-shirt and stickers!"
+    "incentive": "All alpha users who complete this survey will receive a special Truxe t-shirt and stickers!"
   }
 }

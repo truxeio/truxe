@@ -68,7 +68,7 @@ export function dashboardCommand(program: Command): void {
     .description('Real-time service status dashboard')
     .option('--verbose', 'Enable verbose output');
 
-  // heimdall dashboard show - Show dashboard in terminal
+  // truxe dashboard show - Show dashboard in terminal
   dashboard
     .command('show')
     .description('Show real-time dashboard in terminal')
@@ -83,7 +83,7 @@ export function dashboardCommand(program: Command): void {
       }
     });
 
-  // heimdall dashboard status - Quick status check
+  // truxe dashboard status - Quick status check
   dashboard
     .command('status')
     .description('Show quick status overview')
@@ -109,7 +109,7 @@ export function dashboardCommand(program: Command): void {
       }
     });
 
-  // heimdall dashboard services - Show service details
+  // truxe dashboard services - Show service details
   dashboard
     .command('services')
     .description('Show detailed service information')
@@ -147,7 +147,7 @@ export function dashboardCommand(program: Command): void {
       }
     });
 
-  // heimdall dashboard ports - Show port information
+  // truxe dashboard ports - Show port information
   dashboard
     .command('ports')
     .description('Show port usage information')
@@ -185,7 +185,7 @@ export function dashboardCommand(program: Command): void {
       }
     });
 
-  // heimdall dashboard alerts - Show alerts
+  // truxe dashboard alerts - Show alerts
   dashboard
     .command('alerts')
     .description('Show current alerts and notifications')
@@ -216,7 +216,7 @@ export function dashboardCommand(program: Command): void {
       }
     });
 
-  // heimdall dashboard kill - Kill process on port
+  // truxe dashboard kill - Kill process on port
   dashboard
     .command('kill')
     .description('Kill process using specific port')
@@ -284,7 +284,7 @@ export function dashboardCommand(program: Command): void {
 async function showTerminalDashboard(options: any): Promise<void> {
   const screen = blessed.screen({
     smartCSR: true,
-    title: 'Heimdall Dashboard'
+    title: 'Truxe Dashboard'
   });
 
   // Create grid layout

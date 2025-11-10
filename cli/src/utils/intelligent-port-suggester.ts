@@ -726,7 +726,7 @@ export class IntelligentPortSuggester {
 
   private async loadLearningData(): Promise<void> {
     try {
-      const dataPath = path.join(process.cwd(), '.heimdall', 'learning-data.json');
+      const dataPath = path.join(process.cwd(), '.truxe', 'learning-data.json');
       const data = await fs.readFile(dataPath, 'utf-8');
       this.learningData = JSON.parse(data);
     } catch (error) {
@@ -737,7 +737,7 @@ export class IntelligentPortSuggester {
 
   private async saveLearningData(): Promise<void> {
     try {
-      const dataPath = path.join(process.cwd(), '.heimdall', 'learning-data.json');
+      const dataPath = path.join(process.cwd(), '.truxe', 'learning-data.json');
       await fs.mkdir(path.dirname(dataPath), { recursive: true });
       await fs.writeFile(dataPath, JSON.stringify(this.learningData, null, 2));
     } catch (error) {

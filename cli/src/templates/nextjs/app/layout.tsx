@@ -7,21 +7,21 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Heimdall Next.js App',
-  description: 'Next.js application with Heimdall authentication - secure, passwordless login',
+  title: 'Truxe Next.js App',
+  description: 'Next.js application with Truxe authentication - secure, passwordless login',
   keywords: 'authentication, passwordless, magic link, secure login, Next.js',
-  authors: [{ name: 'Heimdall Team' }],
+  authors: [{ name: 'Truxe Team' }],
   viewport: 'width=device-width, initial-scale=1',
   themeColor: '#3b82f6',
   openGraph: {
-    title: 'Heimdall Next.js App',
+    title: 'Truxe Next.js App',
     description: 'Secure authentication with magic links',
     type: 'website',
-    siteName: 'Heimdall App',
+    siteName: 'Truxe App',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Heimdall Next.js App',
+    title: 'Truxe Next.js App',
     description: 'Secure authentication with magic links',
   },
   robots: {

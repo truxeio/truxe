@@ -98,7 +98,7 @@ export default function LoginPage() {
               rel="noopener noreferrer"
               className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
             >
-              Heimdall
+              Truxe
             </a>
           </p>
         </div>

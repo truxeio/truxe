@@ -1,5 +1,5 @@
 /**
- * Heimdall Monitoring & Observability Service
+ * Truxe Monitoring & Observability Service
  * 
  * Enterprise-grade monitoring, logging, and observability system providing
  * Application Performance Monitoring (APM), business metrics, error tracking,
@@ -70,12 +70,12 @@ export class MonitoringObservabilityService extends EventEmitter {
       
       // Metrics configuration
       enablePrometheus: options.enablePrometheus !== false,
-      metricsPrefix: options.metricsPrefix || 'heimdall_',
+      metricsPrefix: options.metricsPrefix || 'truxe_',
       collectDefaultMetrics: options.collectDefaultMetrics !== false,
       
       // APM configuration
       enableAPM: options.enableAPM !== false,
-      apmServiceName: options.apmServiceName || 'heimdall-api',
+      apmServiceName: options.apmServiceName || 'truxe-api',
       apmServiceVersion: options.apmServiceVersion || '1.0.0',
       
       // Business metrics
@@ -208,13 +208,13 @@ export class MonitoringObservabilityService extends EventEmitter {
           clientOpts: {
             node: this.options.elasticsearchUrl
           },
-          index: `heimdall-logs-${new Date().toISOString().slice(0, 10)}`,
+          index: `truxe-logs-${new Date().toISOString().slice(0, 10)}`,
           transformer: (logData) => {
             return {
               '@timestamp': new Date().toISOString(),
               severity: logData.level,
               message: logData.message,
-              service: 'heimdall-api',
+              service: 'truxe-api',
               environment: config.app.environment,
               ...logData.meta
             };
@@ -434,7 +434,7 @@ export class MonitoringObservabilityService extends EventEmitter {
       timestamp: new Date().toISOString(),
       level,
       message,
-      service: 'heimdall-api',
+      service: 'truxe-api',
       environment: config.app.environment,
       requestId: metadata.requestId,
       userId: metadata.userId,
@@ -521,7 +521,7 @@ export class MonitoringObservabilityService extends EventEmitter {
       timestamp: Date.now(),
       status: 'active',
       metadata: {
-        service: 'heimdall-api',
+        service: 'truxe-api',
         environment: config.app.environment,
         ...metadata
       }
@@ -638,7 +638,7 @@ export class MonitoringObservabilityService extends EventEmitter {
             short: true
           }
         ],
-        footer: 'Heimdall Monitoring',
+        footer: 'Truxe Monitoring',
         ts: Math.floor(alert.timestamp / 1000)
       }]
     };

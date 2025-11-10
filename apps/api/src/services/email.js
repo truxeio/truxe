@@ -1581,7 +1581,7 @@ ${entries.map(({ label, value }) => `- ${label}: ${value}`).join('\n')}
             </div>
             
             <div class="footer">
-              <p>This is an automated security notification from Heimdall.</p>
+              <p>This is an automated security notification from Truxe.</p>
             </div>
           </div>
         </body>
@@ -1618,9 +1618,9 @@ Truxe Authentication Security Team
     try {
       const testEmail = {
         to: 'test@example.com',
-        subject: 'Heimdall Email Service Test',
-        html: '<p>This is a test email from Heimdall.</p>',
-        text: 'This is a test email from Heimdall.',
+        subject: 'Truxe Email Service Test',
+        html: '<p>This is a test email from Truxe.</p>',
+        text: 'This is a test email from Truxe.',
       }
       
       // Don't actually send, just validate configuration

@@ -8,7 +8,7 @@ import { StatusOptions, HealthStatus } from '../types';
 export function statusCommand(program: Command): void {
   program
     .command('status')
-    .description('Check Heimdall system health and status')
+    .description('Check Truxe system health and status')
     .option('--check-all', 'Run all health checks')
     .option('--check-db', 'Check database connection')
     .option('--check-email', 'Check email service')
@@ -18,11 +18,11 @@ export function statusCommand(program: Command): void {
       const logger = new Logger();
       
       try {
-        logger.header('🛡️  Heimdall System Status');
+        logger.header('🛡️  Truxe System Status');
         logger.blank();
         
         // Validate project
-        if (!ConfigManager.isHeimdallProject()) {
+        if (!ConfigManager.isTruxeProject()) {
           throw ErrorHandler.invalidProject();
         }
         
@@ -488,7 +488,7 @@ async function checkServer(config: any): Promise<HealthStatus> {
       return {
         service: 'Server',
         status: 'healthy',
-        message: `Heimdall server running on port ${port}`,
+        message: `Truxe server running on port ${port}`,
         details: { 
           port,
           uptime: (healthData as any).uptime,
@@ -511,7 +511,7 @@ async function checkServer(config: any): Promise<HealthStatus> {
       return {
         service: 'Server',
         status: 'unhealthy',
-        message: 'Heimdall server is not running',
+        message: 'Truxe server is not running',
         details: { port: config.server?.port || 3001 }
       };
     }
@@ -592,17 +592,17 @@ function getSuggestions(service: string, message: string): string[] {
         suggestions.push('Check database credentials in DATABASE_URL');
         suggestions.push('Verify user has access to the database');
       } else if (message.includes('does not exist')) {
-        suggestions.push('Create the database: createdb heimdall');
-        suggestions.push('Run migrations: heimdall migrate up');
+        suggestions.push('Create the database: createdb truxe');
+        suggestions.push('Run migrations: truxe migrate up');
       }
       break;
       
     case 'JWT':
       if (message.includes('keys not configured')) {
-        suggestions.push('Run: heimdall keys generate');
+        suggestions.push('Run: truxe keys generate');
         suggestions.push('Set JWT_PRIVATE_KEY and JWT_PUBLIC_KEY environment variables');
       } else if (message.includes('Invalid')) {
-        suggestions.push('Regenerate JWT keys: heimdall keys generate --force');
+        suggestions.push('Regenerate JWT keys: truxe keys generate --force');
         suggestions.push('Check for newline characters in environment variables');
       }
       break;

@@ -1,7 +1,7 @@
 /**
- * @heimdall/react
+ * @truxe/react
  *
- * React components and hooks for Heimdall authentication.
+ * React components and hooks for Truxe authentication.
  *
  * @packageDocumentation
  */
@@ -9,7 +9,7 @@
 // ============================================
 // Provider
 // ============================================
-export { HeimdallProvider } from './context/HeimdallProvider';
+export { TruxeProvider } from './context/TruxeProvider';
 
 // ============================================
 // Hooks
@@ -58,7 +58,7 @@ export type {
   AppearanceConfig,
   AuthResponse,
   AuthState,
-  HeimdallConfig,
+  TruxeConfig,
   MagicLinkResponse,
   Organization,
   OrganizationMembership,

@@ -184,7 +184,7 @@ export default async function jwksRoutes(fastify, options) {
         
         code_challenge_methods_supported: ['S256'],
         
-        // Custom Heimdall metadata
+        // Custom Truxe metadata
         magic_link_endpoint: `${baseUrl}/auth/magic-link`,
         refresh_endpoint: `${baseUrl}/auth/refresh`,
         revocation_endpoint: `${baseUrl}/auth/revoke`,

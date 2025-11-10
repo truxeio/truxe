@@ -1,12 +1,12 @@
 /**
  * Auth0 Migrator
  * 
- * Handles migration of users and organizations from Auth0 to Heimdall
+ * Handles migration of users and organizations from Auth0 to Truxe
  */
 
 import axios from 'axios';
 import { Logger } from './logger';
-import { HeimdallError } from './error-handler';
+import { TruxeError } from './error-handler';
 
 export interface Auth0Config {
   domain: string;
@@ -248,7 +248,7 @@ export class Auth0Migrator {
       };
 
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Failed to export data from Auth0: ${error.message}`,
         'AUTH0_EXPORT_FAILED',
         [
@@ -340,7 +340,7 @@ export class Auth0Migrator {
     if (migrationData.rules && migrationData.rules.length > 0) {
       issues.push({
         type: 'auth0_rules',
-        message: `${migrationData.rules.length} Auth0 rules found - these need manual migration to Heimdall webhooks`,
+        message: `${migrationData.rules.length} Auth0 rules found - these need manual migration to Truxe webhooks`,
       });
     }
 
@@ -348,7 +348,7 @@ export class Auth0Migrator {
     if (migrationData.actions && migrationData.actions.length > 0) {
       issues.push({
         type: 'auth0_actions',
-        message: `${migrationData.actions.length} Auth0 actions found - these need manual migration to Heimdall webhooks`,
+        message: `${migrationData.actions.length} Auth0 actions found - these need manual migration to Truxe webhooks`,
       });
     }
 
@@ -371,8 +371,8 @@ export class Auth0Migrator {
     let organizationsCreated = 0;
 
     try {
-      // Create Heimdall API client
-      const heimdallClient = axios.create({
+      // Create Truxe API client
+      const truxeClient = axios.create({
         baseURL: this.truxeApiUrl,
         headers: {
           'Authorization': `Bearer ${this.truxeApiKey}`,
@@ -388,7 +388,7 @@ export class Auth0Migrator {
           try {
             const slug = this.generateSlugFromName(org.display_name);
             
-            const heimdallOrg = await heimdallClient.post('/organizations', {
+            const truxeOrg = await truxeClient.post('/organizations', {
               name: org.display_name,
               slug,
               settings: {
@@ -435,11 +435,11 @@ export class Auth0Migrator {
               continue;
             }
 
-            // Transform Auth0 user to Heimdall format
-            const heimdallUser = this.transformAuth0User(user);
+            // Transform Auth0 user to Truxe format
+            const truxeUser = this.transformAuth0User(user);
 
-            // Create user in Heimdall
-            const response = await heimdallClient.post('/admin/users', heimdallUser);
+            // Create user in Truxe
+            const response = await truxeClient.post('/admin/users', truxeUser);
             
             usersMigrated++;
 
@@ -480,11 +480,11 @@ export class Auth0Migrator {
       };
 
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Migration failed: ${error.message}`,
         'MIGRATION_FAILED',
         [
-          'Check Heimdall API connectivity',
+          'Check Truxe API connectivity',
           'Verify API key permissions',
           'Check database connection',
         ]
@@ -501,7 +501,7 @@ export class Auth0Migrator {
     let organizationsRemoved = 0;
 
     try {
-      const heimdallClient = axios.create({
+      const truxeClient = axios.create({
         baseURL: this.truxeApiUrl,
         headers: {
           'Authorization': `Bearer ${this.truxeApiKey}`,
@@ -514,7 +514,7 @@ export class Auth0Migrator {
         this.logger.info('Rolling back migrated users...');
         
         // Get users with Auth0 metadata
-        const usersResponse = await heimdallClient.get('/admin/users', {
+        const usersResponse = await truxeClient.get('/admin/users', {
           params: {
             'metadata.auth0Id': { $exists: true },
             limit: 1000,
@@ -523,7 +523,7 @@ export class Auth0Migrator {
 
         for (const user of usersResponse.data.users || []) {
           try {
-            await heimdallClient.delete(`/admin/users/${user.id}`);
+            await truxeClient.delete(`/admin/users/${user.id}`);
             usersRemoved++;
           } catch (error) {
             failedRemovals.push({
@@ -540,7 +540,7 @@ export class Auth0Migrator {
         this.logger.info('Rolling back created organizations...');
         
         // Get organizations with Auth0 metadata
-        const orgsResponse = await heimdallClient.get('/admin/organizations', {
+        const orgsResponse = await truxeClient.get('/admin/organizations', {
           params: {
             'settings.auth0Id': { $exists: true },
             limit: 1000,
@@ -549,7 +549,7 @@ export class Auth0Migrator {
 
         for (const org of orgsResponse.data.organizations || []) {
           try {
-            await heimdallClient.delete(`/admin/organizations/${org.id}`);
+            await truxeClient.delete(`/admin/organizations/${org.id}`);
             organizationsRemoved++;
           } catch (error) {
             failedRemovals.push({
@@ -568,11 +568,11 @@ export class Auth0Migrator {
       };
 
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Rollback failed: ${error.message}`,
         'ROLLBACK_FAILED',
         [
-          'Check Heimdall API connectivity',
+          'Check Truxe API connectivity',
           'Verify API key permissions',
           'Some items may need manual cleanup',
         ]
@@ -581,7 +581,7 @@ export class Auth0Migrator {
   }
 
   /**
-   * Transform Auth0 user to Heimdall format
+   * Transform Auth0 user to Truxe format
    */
   private transformAuth0User(auth0User: Auth0User): any {
     return {

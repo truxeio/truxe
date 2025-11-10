@@ -161,7 +161,7 @@ export class MigrationValidator {
     if (data.rules && data.rules.length > 0) {
       warnings.push({
         field: 'rules',
-        message: `${data.rules.length} Auth0 rules found - these will need manual migration to Heimdall webhooks`,
+        message: `${data.rules.length} Auth0 rules found - these will need manual migration to Truxe webhooks`,
         severity: 'warning',
       });
     }
@@ -169,7 +169,7 @@ export class MigrationValidator {
     if (data.actions && data.actions.length > 0) {
       warnings.push({
         field: 'actions',
-        message: `${data.actions.length} Auth0 actions found - these will need manual migration to Heimdall webhooks`,
+        message: `${data.actions.length} Auth0 actions found - these will need manual migration to Truxe webhooks`,
         severity: 'warning',
       });
     }
@@ -307,7 +307,7 @@ export class MigrationValidator {
     if (data.webhooks && data.webhooks.length > 0) {
       warnings.push({
         field: 'webhooks',
-        message: `${data.webhooks.length} Clerk webhooks found - these will need manual migration to Heimdall webhooks`,
+        message: `${data.webhooks.length} Clerk webhooks found - these will need manual migration to Truxe webhooks`,
         severity: 'warning',
       });
     }

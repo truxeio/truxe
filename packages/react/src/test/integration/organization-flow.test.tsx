@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { HeimdallProvider } from '../../context/HeimdallProvider';
+import { TruxeProvider } from '../../context/TruxeProvider';
 import { OrganizationSwitcher } from '../../components/organization/OrganizationSwitcher/OrganizationSwitcher';
 import { OrganizationProfile } from '../../components/organization/OrganizationProfile/OrganizationProfile';
 import { OrganizationList } from '../../components/organization/OrganizationList/OrganizationList';
@@ -67,12 +67,12 @@ describe('Organization Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <CreateOrganization mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Fill in organization form
@@ -109,12 +109,12 @@ describe('Organization Flow Integration', () => {
       });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <OrganizationSwitcher />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Click organization switcher
@@ -147,12 +147,12 @@ describe('Organization Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <OrganizationList />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Wait for organizations to load
@@ -178,12 +178,12 @@ describe('Organization Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <OrganizationProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Update organization name
@@ -224,12 +224,12 @@ describe('Organization Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <OrganizationProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for members section
@@ -261,12 +261,12 @@ describe('Organization Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <OrganizationProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for invite button
@@ -299,12 +299,12 @@ describe('Organization Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <OrganizationProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for remove/delete member button
@@ -335,12 +335,12 @@ describe('Organization Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <OrganizationProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for role selector
@@ -364,12 +364,12 @@ describe('Organization Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <OrganizationProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for delete organization button
@@ -401,12 +401,12 @@ describe('Organization Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <CreateOrganization mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Try to create with duplicate name

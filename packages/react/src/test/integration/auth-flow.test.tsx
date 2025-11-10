@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { HeimdallProvider } from '../../context/HeimdallProvider';
+import { TruxeProvider } from '../../context/TruxeProvider';
 import { SignIn } from '../../components/auth/SignIn/SignIn';
 import { SignInButton } from '../../components/auth/SignInButton/SignInButton';
 import { UserButton } from '../../components/user/UserButton/UserButton';
@@ -45,12 +45,12 @@ describe('Authentication Flow Integration', () => {
     const user = userEvent.setup();
     
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <SignIn mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Verify sign-in form is rendered
@@ -85,12 +85,12 @@ describe('Authentication Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <TestAuthFlow />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Initially not signed in
@@ -110,12 +110,12 @@ describe('Authentication Flow Integration', () => {
     const user = userEvent.setup();
     
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <SignIn mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Click magic link tab/button
@@ -138,12 +138,12 @@ describe('Authentication Flow Integration', () => {
     const user = userEvent.setup();
     
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <SignIn mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for OAuth buttons (GitHub, Google, etc.)
@@ -164,12 +164,12 @@ describe('Authentication Flow Integration', () => {
 
   it('should persist session across component remounts', async () => {
     const { rerender } = render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <TestAuthFlow />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Initial render - not signed in
@@ -185,16 +185,16 @@ describe('Authentication Flow Integration', () => {
       token: 'token_123',
     };
     
-    localStorage.setItem('heimdall_session', JSON.stringify(mockSession));
+    localStorage.setItem('truxe_session', JSON.stringify(mockSession));
 
     // Remount component
     rerender(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <TestAuthFlow />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Session should be restored
@@ -216,12 +216,12 @@ describe('Authentication Flow Integration', () => {
     };
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <TestAuthFlow />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // If sign out button exists, click it
@@ -242,12 +242,12 @@ describe('Authentication Flow Integration', () => {
     global.fetch = vi.fn().mockRejectedValue(new Error('Invalid credentials'));
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <SignIn mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Fill in invalid credentials
@@ -274,12 +274,12 @@ describe('Authentication Flow Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <TestAuthFlow />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // This test verifies the automatic token refresh mechanism

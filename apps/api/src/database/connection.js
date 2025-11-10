@@ -1,5 +1,5 @@
 /**
- * Database Connection Module for Heimdall API
+ * Database Connection Module for Truxe API
  * 
  * Creates and manages PostgreSQL connection pool using environment variables
  */

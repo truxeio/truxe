@@ -1,5 +1,5 @@
 /**
- * Heimdall API Startup Validation
+ * Truxe API Startup Validation
  * 
  * Comprehensive startup validation including port management, configuration,
  * and system health checks before the API server starts.
@@ -323,11 +323,11 @@ class StartupValidator {
     
     // Check production security settings
     if (config.app.environment === 'production') {
-      if (config.security.cookieSecret === 'heimdall-cookie-secret-change-in-production') {
+      if (config.security.cookieSecret === 'truxe-cookie-secret-change-in-production') {
         this.addResult('critical', 'security', 'Cookie secret must be changed in production');
       }
       
-      if (config.security.sessionSecret === 'heimdall-session-secret-change-in-production') {
+      if (config.security.sessionSecret === 'truxe-session-secret-change-in-production') {
         this.addResult('critical', 'security', 'Session secret must be changed in production');
       }
       
@@ -407,7 +407,7 @@ class StartupValidator {
    * Run all validations
    */
   async runAllValidations() {
-    console.log('🚀 Starting Heimdall API startup validation...\n');
+    console.log('🚀 Starting Truxe API startup validation...\n');
     
     const validations = [
       this.validatePortManagement(),

@@ -4,7 +4,7 @@
  * Service for managing GitHub Actions workflows, runs, and secrets.
  *
  * Features:
- * - Trigger workflows from Heimdall
+ * - Trigger workflows from Truxe
  * - Monitor workflow runs
  * - Access workflow logs
  * - Manage workflow secrets
@@ -351,7 +351,7 @@ export class GitHubActionsService {
    * Store workflow run in database for tracking
    *
    * @param {Object} runData - Workflow run data from GitHub
-   * @param {string} repositoryId - Heimdall repository ID (optional)
+   * @param {string} repositoryId - Truxe repository ID (optional)
    * @returns {Promise<Object>} Stored run
    */
   async storeWorkflowRun(runData, repositoryId = null) {

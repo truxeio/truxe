@@ -1,13 +1,13 @@
 /**
  * GitHub Organization Sync Service
  *
- * Synchronizes GitHub organizations to Heimdall organizations.
+ * Synchronizes GitHub organizations to Truxe organizations.
  * Supports member sync, team sync, role mapping, and incremental updates.
  *
  * Features:
- * - Sync GitHub organizations to Heimdall
+ * - Sync GitHub organizations to Truxe
  * - Sync organization members with role mapping
- * - Sync teams and map to Heimdall roles
+ * - Sync teams and map to Truxe roles
  * - Incremental sync support
  * - Conflict resolution
  * - Progress tracking
@@ -40,12 +40,12 @@ export class OrganizationSyncService {
   }
 
   /**
-   * Sync a GitHub organization to Heimdall
+   * Sync a GitHub organization to Truxe
    *
    * @param {Object} params
    * @param {string} params.githubOrgLogin - GitHub organization login
    * @param {string} params.accessToken - GitHub access token
-   * @param {string} params.userId - Heimdall user ID initiating the sync
+   * @param {string} params.userId - Truxe user ID initiating the sync
    * @param {Object} params.options - Sync options
    * @returns {Promise<Object>} Sync result
    */
@@ -103,16 +103,16 @@ export class OrganizationSyncService {
         login: githubOrg.login,
       });
 
-      // 2. Get or create Heimdall organization
-      const heimdallOrg = await this.createOrUpdateOrganization({
+      // 2. Get or create Truxe organization
+      const truxeOrg = await this.createOrUpdateOrganization({
         githubOrg,
         userId,
         options,
       });
-      result.organization = heimdallOrg;
+      result.organization = truxeOrg;
 
       // Load organization settings for team mapping
-      const orgSettings = heimdallOrg.settings || {};
+      const orgSettings = truxeOrg.settings || {};
       const mappingService = createMappingService({
         orgSettings,
         logger: this.logger,
@@ -121,7 +121,7 @@ export class OrganizationSyncService {
       // 3. Sync members if enabled
       if (options.syncMembers !== false) {
         const memberResult = await this.syncOrganizationMembers({
-          heimdallOrgId: heimdallOrg.id,
+          truxeOrgId: truxeOrg.id,
           githubOrgLogin,
           client,
           mappingService,
@@ -133,7 +133,7 @@ export class OrganizationSyncService {
       // 4. Sync teams if enabled
       if (options.syncTeams !== false) {
         const teamResult = await this.syncOrganizationTeams({
-          heimdallOrgId: heimdallOrg.id,
+          truxeOrgId: truxeOrg.id,
           githubOrgLogin,
           client,
           mappingService,
@@ -161,7 +161,7 @@ export class OrganizationSyncService {
 
       this.logger.info('GitHub organization sync completed', {
         githubOrgLogin,
-        heimdallOrgId: heimdallOrg.id,
+        truxeOrgId: truxeOrg.id,
         ...result,
         duration: `${result.duration}ms`,
       });
@@ -198,13 +198,13 @@ export class OrganizationSyncService {
   }
 
   /**
-   * Create or update Heimdall organization from GitHub org
+   * Create or update Truxe organization from GitHub org
    *
    * @param {Object} params
    * @param {Object} params.githubOrg - GitHub organization data
-   * @param {string} params.userId - Heimdall user ID
+   * @param {string} params.userId - Truxe user ID
    * @param {Object} params.options - Options
-   * @returns {Promise<Object>} Heimdall organization
+   * @returns {Promise<Object>} Truxe organization
    * @private
    */
   async createOrUpdateOrganization({ githubOrg, userId, options }) {
@@ -307,7 +307,7 @@ export class OrganizationSyncService {
    * Sync organization members from GitHub
    *
    * @param {Object} params
-   * @param {string} params.heimdallOrgId - Heimdall organization ID
+   * @param {string} params.truxeOrgId - Truxe organization ID
    * @param {string} params.githubOrgLogin - GitHub organization login
    * @param {GitHubClient} params.client - GitHub API client
    * @param {TeamRoleMappingService} params.mappingService - Role mapping service
@@ -316,7 +316,7 @@ export class OrganizationSyncService {
    * @private
    */
   async syncOrganizationMembers({
-    heimdallOrgId,
+    truxeOrgId,
     githubOrgLogin,
     client,
     mappingService,
@@ -356,7 +356,7 @@ export class OrganizationSyncService {
       for (let i = 0; i < githubMembers.length; i += batchSize) {
         const batch = githubMembers.slice(i, i + batchSize);
         await this.syncMemberBatch({
-          heimdallOrgId,
+          truxeOrgId,
           members: batch,
           client,
           githubOrgLogin,
@@ -368,7 +368,7 @@ export class OrganizationSyncService {
       return result;
     } catch (error) {
       this.logger.error('Failed to sync organization members', {
-        heimdallOrgId,
+        truxeOrgId,
         error: error.message,
       });
       result.errors.push({
@@ -422,7 +422,7 @@ export class OrganizationSyncService {
    * Sync a batch of members
    *
    * @param {Object} params
-   * @param {string} params.heimdallOrgId - Heimdall organization ID
+   * @param {string} params.truxeOrgId - Truxe organization ID
    * @param {Array} params.members - GitHub member data
    * @param {GitHubClient} params.client - GitHub API client
    * @param {string} params.githubOrgLogin - GitHub organization login
@@ -431,7 +431,7 @@ export class OrganizationSyncService {
    * @private
    */
   async syncMemberBatch({
-    heimdallOrgId,
+    truxeOrgId,
     members,
     client,
     githubOrgLogin,
@@ -446,12 +446,12 @@ export class OrganizationSyncService {
       for (const githubMember of members) {
         try {
           // Find or create user by GitHub username/email
-          const heimdallUser = await this.findOrCreateUser({
+          const truxeUser = await this.findOrCreateUser({
             githubMember,
             client,
           });
 
-          if (!heimdallUser) {
+          if (!truxeUser) {
             result.errors.push({
               type: 'user_not_found',
               githubLogin: githubMember.login,
@@ -479,8 +479,8 @@ export class OrganizationSyncService {
 
           // Create or update membership
           await this.ensureMembership({
-            orgId: heimdallOrgId,
-            userId: heimdallUser.id,
+            orgId: truxeOrgId,
+            userId: truxeUser.id,
             role: effectiveRole.role,
             permissions: effectiveRole.permissions,
             joinedAt: new Date(),
@@ -490,7 +490,7 @@ export class OrganizationSyncService {
           const existing = await dbClient.query(
             `SELECT 1 FROM memberships 
              WHERE org_id = $1 AND user_id = $2`,
-            [heimdallOrgId, heimdallUser.id]
+            [truxeOrgId, truxeUser.id]
           );
 
           if (existing.rows.length > 0) {
@@ -521,11 +521,11 @@ export class OrganizationSyncService {
   }
 
   /**
-   * Find or create Heimdall user from GitHub member
+   * Find or create Truxe user from GitHub member
    *
    * @param {Object} githubMember - GitHub member data
    * @param {GitHubClient} client - GitHub API client
-   * @returns {Promise<Object|null>} Heimdall user or null
+   * @returns {Promise<Object|null>} Truxe user or null
    * @private
    */
   async findOrCreateUser({ githubMember, client }) {
@@ -559,7 +559,7 @@ export class OrganizationSyncService {
 
     // User not found - would need to create, but that's outside scope of sync
     // Return null and log
-    this.logger.debug('User not found in Heimdall', {
+    this.logger.debug('User not found in Truxe', {
       githubId: githubMember.id,
       githubLogin: githubMember.login,
       email: githubMember.email || 'not provided',
@@ -622,7 +622,7 @@ export class OrganizationSyncService {
    * Sync organization teams from GitHub
    *
    * @param {Object} params
-   * @param {string} params.heimdallOrgId - Heimdall organization ID
+   * @param {string} params.truxeOrgId - Truxe organization ID
    * @param {string} params.githubOrgLogin - GitHub organization login
    * @param {GitHubClient} params.client - GitHub API client
    * @param {TeamRoleMappingService} params.mappingService - Role mapping service
@@ -631,7 +631,7 @@ export class OrganizationSyncService {
    * @private
    */
   async syncOrganizationTeams({
-    heimdallOrgId,
+    truxeOrgId,
     githubOrgLogin,
     client,
     mappingService,
@@ -695,7 +695,7 @@ export class OrganizationSyncService {
       if (Object.keys(teamMappings).length > 0) {
         const currentSettings = await this.pool.query(
           `SELECT settings FROM organizations WHERE id = $1`,
-          [heimdallOrgId]
+          [truxeOrgId]
         );
 
         if (currentSettings.rows.length > 0) {
@@ -707,7 +707,7 @@ export class OrganizationSyncService {
             `UPDATE organizations 
              SET settings = $1, updated_at = NOW()
              WHERE id = $2`,
-            [JSON.stringify(settings), heimdallOrgId]
+            [JSON.stringify(settings), truxeOrgId]
           );
         }
       }
@@ -715,7 +715,7 @@ export class OrganizationSyncService {
       return result;
     } catch (error) {
       this.logger.error('Failed to sync organization teams', {
-        heimdallOrgId,
+        truxeOrgId,
         error: error.message,
       });
       result.errors.push({

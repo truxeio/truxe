@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { HeimdallProvider } from '../../context/HeimdallProvider';
+import { TruxeProvider } from '../../context/TruxeProvider';
 import { UserProfile } from '../../components/user/UserProfile/UserProfile';
 import { UserButton } from '../../components/user/UserButton/UserButton';
 import { UserAvatar } from '../../components/user/UserAvatar/UserAvatar';
@@ -46,12 +46,12 @@ describe('User Management Integration', () => {
 
   it('should display user profile information', async () => {
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Profile component should render
@@ -71,12 +71,12 @@ describe('User Management Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for first name input
@@ -98,12 +98,12 @@ describe('User Management Integration', () => {
 
   it('should display user avatar with correct image', async () => {
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserAvatar user={mockUser} size="lg" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Avatar should be rendered
@@ -117,12 +117,12 @@ describe('User Management Integration', () => {
     const mockFile = new File(['avatar'], 'avatar.png', { type: 'image/png' });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for file upload input
@@ -141,12 +141,12 @@ describe('User Management Integration', () => {
     const user = userEvent.setup();
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for email input
@@ -164,12 +164,12 @@ describe('User Management Integration', () => {
     const user = userEvent.setup();
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for password change section
@@ -195,12 +195,12 @@ describe('User Management Integration', () => {
     const user = userEvent.setup();
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserButton />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Click user button
@@ -220,12 +220,12 @@ describe('User Management Integration', () => {
     const user = userEvent.setup();
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserButton />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Click user button
@@ -252,12 +252,12 @@ describe('User Management Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Try to submit invalid email
@@ -287,12 +287,12 @@ describe('User Management Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <UserProfile mode="inline" />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Look for delete account button

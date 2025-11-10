@@ -10,7 +10,7 @@
 import { readFileSync, existsSync } from 'fs'
 import { resolve } from 'path'
 
-console.log('🔒 Heimdall W3.1 Advanced Session Security - Implementation Validation')
+console.log('🔒 Truxe W3.1 Advanced Session Security - Implementation Validation')
 console.log('=' .repeat(70))
 
 const requiredFiles = [

@@ -1,5 +1,5 @@
 /**
- * Heimdall Configuration Constants
+ * Truxe Configuration Constants
  * 
  * Centralized constants and default values for all configuration options.
  * This file serves as the single source of truth for all hardcoded values
@@ -14,7 +14,7 @@
  */
 export const APP_CONSTANTS = {
   // Application Info
-  NAME: process.env.APP_NAME || 'Heimdall API',
+  NAME: process.env.APP_NAME || 'Truxe API',
   VERSION: process.env.APP_VERSION || process.env.npm_package_version || '1.0.0',
   DESCRIPTION: process.env.APP_DESCRIPTION || 'Secure, scalable authentication service',
   
@@ -30,11 +30,11 @@ export const APP_CONSTANTS = {
 
 /**
  * Port Management Constants
- * Updated to use 87000-87999 range for Heimdall services
+ * Updated to use 87000-87999 range for Truxe services
  * Following industry best practices for on-premise deployments
  */
 export const PORT_CONSTANTS = {
-  // Port Ranges (87000-87999 for Heimdall services)
+  // Port Ranges (87000-87999 for Truxe services)
   DEVELOPMENT_RANGE_START: parseInt(process.env.DEV_PORT_RANGE_START) || 87000,
   DEVELOPMENT_RANGE_END: parseInt(process.env.DEV_PORT_RANGE_END) || 87099,
   TESTING_RANGE_START: parseInt(process.env.TEST_PORT_RANGE_START) || 87100,
@@ -115,7 +115,7 @@ export const DATABASE_CONSTANTS = {
  */
 export const REDIS_CONSTANTS = {
   DEFAULT_URL: process.env.REDIS_DEFAULT_URL || 'redis://localhost:6379',
-  DEFAULT_KEY_PREFIX: process.env.REDIS_DEFAULT_KEY_PREFIX || 'heimdall:',
+  DEFAULT_KEY_PREFIX: process.env.REDIS_DEFAULT_KEY_PREFIX || 'truxe:',
   DEFAULT_RETRY_DELAY: parseInt(process.env.REDIS_DEFAULT_RETRY_DELAY) || 100,
   DEFAULT_MAX_RETRIES: parseInt(process.env.REDIS_DEFAULT_MAX_RETRIES) || 3,
 }

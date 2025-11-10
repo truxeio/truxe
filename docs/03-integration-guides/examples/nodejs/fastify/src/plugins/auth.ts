@@ -4,7 +4,7 @@ import { OAuthClient } from '../oauth-client';
 
 const authPlugin: FastifyPluginAsync = async (fastify) => {
   const oauthClient = new OAuthClient({
-    heimdallUrl: process.env.TRUXE_URL!,
+    truxeUrl: process.env.TRUXE_URL!,
     clientId: process.env.OAUTH_CLIENT_ID!,
     clientSecret: process.env.OAUTH_CLIENT_SECRET!,
     redirectUri: process.env.OAUTH_REDIRECT_URI!,

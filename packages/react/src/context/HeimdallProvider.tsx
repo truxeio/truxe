@@ -1,8 +1,8 @@
 import React, { createContext, useCallback, useEffect, useState } from 'react';
-import { HeimdallAPIClient } from '../utils/api-client';
+import { TruxeAPIClient } from '../utils/api-client';
 import type {
   AuthState,
-  HeimdallConfig,
+  TruxeConfig,
   Organization,
   User,
 } from '../types';
@@ -11,8 +11,8 @@ import type {
 // Context Type
 // ============================================
 
-interface HeimdallContextValue extends AuthState {
-  client: HeimdallAPIClient;
+interface TruxeContextValue extends AuthState {
+  client: TruxeAPIClient;
   organizations: Organization[];
   signIn: (email: string, password?: string) => Promise<void>;
   signUp: (
@@ -29,13 +29,13 @@ interface HeimdallContextValue extends AuthState {
   }) => Promise<Organization>;
 }
 
-export const HeimdallContext = createContext<HeimdallContextValue | null>(null);
+export const TruxeContext = createContext<TruxeContextValue | null>(null);
 
 // ============================================
 // Provider Props
 // ============================================
 
-interface HeimdallProviderProps extends HeimdallConfig {
+interface TruxeProviderProps extends TruxeConfig {
   children: React.ReactNode;
 }
 
@@ -44,19 +44,19 @@ interface HeimdallProviderProps extends HeimdallConfig {
 // ============================================
 
 /**
- * HeimdallProvider
+ * TruxeProvider
  *
- * Root provider for Heimdall authentication.
+ * Root provider for Truxe authentication.
  */
-export function HeimdallProvider({
+export function TruxeProvider({
   publishableKey,
   apiUrl = 'http://localhost:3001',
   onTokenRefresh,
   onAuthChange,
   children,
-}: HeimdallProviderProps) {
+}: TruxeProviderProps) {
   const [client] = useState(
-    () => new HeimdallAPIClient(apiUrl, publishableKey)
+    () => new TruxeAPIClient(apiUrl, publishableKey)
   );
 
   const [authState, setAuthState] = useState<AuthState>({
@@ -198,7 +198,7 @@ export function HeimdallProvider({
     [client]
   );
 
-  const value: HeimdallContextValue = {
+  const value: TruxeContextValue = {
     ...authState,
     client,
     organizations,
@@ -211,8 +211,8 @@ export function HeimdallProvider({
   };
 
   return (
-    <HeimdallContext.Provider value={value}>
+    <TruxeContext.Provider value={value}>
       {children}
-    </HeimdallContext.Provider>
+    </TruxeContext.Provider>
   );
 }

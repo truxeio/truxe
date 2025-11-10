@@ -18,7 +18,7 @@ import {
   alertNotificationsProcessor,
 } from '../processors/index.js'
 
-console.log('🚀 Starting Heimdall Background Worker...')
+console.log('🚀 Starting Truxe Background Worker...')
 console.log('=====================================')
 
 // Worker configuration

@@ -127,7 +127,7 @@ export class BaseOAuthProvider {
         ...options,
         headers: {
           'Content-Type': 'application/json',
-          'User-Agent': 'Heimdall-OAuth/1.0',
+          'User-Agent': 'Truxe-OAuth/1.0',
           ...options.headers
         }
       });

@@ -2,7 +2,7 @@
  * API Integration Script for Nested Multi-Tenancy
  * 
  * Integrates the new tenant routes and services with the existing
- * Fastify-based Heimdall API while maintaining backward compatibility.
+ * Fastify-based Truxe API while maintaining backward compatibility.
  */
 
 import { fileURLToPath } from 'url';

@@ -41,7 +41,7 @@ export class GitHubApp {
     this.webhookSecret = options.webhookSecret || process.env.GITHUB_APP_WEBHOOK_SECRET;
     this.baseUrl = options.baseUrl || process.env.GITHUB_ENTERPRISE_URL || 'https://api.github.com';
     this.apiVersion = options.apiVersion || process.env.GITHUB_API_VERSION || '2022-11-28';
-    this.userAgent = options.userAgent || process.env.GITHUB_USER_AGENT || 'Heimdall-GitHubApp';
+    this.userAgent = options.userAgent || process.env.GITHUB_USER_AGENT || 'Truxe-GitHubApp';
     this.logger = options.logger || console;
     this.pool = options.pool || getPool();
     this.metrics = options.metrics || getGitHubMetrics();
@@ -394,7 +394,7 @@ export class GitHubApp {
    * Store installation in database
    *
    * @param {Object} installationData - Installation data from GitHub
-   * @param {string} organizationId - Heimdall organization ID (optional)
+   * @param {string} organizationId - Truxe organization ID (optional)
    * @returns {Promise<Object>} Stored installation
    */
   async storeInstallation(installationData, organizationId = null) {

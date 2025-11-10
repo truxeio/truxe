@@ -21,7 +21,7 @@ export const testDatabase = new Pool({
   host: process.env.TEST_DB_HOST || 'localhost',
   port: process.env.TEST_DB_PORT || parseInt(process.env.TRUXE_DB_PORT) || 87032,
   database: process.env.TEST_DB_NAME || 'truxe.io',
-  user: process.env.TEST_DB_USER || 'heimdall',
+  user: process.env.TEST_DB_USER || 'truxe',
   password: process.env.TEST_DB_PASSWORD || 'dev_password_change_me',
   max: 20,  // Max connections
   idleTimeoutMillis: 30000,

@@ -33,11 +33,11 @@ export async function webhookProcessor(job) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Heimdall-Signature': signature,
-        'X-Heimdall-Event': event,
-        'X-Heimdall-Delivery': job.id,
-        'X-Heimdall-Timestamp': timestamp.toString(),
-        'User-Agent': 'Heimdall-Webhooks/1.0',
+        'X-Truxe-Signature': signature,
+        'X-Truxe-Event': event,
+        'X-Truxe-Delivery': job.id,
+        'X-Truxe-Timestamp': timestamp.toString(),
+        'User-Agent': 'Truxe-Webhooks/1.0',
       },
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(30000), // 30 second timeout

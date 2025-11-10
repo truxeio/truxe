@@ -3,7 +3,7 @@ import crypto from 'crypto';
 
 // ... (same as app-router/lib/oauth-client.ts)
 interface OAuthClientConfig {
-  heimdallUrl: string;
+  truxeUrl: string;
   clientId: string;
   clientSecret: string;
   redirectUri: string;
@@ -34,7 +34,7 @@ export class OAuthClient {
       code_challenge: codeChallenge,
       code_challenge_method: 'S256',
     });
-    return `${this.config.heimdallUrl}/oauth/authorize?${params.toString()}`;
+    return `${this.config.truxeUrl}/oauth/authorize?${params.toString()}`;
   }
 
   public async getTokens(code: string, codeVerifier: string): Promise<TokenResponse> {
@@ -48,7 +48,7 @@ export class OAuthClient {
     });
 
     const { data } = await axios.post<TokenResponse>(
-      `${this.config.heimdallUrl}/oauth/token`,
+      `${this.config.truxeUrl}/oauth/token`,
       params,
       {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -66,7 +66,7 @@ export class OAuthClient {
     });
 
     const { data } = await axios.post<TokenResponse>(
-      `${this.config.heimdallUrl}/oauth/token`,
+      `${this.config.truxeUrl}/oauth/token`,
       params,
       {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -86,7 +86,7 @@ export class OAuthClient {
 }
 
 export const oauthClient = new OAuthClient({
-    heimdallUrl: process.env.TRUXE_URL!,
+    truxeUrl: process.env.TRUXE_URL!,
     clientId: process.env.OAUTH_CLIENT_ID!,
     clientSecret: process.env.OAUTH_CLIENT_SECRET!,
     redirectUri: process.env.OAUTH_REDIRECT_URI!,

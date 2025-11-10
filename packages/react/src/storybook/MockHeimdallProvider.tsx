@@ -1,20 +1,20 @@
 import React, { useMemo } from 'react';
-import { HeimdallContext } from '../context/HeimdallProvider';
+import { TruxeContext } from '../context/TruxeProvider';
 import type { Organization, User } from '../types';
 
-interface MockHeimdallProviderProps {
+interface MockTruxeProviderProps {
   children: React.ReactNode;
   isSignedIn?: boolean;
 }
 
 /**
- * Minimal mocked HeimdallProvider for Storybook stories.
+ * Minimal mocked TruxeProvider for Storybook stories.
  * Provides a stable auth context without requiring API access.
  */
-export function MockHeimdallProvider({
+export function MockTruxeProvider({
   children,
   isSignedIn = false,
-}: MockHeimdallProviderProps) {
+}: MockTruxeProviderProps) {
   const mockUser: User = {
     id: 'user_1',
     email: 'demo@truxe.io',
@@ -54,8 +54,8 @@ export function MockHeimdallProvider({
   }), [isSignedIn, mockOrganization, mockUser]);
 
   return (
-    <HeimdallContext.Provider value={value}>
+    <TruxeContext.Provider value={value}>
       {children}
-    </HeimdallContext.Provider>
+    </TruxeContext.Provider>
   );
 }

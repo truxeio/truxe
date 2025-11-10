@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { LoadingSpinner } from '@heimdall/ui';
+import { LoadingSpinner } from '@truxe/ui';
 
 export default function CallbackPage() {
   const router = useRouter();
@@ -30,7 +30,7 @@ export default function CallbackPage() {
           return;
         }
 
-        // Process the callback with Heimdall API
+        // Process the callback with Truxe API
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_HEIMDALL_URL || 'http://localhost:3001'}/auth/callback`,
           {

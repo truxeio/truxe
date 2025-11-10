@@ -11,7 +11,7 @@ export const config = {
     host: __ENV.DB_HOST || 'localhost',
     port: __ENV.DB_PORT || '21432',
     database: __ENV.DB_NAME || 'truxe.io',
-    user: __ENV.DB_USER || 'heimdall',
+    user: __ENV.DB_USER || 'truxe',
     password: __ENV.DB_PASSWORD || 'dev_password_change_me'
   },
   redis: {

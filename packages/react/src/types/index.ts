@@ -1,5 +1,5 @@
 /**
- * Core Type Definitions for @heimdall/react
+ * Core Type Definitions for @truxe/react
  */
 
 // ============================================
@@ -7,7 +7,7 @@
 // ============================================
 
 /**
- * Represents a Heimdall user record.
+ * Represents a Truxe user record.
  */
 export interface User {
   id: string;
@@ -99,9 +99,9 @@ export interface TokenPair {
 // ============================================
 
 /**
- * Configuration accepted by the HeimdallProvider.
+ * Configuration accepted by the TruxeProvider.
  */
-export interface HeimdallConfig {
+export interface TruxeConfig {
   publishableKey: string;
   apiUrl?: string;
   onTokenRefresh?: (tokens: TokenPair) => void;

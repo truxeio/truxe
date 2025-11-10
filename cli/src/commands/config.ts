@@ -7,7 +7,7 @@ import { ConfigManager } from '../utils/config';
 export function configCommand(program: Command): void {
   const config = program
     .command('config')
-    .description('Manage Heimdall configuration');
+    .description('Manage Truxe configuration');
 
   // Set configuration value
   config
@@ -17,11 +17,11 @@ export function configCommand(program: Command): void {
       const logger = new Logger();
       
       try {
-        logger.header('⚙️  Heimdall Configuration');
+        logger.header('⚙️  Truxe Configuration');
         logger.blank();
         
         // Validate project
-        if (!ConfigManager.isHeimdallProject()) {
+        if (!ConfigManager.isTruxeProject()) {
           throw ErrorHandler.invalidProject();
         }
         
@@ -44,11 +44,11 @@ export function configCommand(program: Command): void {
       const logger = new Logger();
       
       try {
-        logger.header('⚙️  Heimdall Configuration');
+        logger.header('⚙️  Truxe Configuration');
         logger.blank();
         
         // Validate project
-        if (!ConfigManager.isHeimdallProject()) {
+        if (!ConfigManager.isTruxeProject()) {
           throw ErrorHandler.invalidProject();
         }
         
@@ -69,7 +69,7 @@ export function configCommand(program: Command): void {
           } else {
             logger.warning(`Configuration key '${key}' not found`);
             logger.blank();
-            logger.info('💡 Use `heimdall config get --all` to see all available keys');
+            logger.info('💡 Use `truxe config get --all` to see all available keys');
           }
           
         } else if (options.all) {
@@ -113,8 +113,8 @@ export function configCommand(program: Command): void {
         } else {
           // Show usage
           logger.info('Usage:');
-          logger.bullet('`heimdall config get <key>` - Get specific value');
-          logger.bullet('`heimdall config get --all` - Show all configuration');
+          logger.bullet('`truxe config get <key>` - Get specific value');
+          logger.bullet('`truxe config get --all` - Show all configuration');
           logger.blank();
           
           logger.info('Common keys:');
@@ -142,7 +142,7 @@ export function configCommand(program: Command): void {
         logger.blank();
         
         // Validate project
-        if (!ConfigManager.isHeimdallProject()) {
+        if (!ConfigManager.isTruxeProject()) {
           throw ErrorHandler.invalidProject();
         }
         
@@ -189,7 +189,7 @@ export function configCommand(program: Command): void {
         logger.blank();
         
         // Validate project
-        if (!ConfigManager.isHeimdallProject()) {
+        if (!ConfigManager.isTruxeProject()) {
           throw ErrorHandler.invalidProject();
         }
         
@@ -236,7 +236,7 @@ export function configCommand(program: Command): void {
         logger.blank();
         
         // Validate project
-        if (!ConfigManager.isHeimdallProject()) {
+        if (!ConfigManager.isTruxeProject()) {
           throw ErrorHandler.invalidProject();
         }
         
@@ -319,7 +319,7 @@ function validateConfiguration(config: any): Array<{ message: string; suggestion
       message: 'Database URL is required',
       suggestions: [
         'Set DATABASE_URL environment variable',
-        'Configure database.url in heimdall.config.yaml'
+        'Configure database.url in truxe.config.yaml'
       ]
     });
   }
@@ -330,7 +330,7 @@ function validateConfiguration(config: any): Array<{ message: string; suggestion
       issues.push({
         message: 'JWT keys are required for RS256 algorithm',
         suggestions: [
-          'Run `heimdall keys generate` to create keys',
+          'Run `truxe keys generate` to create keys',
           'Set JWT_PRIVATE_KEY and JWT_PUBLIC_KEY environment variables'
         ]
       });

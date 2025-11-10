@@ -1,4 +1,4 @@
-// Heimdall Alpha User Analytics and Tracking
+// Truxe Alpha User Analytics and Tracking
 // Privacy-focused analytics for alpha program insights
 
 const { EventEmitter } = require('events');
@@ -301,12 +301,12 @@ class AlphaAnalytics extends EventEmitter {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${process.env.ANALYTICS_API_KEY}`,
-          'User-Agent': 'Heimdall-Analytics/1.0'
+          'User-Agent': 'Truxe-Analytics/1.0'
         },
         body: JSON.stringify({
           events: events,
           metadata: {
-            source: 'heimdall-alpha',
+            source: 'truxe-alpha',
             version: process.env.TRUXE_VERSION,
             timestamp: Date.now()
           }

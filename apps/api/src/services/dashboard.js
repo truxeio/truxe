@@ -65,7 +65,7 @@ export class DashboardService extends EventEmitter {
     this.serviceDefinitions = {
       api: {
         port: servicePorts.api || parseInt(process.env.TRUXE_API_PORT) || 87001,
-        name: 'Heimdall API',
+        name: 'Truxe API',
         type: 'http',
         healthPath: '/health'
       },
@@ -348,7 +348,7 @@ export class DashboardService extends EventEmitter {
         try {
           const response = await fetch(`http://localhost:${service.port}${service.healthPath}`, {
             timeout: 5000,
-            headers: { 'User-Agent': 'Heimdall-Dashboard/1.0' }
+            headers: { 'User-Agent': 'Truxe-Dashboard/1.0' }
           })
           
           const responseTime = Date.now() - startTime

@@ -38,7 +38,7 @@ export class GitHubClient {
     this.accessToken = accessToken;
     this.baseUrl = options.enterpriseUrl || process.env.GITHUB_ENTERPRISE_URL || 'https://api.github.com';
     this.apiVersion = options.apiVersion || process.env.GITHUB_API_VERSION || '2022-11-28';
-    this.userAgent = options.userAgent || process.env.GITHUB_USER_AGENT || 'Heimdall-Auth';
+    this.userAgent = options.userAgent || process.env.GITHUB_USER_AGENT || 'Truxe-Auth';
     this.timeout = options.timeout || 30000; // 30 seconds default
     this.maxRetries = options.maxRetries || 3;
     this.retryDelay = options.retryDelay || 1000; // 1 second initial delay

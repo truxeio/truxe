@@ -21,7 +21,7 @@ export class ApiKeyService {
 
   /**
    * Generate a new API key
-   * Format: heimdall_<env>_<type>_<identifier>_<secret>
+   * Format: truxe_<env>_<type>_<identifier>_<secret>
    *
    * @param {string} environment - 'live' or 'test'
    * @param {string} keyType - 'pk' (public key) or 'sk' (secret key)
@@ -35,8 +35,8 @@ export class ApiKeyService {
     const secret = this.generateSecret(32);
 
     // Construct full key
-    const fullKey = `heimdall_${keyType}_${environment}_${identifier}_${secret}`;
-    const keyPrefix = `heimdall_${keyType}_${environment}_${identifier}`;
+    const fullKey = `truxe_${keyType}_${environment}_${identifier}_${secret}`;
+    const keyPrefix = `truxe_${keyType}_${environment}_${identifier}`;
 
     return {
       fullKey,        // Return to user ONCE (never stored)
@@ -200,10 +200,10 @@ export class ApiKeyService {
    * @throws {Error} If API key is invalid
    */
   async verifyApiKey(providedKey, clientIp = null) {
-    // Parse key format: heimdall_pk_live_2k8x9m4p_7j3n5q8r...
+    // Parse key format: truxe_pk_live_2k8x9m4p_7j3n5q8r...
     const keyParts = providedKey.split('_');
 
-    if (keyParts.length < 5 || keyParts[0] !== 'heimdall') {
+    if (keyParts.length < 5 || keyParts[0] !== 'truxe') {
       throw new Error('Invalid API key format');
     }
 

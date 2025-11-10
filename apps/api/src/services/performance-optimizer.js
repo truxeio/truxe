@@ -1,5 +1,5 @@
 /**
- * Heimdall Performance Optimizer
+ * Truxe Performance Optimizer
  * 
  * Enterprise-grade performance optimization service providing caching strategies,
  * database query optimization, connection pooling, memory management,
@@ -49,7 +49,7 @@ export class PerformanceOptimizer extends EventEmitter {
       cacheEnabled: options.cacheEnabled !== false,
       cacheStrategy: options.cacheStrategy || CacheStrategy.CACHE_ASIDE,
       cacheTTL: options.cacheTTL || 3600, // 1 hour
-      cachePrefix: options.cachePrefix || 'heimdall:cache:',
+      cachePrefix: options.cachePrefix || 'truxe:cache:',
       
       // Database optimization
       queryTimeout: options.queryTimeout || 30000, // 30 seconds

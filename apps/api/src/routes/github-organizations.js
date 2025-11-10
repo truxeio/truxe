@@ -72,7 +72,7 @@ export default async function githubOrganizationRoutes(fastify, options) {
   fastify.post('/sync', {
     preHandler: [(request, reply) => fastify.authenticate(request, reply)],
     schema: {
-      description: 'Sync a GitHub organization to Heimdall',
+      description: 'Sync a GitHub organization to Truxe',
       tags: ['GitHub Organizations'],
       body: {
         type: 'object',
@@ -358,7 +358,7 @@ export default async function githubOrganizationRoutes(fastify, options) {
   fastify.get('/:orgLogin/settings', {
     preHandler: [(request, reply) => fastify.authenticate(request, reply)],
     schema: {
-      description: 'Get GitHub settings for a Heimdall organization',
+      description: 'Get GitHub settings for a Truxe organization',
       tags: ['GitHub Organizations'],
       params: {
         type: 'object',
@@ -366,7 +366,7 @@ export default async function githubOrganizationRoutes(fastify, options) {
         properties: {
           orgLogin: {
             type: 'string',
-            description: 'GitHub organization login (or Heimdall org slug)',
+            description: 'GitHub organization login (or Truxe org slug)',
           },
         },
       },
@@ -385,7 +385,7 @@ export default async function githubOrganizationRoutes(fastify, options) {
     const { orgLogin } = request.params;
 
     try {
-      // Find Heimdall organization
+      // Find Truxe organization
       const org = await organizationService.getOrganizationById({
         orgId: orgLogin, // Try as ID first
         userId,
@@ -434,7 +434,7 @@ export default async function githubOrganizationRoutes(fastify, options) {
   fastify.put('/:orgLogin/settings', {
     preHandler: [(request, reply) => fastify.authenticate(request, reply)],
     schema: {
-      description: 'Update GitHub settings for a Heimdall organization',
+      description: 'Update GitHub settings for a Truxe organization',
       tags: ['GitHub Organizations'],
       params: {
         type: 'object',
@@ -442,7 +442,7 @@ export default async function githubOrganizationRoutes(fastify, options) {
         properties: {
           orgLogin: {
             type: 'string',
-            description: 'GitHub organization login (or Heimdall org slug)',
+            description: 'GitHub organization login (or Truxe org slug)',
           },
         },
       },
@@ -487,7 +487,7 @@ export default async function githubOrganizationRoutes(fastify, options) {
     const settingsUpdates = request.body;
 
     try {
-      // Find Heimdall organization
+      // Find Truxe organization
       let org = await organizationService.getOrganizationById({
         orgId: orgLogin,
         userId,

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { HeimdallContext } from '../context/HeimdallProvider';
+import { TruxeContext } from '../context/TruxeProvider';
 import type { User } from '../types';
 
 /**
@@ -25,10 +25,10 @@ import type { User } from '../types';
  * ```
  */
 export function useUser() {
-  const context = useContext(HeimdallContext);
+  const context = useContext(TruxeContext);
 
   if (!context) {
-    throw new Error('useUser must be used within HeimdallProvider');
+    throw new Error('useUser must be used within TruxeProvider');
   }
 
   const { isLoaded, isSignedIn, user, updateUser } = context;

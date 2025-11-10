@@ -141,7 +141,7 @@ async function registerPlugins(fastify) {
       'Content-Type',
       'Authorization',
       'X-Requested-With',
-      'X-Heimdall-Publishable-Key',
+      'X-Truxe-Publishable-Key',
       'X-Organization-Id',
     ],
   })
@@ -208,7 +208,7 @@ async function registerPlugins(fastify) {
             CookieAuth: {
               type: 'apiKey',
               in: 'cookie',
-              name: 'heimdall_access_token',
+              name: 'truxe_access_token',
               description: 'JWT access token in HTTP-only cookie',
             },
           },
@@ -825,7 +825,7 @@ async function start() {
       environment: config.app.environment,
       version: config.app.version,
       docs: config.features.swagger ? `http://${config.app.host}:${config.app.port}/docs` : null,
-    }, 'Heimdall API server started successfully')
+    }, 'Truxe API server started successfully')
 
     // Initialize scheduled jobs and monitoring (if BullMQ enabled)
     if (config.features.useBullMQQueues) {

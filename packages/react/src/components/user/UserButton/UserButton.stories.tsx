@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { UserButton } from './UserButton';
-import { HeimdallProvider } from '../../../context/HeimdallProvider';
+import { TruxeProvider } from '../../../context/TruxeProvider';
 import type { User } from '../../../types';
 
 const meta: Meta<typeof UserButton> = {

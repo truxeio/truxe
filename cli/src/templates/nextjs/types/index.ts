@@ -121,7 +121,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 // Error Types
-export interface HeimdallError extends Error {
+export interface TruxeError extends Error {
   code?: string;
   statusCode?: number;
   details?: any;

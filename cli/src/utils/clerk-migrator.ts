@@ -1,12 +1,12 @@
 /**
  * Clerk Migrator
  * 
- * Handles migration of users and organizations from Clerk to Heimdall
+ * Handles migration of users and organizations from Clerk to Truxe
  */
 
 import axios from 'axios';
 import { Logger } from './logger';
-import { HeimdallError } from './error-handler';
+import { TruxeError } from './error-handler';
 
 export interface ClerkUser {
   id: string;
@@ -126,14 +126,14 @@ export interface RollbackResult {
 export class ClerkMigrator {
   private config: any;
   private logger: Logger;
-  private heimdallApiUrl: string;
-  private heimdallApiKey: string;
+  private truxeApiUrl: string;
+  private truxeApiKey: string;
 
   constructor(config: any) {
     this.config = config;
     this.logger = new Logger();
-    this.heimdallApiUrl = config.api?.url || 'http://localhost:21001';
-    this.heimdallApiKey = config.api?.key || process.env.TRUXE_API_KEY;
+    this.truxeApiUrl = config.api?.url || 'http://localhost:21001';
+    this.truxeApiKey = config.api?.key || process.env.TRUXE_API_KEY;
   }
 
   /**
@@ -239,7 +239,7 @@ export class ClerkMigrator {
       };
 
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Failed to export data from Clerk: ${error.message}`,
         'CLERK_EXPORT_FAILED',
         [
@@ -348,7 +348,7 @@ export class ClerkMigrator {
     if (migrationData.webhooks && migrationData.webhooks.length > 0) {
       issues.push({
         type: 'clerk_webhooks',
-        message: `${migrationData.webhooks.length} Clerk webhooks found - these need manual migration to Heimdall webhooks`,
+        message: `${migrationData.webhooks.length} Clerk webhooks found - these need manual migration to Truxe webhooks`,
       });
     }
 
@@ -371,16 +371,16 @@ export class ClerkMigrator {
     let organizationsCreated = 0;
 
     try {
-      // Create Heimdall API client
-      const heimdallClient = axios.create({
-        baseURL: this.heimdallApiUrl,
+      // Create Truxe API client
+      const truxeClient = axios.create({
+        baseURL: this.truxeApiUrl,
         headers: {
-          'Authorization': `Bearer ${this.heimdallApiKey}`,
+          'Authorization': `Bearer ${this.truxeApiKey}`,
           'Content-Type': 'application/json',
         },
       });
 
-      // Create a mapping of Clerk org IDs to Heimdall org IDs
+      // Create a mapping of Clerk org IDs to Truxe org IDs
       const orgIdMapping: Record<string, string> = {};
 
       // Migrate organizations first (if any)
@@ -389,7 +389,7 @@ export class ClerkMigrator {
         
         for (const org of migrationData.organizations) {
           try {
-            const heimdallOrg = await heimdallClient.post('/organizations', {
+            const truxeOrg = await truxeClient.post('/organizations', {
               name: org.name,
               slug: org.slug,
               settings: {
@@ -400,7 +400,7 @@ export class ClerkMigrator {
               },
             });
 
-            orgIdMapping[org.id] = heimdallOrg.data.id;
+            orgIdMapping[org.id] = truxeOrg.data.id;
             organizationsCreated++;
             this.logger.info(`Created organization: ${org.name} (${org.slug})`);
 
@@ -440,11 +440,11 @@ export class ClerkMigrator {
               continue;
             }
 
-            // Transform Clerk user to Heimdall format
-            const heimdallUser = this.transformClerkUser(user);
+            // Transform Clerk user to Truxe format
+            const truxeUser = this.transformClerkUser(user);
 
-            // Create user in Heimdall
-            const response = await heimdallClient.post('/admin/users', heimdallUser);
+            // Create user in Truxe
+            const response = await truxeClient.post('/admin/users', truxeUser);
             const createdUser = response.data;
             
             // Handle organization memberships
@@ -454,12 +454,12 @@ export class ClerkMigrator {
               );
 
               for (const membership of userMemberships) {
-                const heimdallOrgId = orgIdMapping[membership.organization_id];
-                if (heimdallOrgId) {
+                const truxeOrgId = orgIdMapping[membership.organization_id];
+                if (truxeOrgId) {
                   try {
-                    await heimdallClient.post(`/organizations/${heimdallOrgId}/members`, {
+                    await truxeClient.post(`/organizations/${truxeOrgId}/members`, {
                       userId: createdUser.id,
-                      role: this.mapClerkRoleToHeimdall(membership.role),
+                      role: this.mapClerkRoleToTruxe(membership.role),
                       permissions: membership.permissions || [],
                     });
                   } catch (membershipError) {
@@ -509,11 +509,11 @@ export class ClerkMigrator {
       };
 
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Migration failed: ${error.message}`,
         'MIGRATION_FAILED',
         [
-          'Check Heimdall API connectivity',
+          'Check Truxe API connectivity',
           'Verify API key permissions',
           'Check database connection',
         ]
@@ -530,10 +530,10 @@ export class ClerkMigrator {
     let organizationsRemoved = 0;
 
     try {
-      const heimdallClient = axios.create({
-        baseURL: this.heimdallApiUrl,
+      const truxeClient = axios.create({
+        baseURL: this.truxeApiUrl,
         headers: {
-          'Authorization': `Bearer ${this.heimdallApiKey}`,
+          'Authorization': `Bearer ${this.truxeApiKey}`,
           'Content-Type': 'application/json',
         },
       });
@@ -543,7 +543,7 @@ export class ClerkMigrator {
         this.logger.info('Rolling back migrated users...');
         
         // Get users with Clerk metadata
-        const usersResponse = await heimdallClient.get('/admin/users', {
+        const usersResponse = await truxeClient.get('/admin/users', {
           params: {
             'metadata.clerkId': { $exists: true },
             limit: 1000,
@@ -552,7 +552,7 @@ export class ClerkMigrator {
 
         for (const user of usersResponse.data.users || []) {
           try {
-            await heimdallClient.delete(`/admin/users/${user.id}`);
+            await truxeClient.delete(`/admin/users/${user.id}`);
             usersRemoved++;
           } catch (error) {
             failedRemovals.push({
@@ -569,7 +569,7 @@ export class ClerkMigrator {
         this.logger.info('Rolling back created organizations...');
         
         // Get organizations with Clerk metadata
-        const orgsResponse = await heimdallClient.get('/admin/organizations', {
+        const orgsResponse = await truxeClient.get('/admin/organizations', {
           params: {
             'settings.clerkId': { $exists: true },
             limit: 1000,
@@ -578,7 +578,7 @@ export class ClerkMigrator {
 
         for (const org of orgsResponse.data.organizations || []) {
           try {
-            await heimdallClient.delete(`/admin/organizations/${org.id}`);
+            await truxeClient.delete(`/admin/organizations/${org.id}`);
             organizationsRemoved++;
           } catch (error) {
             failedRemovals.push({
@@ -597,11 +597,11 @@ export class ClerkMigrator {
       };
 
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Rollback failed: ${error.message}`,
         'ROLLBACK_FAILED',
         [
-          'Check Heimdall API connectivity',
+          'Check Truxe API connectivity',
           'Verify API key permissions',
           'Some items may need manual cleanup',
         ]
@@ -610,7 +610,7 @@ export class ClerkMigrator {
   }
 
   /**
-   * Transform Clerk user to Heimdall format
+   * Transform Clerk user to Truxe format
    */
   private transformClerkUser(clerkUser: ClerkUser): any {
     const primaryEmail = clerkUser.email_addresses?.[0];
@@ -653,9 +653,9 @@ export class ClerkMigrator {
   }
 
   /**
-   * Map Clerk role to Heimdall role
+   * Map Clerk role to Truxe role
    */
-  private mapClerkRoleToHeimdall(clerkRole: string): string {
+  private mapClerkRoleToTruxe(clerkRole: string): string {
     const roleMapping: Record<string, string> = {
       'admin': 'admin',
       'basic_member': 'member',

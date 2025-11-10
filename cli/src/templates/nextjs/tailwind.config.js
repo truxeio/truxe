@@ -5,7 +5,7 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './lib/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@heimdall/ui/dist/**/*.js',
+    './node_modules/@truxe/ui/dist/**/*.js',
   ],
   theme: {
     extend: {

@@ -8,14 +8,14 @@ import type {
 } from '../types';
 
 /**
- * Heimdall API Client
+ * Truxe API Client
  *
- * Handles all HTTP requests to the Heimdall API with:
+ * Handles all HTTP requests to the Truxe API with:
  * - Automatic token refresh
  * - Token storage using localStorage
  * - Consistent error handling
  */
-export class HeimdallAPIClient {
+export class TruxeAPIClient {
   private apiUrl: string;
   private publishableKey: string;
   private accessToken: string | null = null;
@@ -34,8 +34,8 @@ export class HeimdallAPIClient {
   private loadTokens(): void {
     if (typeof window === 'undefined') return;
 
-    this.accessToken = localStorage.getItem('heimdall_access_token');
-    this.refreshToken = localStorage.getItem('heimdall_refresh_token');
+    this.accessToken = localStorage.getItem('truxe_access_token');
+    this.refreshToken = localStorage.getItem('truxe_refresh_token');
   }
 
   private saveTokens(tokens: TokenPair): void {
@@ -44,10 +44,10 @@ export class HeimdallAPIClient {
     this.accessToken = tokens.accessToken;
     this.refreshToken = tokens.refreshToken;
 
-    localStorage.setItem('heimdall_access_token', tokens.accessToken);
-    localStorage.setItem('heimdall_refresh_token', tokens.refreshToken);
+    localStorage.setItem('truxe_access_token', tokens.accessToken);
+    localStorage.setItem('truxe_refresh_token', tokens.refreshToken);
     localStorage.setItem(
-      'heimdall_token_expires_at',
+      'truxe_token_expires_at',
       String(Date.now() + tokens.expiresIn * 1000)
     );
   }
@@ -58,9 +58,9 @@ export class HeimdallAPIClient {
 
     if (typeof window === 'undefined') return;
 
-    localStorage.removeItem('heimdall_access_token');
-    localStorage.removeItem('heimdall_refresh_token');
-    localStorage.removeItem('heimdall_token_expires_at');
+    localStorage.removeItem('truxe_access_token');
+    localStorage.removeItem('truxe_refresh_token');
+    localStorage.removeItem('truxe_token_expires_at');
   }
 
   // ============================================
@@ -72,7 +72,7 @@ export class HeimdallAPIClient {
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'X-Heimdall-Publishable-Key': this.publishableKey,
+      'X-Truxe-Publishable-Key': this.publishableKey,
       ...(options.headers as Record<string, string>),
     };
 
@@ -219,7 +219,7 @@ export class HeimdallAPIClient {
       userId: user.id,
       status: 'active',
       createdAt: new Date().toISOString(),
-      expiresAt: localStorage.getItem('heimdall_token_expires_at') || '',
+      expiresAt: localStorage.getItem('truxe_token_expires_at') || '',
     } as Session;
   }
 

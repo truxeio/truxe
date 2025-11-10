@@ -1,4 +1,4 @@
-import { HeimdallProvider, useAuth, useUser } from './index';
+import { TruxeProvider, useAuth, useUser } from './index';
 
 function TestComponent() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -6,7 +6,7 @@ function TestComponent() {
 
   return (
     <div>
-      <h1>Heimdall React Test</h1>
+      <h1>Truxe React Test</h1>
       <p>Loaded: {isLoaded ? 'Yes' : 'No'}</p>
       <p>Signed In: {isSignedIn ? 'Yes' : 'No'}</p>
       <p>User: {user?.email ?? 'None'}</p>
@@ -16,9 +16,9 @@ function TestComponent() {
 
 export function TestApp() {
   return (
-    <HeimdallProvider publishableKey="pk_test_123">
+    <TruxeProvider publishableKey="pk_test_123">
       <TestComponent />
-    </HeimdallProvider>
+    </TruxeProvider>
   );
 }
 

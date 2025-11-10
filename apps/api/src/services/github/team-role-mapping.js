@@ -1,11 +1,11 @@
 /**
- * GitHub Team to Heimdall Role Mapping Service
+ * GitHub Team to Truxe Role Mapping Service
  *
- * Maps GitHub team permissions and team names to Heimdall roles and permissions.
+ * Maps GitHub team permissions and team names to Truxe roles and permissions.
  * Supports custom team-based mappings and configurable role translations.
  *
  * Features:
- * - Default GitHub permission to Heimdall role mapping
+ * - Default GitHub permission to Truxe role mapping
  * - Custom team-based role assignments
  * - Permission inheritance
  * - Team slug pattern matching
@@ -13,10 +13,10 @@
  */
 
 /**
- * Default mapping from GitHub permissions to Heimdall roles
+ * Default mapping from GitHub permissions to Truxe roles
  */
 export const GITHUB_TEAM_ROLE_MAPPING = {
-  // GitHub permission → Heimdall role
+  // GitHub permission → Truxe role
   admin: 'admin',
   maintain: 'admin',
   write: 'member',
@@ -25,7 +25,7 @@ export const GITHUB_TEAM_ROLE_MAPPING = {
 };
 
 /**
- * Default permission sets for each Heimdall role
+ * Default permission sets for each Truxe role
  */
 export const TRUXE_ROLE_PERMISSIONS = {
   owner: ['*'], // All permissions
@@ -58,7 +58,7 @@ export class TeamRoleMappingService {
   }
 
   /**
-   * Map GitHub team permission to Heimdall role
+   * Map GitHub team permission to Truxe role
    *
    * @param {Object} params
    * @param {string} params.permission - GitHub team permission (admin, maintain, write, triage, read)
@@ -149,7 +149,7 @@ export class TeamRoleMappingService {
   /**
    * Get default permissions for a role
    *
-   * @param {string} role - Heimdall role
+   * @param {string} role - Truxe role
    * @returns {Array<string>} Permission list
    * @private
    */

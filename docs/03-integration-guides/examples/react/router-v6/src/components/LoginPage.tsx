@@ -18,7 +18,7 @@ export function LoginPage() {
     <div>
       <h1>Login Required</h1>
       <p>Please log in to continue.</p>
-      <button onClick={login}>Login with Heimdall</button>
+      <button onClick={login}>Login with Truxe</button>
     </div>
   );
 }

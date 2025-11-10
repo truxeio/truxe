@@ -3,7 +3,7 @@ import { join, basename } from 'path';
 import { execSync } from 'child_process';
 import validateNpmName from 'validate-npm-package-name';
 import { Logger } from './logger';
-import { HeimdallError } from './error-handler';
+import { TruxeError } from './error-handler';
 import { FrameworkTemplate } from '../types';
 
 export class ProjectUtils {
@@ -18,7 +18,7 @@ export class ProjectUtils {
         ...(validation.warnings || [])
       ];
       
-      throw new HeimdallError(
+      throw new TruxeError(
         `Invalid project name: ${name}`,
         'INVALID_PROJECT_NAME',
         [
@@ -33,7 +33,7 @@ export class ProjectUtils {
 
   static validateProjectPath(projectPath: string): void {
     if (existsSync(projectPath)) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Directory already exists: ${projectPath}`,
         'DIRECTORY_EXISTS',
         [
@@ -48,11 +48,11 @@ export class ProjectUtils {
     const parentDir = join(projectPath, '..');
     try {
       // Try to create a temporary file to test write permissions
-      const testFile = join(parentDir, '.heimdall-test-' + Date.now());
+      const testFile = join(parentDir, '.truxe-test-' + Date.now());
       writeFileSync(testFile, '');
       execSync(`rm -f "${testFile}"`);
     } catch {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Cannot write to directory: ${parentDir}`,
         'PERMISSION_DENIED',
         [
@@ -69,7 +69,7 @@ export class ProjectUtils {
       mkdirSync(projectPath, { recursive: true });
       this.logger.success(`Created project directory: ${basename(projectPath)}`);
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Failed to create project directory: ${(error as Error).message}`,
         'DIRECTORY_CREATION_FAILED'
       );
@@ -110,7 +110,7 @@ export class ProjectUtils {
       
       this.logger.success('Dependencies installed successfully');
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Failed to install dependencies: ${(error as Error).message}`,
         'DEPENDENCY_INSTALLATION_FAILED',
         [
@@ -145,28 +145,28 @@ export class ProjectUtils {
       name: projectName,
       version: '0.1.0',
       private: true,
-      description: `${template.displayName} application with Heimdall authentication`,
+      description: `${template.displayName} application with Truxe authentication`,
       scripts: {
         ...template.scripts,
         'truxe.io': 'truxe.io',
-        'heimdall:migrate': 'heimdall migrate',
-        'heimdall:status': 'heimdall status'
+        'truxe:migrate': 'truxe migrate',
+        'truxe:status': 'truxe status'
       },
       dependencies: {
         ...template.dependencies
       },
       devDependencies: {
         ...template.devDependencies,
-        '@heimdall/cli': 'latest'
+        '@truxe/cli': 'latest'
       },
       keywords: [
         template.name,
-        'heimdall',
+        'truxe',
         'authentication',
         'auth',
         'magic-links'
       ],
-      heimdall: {
+      truxe: {
         template: template.name,
         version: '0.1.0',
         features: template.supportedFeatures
@@ -192,9 +192,9 @@ export class ProjectUtils {
 
 # Database
 DATABASE_URL=sqlite:./dev.db
-# DATABASE_URL=postgresql://user:password@localhost:5432/heimdall
+# DATABASE_URL=postgresql://user:password@localhost:5432/truxe
 
-# JWT Keys (generate with: heimdall keys generate)
+# JWT Keys (generate with: truxe keys generate)
 JWT_PRIVATE_KEY=""
 JWT_PUBLIC_KEY=""
 JWT_ALGORITHM=RS256
@@ -235,7 +235,7 @@ ENABLE_MULTI_TENANT=false
   static createReadme(projectPath: string, projectName: string, template: FrameworkTemplate): void {
     const readmeContent = `# ${projectName}
 
-A ${template.displayName} application with Heimdall authentication.
+A ${template.displayName} application with Truxe authentication.
 
 ## Getting Started
 
@@ -251,26 +251,26 @@ npm install
 # Start your application
 npm run dev
 
-# Start Heimdall (in another terminal)
+# Start Truxe (in another terminal)
 npm run truxe.io
 \`\`\`
 
 ### 3. Open your browser
 
 - Application: http://localhost:3000
-- Heimdall Admin: http://localhost:3001/admin
+- Truxe Admin: http://localhost:3001/admin
 - Development Inbox: http://localhost:3001/dev/inbox
 
 ## Authentication
 
-This project uses Heimdall for authentication with the following features:
+This project uses Truxe for authentication with the following features:
 
 ${template.supportedFeatures.map(feature => `- ${feature}`).join('\n')}
 
 ### Usage
 
 \`\`\`typescript
-import { withAuth } from '@heimdall/${template.name}';
+import { withAuth } from '@truxe/${template.name}';
 
 function ProtectedPage({ user }) {
   return <h1>Welcome, {user.email}!</h1>;
@@ -281,7 +281,7 @@ export default withAuth(ProtectedPage);
 
 ## Configuration
 
-Edit \`heimdall.config.yaml\` to customize your authentication setup:
+Edit \`truxe.config.yaml\` to customize your authentication setup:
 
 \`\`\`yaml
 multiTenant:
@@ -297,20 +297,20 @@ email:
 
 ## Commands
 
-- \`npm run truxe.io\` - Start Heimdall development server
-- \`npm run heimdall:migrate\` - Run database migrations  
-- \`npm run heimdall:status\` - Check system health
+- \`npm run truxe.io\` - Start Truxe development server
+- \`npm run truxe:migrate\` - Run database migrations  
+- \`npm run truxe:status\` - Check system health
 
 ## Documentation
 
-- [Heimdall Documentation](https://docs.truxe.io)
+- [Truxe Documentation](https://docs.truxe.io)
 - [${template.displayName} Guide](https://docs.truxe.io/guides/${template.name})
 - [API Reference](https://docs.truxe.io/api)
 
 ## Support
 
-- [GitHub Issues](https://github.com/heimdall-auth/heimdall/issues)
-- [Discord Community](https://discord.gg/heimdall)
+- [GitHub Issues](https://github.com/truxe-auth/truxe/issues)
+- [Discord Community](https://discord.gg/truxe)
 - [Documentation](https://docs.truxe.io)
 `;
 
@@ -383,7 +383,7 @@ ehthumbs.db
 Thumbs.db
 
 # Truxe
-.heimdall/cache/
+.truxe/cache/
 `;
 
     const templateSpecific = {

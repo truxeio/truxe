@@ -1,4 +1,4 @@
-export interface HeimdallConfig {
+export interface TruxeConfig {
   // Server configuration
   server?: {
     port: number;
@@ -81,7 +81,7 @@ export interface ProjectScaffold {
   template: FrameworkTemplate;
   projectName: string;
   projectPath: string;
-  config: Partial<HeimdallConfig>;
+  config: Partial<TruxeConfig>;
 }
 
 export interface InitOptions {
@@ -95,7 +95,7 @@ export interface InitOptions {
 
 export interface DevOptions {
   port?: number;
-  apiPort?: number; // Separate port for Heimdall API
+  apiPort?: number; // Separate port for Truxe API
   db?: 'sqlite' | 'postgresql';
   host?: string;
   open?: boolean;

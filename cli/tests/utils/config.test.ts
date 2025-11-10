@@ -18,12 +18,12 @@ describe('ConfigManager', () => {
     (ConfigManager as any).configCache = null;
   });
 
-  describe('isHeimdallProject', () => {
+  describe('isTruxeProject', () => {
     it('should return true when truxe.config file exists', () => {
       const { existsSync } = require('fs');
       existsSync.mockReturnValue(true);
 
-      const result = ConfigManager.isHeimdallProject();
+      const result = ConfigManager.isTruxeProject();
       expect(result).toBe(true);
     });
 
@@ -31,7 +31,7 @@ describe('ConfigManager', () => {
       const { existsSync } = require('fs');
       existsSync.mockReturnValue(false);
 
-      const result = ConfigManager.isHeimdallProject();
+      const result = ConfigManager.isTruxeProject();
       expect(result).toBe(false);
     });
   });

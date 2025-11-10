@@ -10,7 +10,7 @@ class TOTPService {
     const key = options.encryptionKey || process.env.MFA_ENCRYPTION_KEY || config.oauth?.tokenEncryption?.key
     const algorithm = options.encryptionAlgorithm || process.env.MFA_ENCRYPTION_ALGORITHM || config.oauth?.tokenEncryption?.algorithm || 'aes-256-gcm'
     this.encryptor = new OAuthTokenEncryptor({ key, algorithm })
-    this.issuer = options.issuer || config.app.name || 'Heimdall'
+    this.issuer = options.issuer || config.app.name || 'Truxe'
     this.logger = options.logger || console
     this.pool = options.pool || getPool()
   }

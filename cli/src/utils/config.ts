@@ -2,24 +2,24 @@ import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
 import { config as loadEnv } from 'dotenv';
-import { HeimdallConfig, ConfigValue } from '../types';
+import { TruxeConfig, ConfigValue } from '../types';
 import { Logger } from './logger';
-import { HeimdallError } from './error-handler';
+import { TruxeError } from './error-handler';
 
 export class ConfigManager {
   private static logger = new Logger();
-  private static configCache: Partial<HeimdallConfig> | null = null;
+  private static configCache: Partial<TruxeConfig> | null = null;
 
   static getProjectRoot(): string {
     let currentDir = process.cwd();
     
-    // Look for heimdall.config.js, package.json with heimdall, or .heimdall directory
+    // Look for truxe.config.js, package.json with truxe, or .truxe directory
     while (currentDir !== '/') {
       const configFiles = [
-        'heimdall.config.js',
-        'heimdall.config.ts',
-        'heimdall.config.yaml',
-        'heimdall.config.yml'
+        'truxe.config.js',
+        'truxe.config.ts',
+        'truxe.config.yaml',
+        'truxe.config.yml'
       ];
       
       for (const file of configFiles) {
@@ -28,12 +28,12 @@ export class ConfigManager {
         }
       }
       
-      // Check for package.json with heimdall config
+      // Check for package.json with truxe config
       const packageJsonPath = join(currentDir, 'package.json');
       if (existsSync(packageJsonPath)) {
         try {
           const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
-          if (packageJson.heimdall) {
+          if (packageJson.truxe) {
             return currentDir;
           }
         } catch {
@@ -41,25 +41,25 @@ export class ConfigManager {
         }
       }
       
-      // Check for .heimdall directory
-      if (existsSync(join(currentDir, '.heimdall'))) {
+      // Check for .truxe directory
+      if (existsSync(join(currentDir, '.truxe'))) {
         return currentDir;
       }
       
       currentDir = join(currentDir, '..');
     }
     
-    throw new HeimdallError(
-      'Not a Heimdall project',
+    throw new TruxeError(
+      'Not a Truxe project',
       'INVALID_PROJECT',
       [
-        'Run `heimdall init` to create a new project',
+        'Run `truxe init` to create a new project',
         'Make sure you\'re in the correct directory'
       ]
     );
   }
 
-  static isHeimdallProject(): boolean {
+  static isTruxeProject(): boolean {
     try {
       this.getProjectRoot();
       return true;
@@ -68,7 +68,7 @@ export class ConfigManager {
     }
   }
 
-  static loadConfig(projectRoot?: string): Partial<HeimdallConfig> {
+  static loadConfig(projectRoot?: string): Partial<TruxeConfig> {
     if (this.configCache) {
       return this.configCache;
     }
@@ -79,14 +79,14 @@ export class ConfigManager {
     loadEnv({ path: join(root, '.env') });
     loadEnv({ path: join(root, '.env.local') });
     
-    let config: Partial<HeimdallConfig> = this.getDefaultConfig();
+    let config: Partial<TruxeConfig> = this.getDefaultConfig();
     
     // Try to load from various config files
     const configFiles = [
-      { file: 'heimdall.config.js', type: 'js' },
-      { file: 'heimdall.config.ts', type: 'ts' },
-      { file: 'heimdall.config.yaml', type: 'yaml' },
-      { file: 'heimdall.config.yml', type: 'yaml' },
+      { file: 'truxe.config.js', type: 'js' },
+      { file: 'truxe.config.ts', type: 'ts' },
+      { file: 'truxe.config.yaml', type: 'yaml' },
+      { file: 'truxe.config.yml', type: 'yaml' },
     ];
     
     for (const { file, type } of configFiles) {
@@ -107,8 +107,8 @@ export class ConfigManager {
     if (existsSync(packageJsonPath)) {
       try {
         const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
-        if (packageJson.heimdall) {
-          config = this.mergeConfigs(config, packageJson.heimdall);
+        if (packageJson.truxe) {
+          config = this.mergeConfigs(config, packageJson.truxe);
         }
       } catch (error) {
         this.logger.debug(`Failed to load config from package.json: ${(error as Error).message}`);
@@ -122,9 +122,9 @@ export class ConfigManager {
     return config;
   }
 
-  static saveConfig(config: Partial<HeimdallConfig>, projectRoot?: string): void {
+  static saveConfig(config: Partial<TruxeConfig>, projectRoot?: string): void {
     const root = projectRoot || this.getProjectRoot();
-    const configPath = join(root, 'heimdall.config.yaml');
+    const configPath = join(root, 'truxe.config.yaml');
     
     try {
       const yamlContent = stringifyYaml(config, {
@@ -137,7 +137,7 @@ export class ConfigManager {
       this.configCache = null; // Clear cache
       this.logger.success(`Configuration saved to ${configPath}`);
     } catch (error) {
-      throw new HeimdallError(
+      throw new TruxeError(
         `Failed to save configuration: ${(error as Error).message}`,
         'CONFIG_SAVE_ERROR'
       );
@@ -179,7 +179,7 @@ export class ConfigManager {
     return values.sort((a, b) => a.key.localeCompare(b.key));
   }
 
-  private static loadConfigFile(configPath: string, type: string): Partial<HeimdallConfig> {
+  private static loadConfigFile(configPath: string, type: string): Partial<TruxeConfig> {
     const content = readFileSync(configPath, 'utf-8');
     
     switch (type) {
@@ -192,7 +192,7 @@ export class ConfigManager {
         return moduleExports.default || moduleExports;
         
       case 'yaml':
-        return parseYaml(content) as Partial<HeimdallConfig>;
+        return parseYaml(content) as Partial<TruxeConfig>;
         
       default:
         throw new Error(`Unsupported config file type: ${type}`);
@@ -200,9 +200,9 @@ export class ConfigManager {
   }
 
   private static mergeConfigs(
-    base: Partial<HeimdallConfig>, 
-    override: Partial<HeimdallConfig>
-  ): Partial<HeimdallConfig> {
+    base: Partial<TruxeConfig>, 
+    override: Partial<TruxeConfig>
+  ): Partial<TruxeConfig> {
     const result = { ...base };
     
     for (const [key, value] of Object.entries(override)) {
@@ -219,7 +219,7 @@ export class ConfigManager {
     return result;
   }
 
-  private static applyEnvironmentOverrides(config: Partial<HeimdallConfig>): Partial<HeimdallConfig> {
+  private static applyEnvironmentOverrides(config: Partial<TruxeConfig>): Partial<TruxeConfig> {
     const envMappings = {
       'database.url': 'DATABASE_URL',
       'database.ssl': 'DATABASE_SSL',
@@ -242,11 +242,11 @@ export class ConfigManager {
     return result;
   }
 
-  private static getDefaultConfig(): Partial<HeimdallConfig> {
+  private static getDefaultConfig(): Partial<TruxeConfig> {
     return {
       // Server configuration
       server: {
-        port: 3001, // Heimdall API port (standard)
+        port: 3001, // Truxe API port (standard)
         host: '0.0.0.0',
         cors: {
           origin: 'http://localhost:3000', // Default frontend port

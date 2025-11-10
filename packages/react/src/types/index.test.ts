@@ -5,7 +5,7 @@ import type {
   Organization,
   AuthState,
   TokenPair,
-  HeimdallConfig,
+  TruxeConfig,
 } from './index';
 
 describe('Type Definitions', () => {
@@ -87,8 +87,8 @@ describe('Type Definitions', () => {
     expect(tokens.expiresIn).toBe(3600);
   });
 
-  it('should have correct HeimdallConfig interface structure', () => {
-    const config: HeimdallConfig = {
+  it('should have correct TruxeConfig interface structure', () => {
+    const config: TruxeConfig = {
       publishableKey: 'pk_test_123',
       apiUrl: 'http://localhost:3001',
       onTokenRefresh: (tokens) => {

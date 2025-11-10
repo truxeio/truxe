@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { withAuth } from '@heimdall/nextjs';
-import { LoadingSpinner, Button } from '@heimdall/ui';
-import { useAuth } from '@heimdall/react';
+import { withAuth } from '@truxe/nextjs';
+import { LoadingSpinner, Button } from '@truxe/ui';
+import { useAuth } from '@truxe/react';
 
 interface ProfileProps {
   user: {

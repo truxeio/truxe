@@ -1,7 +1,7 @@
 /**
  * Login Page
  *
- * Public page with "Sign in with Heimdall" button
+ * Public page with "Sign in with Truxe" button
  */
 
 import { useAuth } from '../hooks/useAuth';
@@ -25,9 +25,9 @@ export function LoginPage() {
       borderRadius: '8px',
       boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
     }}>
-      <h1>Welcome to Heimdall OAuth Demo</h1>
+      <h1>Welcome to Truxe OAuth Demo</h1>
       <p style={{ color: '#666', marginBottom: '30px' }}>
-        Sign in with your Heimdall account to continue
+        Sign in with your Truxe account to continue
       </p>
 
       <button
@@ -46,7 +46,7 @@ export function LoginPage() {
         onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
         onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
       >
-        Sign in with Heimdall
+        Sign in with Truxe
       </button>
 
       <div style={{

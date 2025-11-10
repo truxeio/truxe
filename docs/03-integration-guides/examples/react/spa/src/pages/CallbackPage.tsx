@@ -1,7 +1,7 @@
 /**
  * OAuth Callback Page
  *
- * Handles OAuth callback from Heimdall
+ * Handles OAuth callback from Truxe
  * Exchanges code for tokens and redirects to dashboard
  */
 

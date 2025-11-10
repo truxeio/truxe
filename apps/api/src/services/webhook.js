@@ -623,11 +623,11 @@ export class WebhookService extends EventEmitter {
       // Prepare headers
       const headers = {
         'Content-Type': 'application/json',
-        'User-Agent': 'Heimdall-Webhooks/1.0',
-        'X-Heimdall-Event': delivery.payload.event,
-        'X-Heimdall-Signature': `sha256=${delivery.signature}`,
-        'X-Heimdall-Timestamp': delivery.payload.timestamp,
-        'X-Heimdall-Delivery': delivery.deliveryId,
+        'User-Agent': 'Truxe-Webhooks/1.0',
+        'X-Truxe-Event': delivery.payload.event,
+        'X-Truxe-Signature': `sha256=${delivery.signature}`,
+        'X-Truxe-Timestamp': delivery.payload.timestamp,
+        'X-Truxe-Delivery': delivery.deliveryId,
         ...delivery.headers,
       }
       

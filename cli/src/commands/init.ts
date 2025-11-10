@@ -4,7 +4,7 @@ import inquirer from 'inquirer';
 import { Listr } from 'listr2';
 import chalk from 'chalk';
 import { Logger } from '../utils/logger';
-import { ErrorHandler, HeimdallError } from '../utils/error-handler';
+import { ErrorHandler, TruxeError } from '../utils/error-handler';
 import { ProjectUtils } from '../utils/project';
 import { ConfigManager } from '../utils/config';
 import { getTemplate, listTemplates } from '../templates';
@@ -14,7 +14,7 @@ export function initCommand(program: Command): void {
   program
     .command('init')
     .argument('[project-name]', 'Name of the project to create')
-    .description('Initialize a new Heimdall project with authentication')
+    .description('Initialize a new Truxe project with authentication')
     .option('-t, --template <template>', 'Framework template (nextjs|nuxt|sveltekit)')
     .option('--db <database>', 'Database type (sqlite|postgresql)', 'sqlite')
     .option('--multi-tenant', 'Enable multi-tenant mode')
@@ -25,7 +25,7 @@ export function initCommand(program: Command): void {
       const logger = new Logger();
       
       try {
-        logger.header('🛡️  Heimdall CLI - Initialize Project');
+        logger.header('🛡️  Truxe CLI - Initialize Project');
         logger.blank();
         
         // Interactive setup if not using --yes flag
@@ -58,7 +58,7 @@ async function interactiveSetup(
 ): Promise<ProjectScaffold> {
   const logger = new Logger();
   
-  logger.info('Let\'s set up your Heimdall project! 🚀');
+  logger.info('Let\'s set up your Truxe project! 🚀');
   logger.blank();
   
   const questions = [];
@@ -69,13 +69,13 @@ async function interactiveSetup(
       type: 'input',
       name: 'projectName',
       message: 'What is your project name?',
-      default: 'my-heimdall-app',
+      default: 'my-truxe-app',
       validate: (input: string) => {
         try {
           ProjectUtils.validateProjectName(input);
           return true;
         } catch (error) {
-          return (error as HeimdallError).message;
+          return (error as TruxeError).message;
         }
       }
     });
@@ -181,7 +181,7 @@ async function interactiveSetup(
     projectPath: join(process.cwd(), projectName || answers.projectName),
     config: {
       database: {
-        url: answers.database === 'sqlite' ? 'sqlite:./dev.db' : 'postgresql://user:password@localhost:5432/heimdall'
+        url: answers.database === 'sqlite' ? 'sqlite:./dev.db' : 'postgresql://user:password@localhost:5432/truxe'
       },
       multiTenant: {
         enabled: options.multiTenant ?? answers.multiTenant,
@@ -199,12 +199,12 @@ async function getDefaultConfig(
   projectName: string | undefined,
   options: InitOptions
 ): Promise<ProjectScaffold> {
-  const name = projectName || 'my-heimdall-app';
+  const name = projectName || 'my-truxe-app';
   
   try {
     ProjectUtils.validateProjectName(name);
   } catch (error) {
-    throw new HeimdallError(
+    throw new TruxeError(
       `Invalid project name: ${name}`,
       'INVALID_PROJECT_NAME',
       ['Use lowercase letters, numbers, and hyphens only']
@@ -218,7 +218,7 @@ async function getDefaultConfig(
     config: {
       database: {
         url: options.database === 'postgresql' 
-          ? 'postgresql://user:password@localhost:5432/heimdall'
+          ? 'postgresql://user:password@localhost:5432/truxe'
           : 'sqlite:./dev.db'
       },
       multiTenant: {
@@ -372,7 +372,7 @@ module.exports = nextConfig`
         join(scaffold.projectPath, 'nuxt.config.ts'),
         `export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['@heimdall/nuxt']
+  modules: ['@truxe/nuxt']
 })`
       );
       break;
@@ -432,7 +432,7 @@ async function generateJWTKeys(projectPath: string): Promise<void> {
     writeFileSync(envPath, envContent);
     
   } catch (error) {
-    throw new HeimdallError(
+    throw new TruxeError(
       'Failed to generate JWT keys',
       'KEY_GENERATION_FAILED',
       [
@@ -463,19 +463,19 @@ function showNextSteps(scaffold: ProjectScaffold): void {
   logger.command(`npm run dev`);
   logger.blank();
   
-  logger.step((scaffold as any).installDeps ? 3 : 4, 4, `Start Heimdall (in another terminal):`);
+  logger.step((scaffold as any).installDeps ? 3 : 4, 4, `Start Truxe (in another terminal):`);
   logger.command(`npm run truxe.io`);
   logger.blank();
   
   logger.step(4, 4, `Open your browser:`);
   logger.bullet(`Application: ${chalk.cyan('http://localhost:3000')}`);
-  logger.bullet(`Heimdall Admin: ${chalk.cyan('http://localhost:3001/admin')}`);
+  logger.bullet(`Truxe Admin: ${chalk.cyan('http://localhost:3001/admin')}`);
   logger.bullet(`Development Inbox: ${chalk.cyan('http://localhost:3001/dev/inbox')}`);
   logger.blank();
   
   logger.info('📚 Documentation: https://docs.truxe.io');
-  logger.info('💬 Discord: https://discord.gg/heimdall');
-  logger.info('🐛 Issues: https://github.com/heimdall-auth/heimdall/issues');
+  logger.info('💬 Discord: https://discord.gg/truxe');
+  logger.info('🐛 Issues: https://github.com/truxe-auth/truxe/issues');
   logger.blank();
   
   logger.success('Happy coding! 🎉');

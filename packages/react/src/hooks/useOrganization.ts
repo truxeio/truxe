@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { HeimdallContext } from '../context/HeimdallProvider';
+import { TruxeContext } from '../context/TruxeProvider';
 
 /**
  * Access organization data and methods.
@@ -28,10 +28,10 @@ import { HeimdallContext } from '../context/HeimdallProvider';
  * ```
  */
 export function useOrganization() {
-  const context = useContext(HeimdallContext);
+  const context = useContext(TruxeContext);
 
   if (!context) {
-    throw new Error('useOrganization must be used within HeimdallProvider');
+    throw new Error('useOrganization must be used within TruxeProvider');
   }
 
   const {

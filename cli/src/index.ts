@@ -26,14 +26,14 @@ if (notifier.update) {
     defer: false,
     message: `Update available: ${chalk.dim(notifier.update.current)} → ${chalk.green(
       notifier.update.latest
-    )}\nRun ${chalk.cyan('npm i -g @heimdall/cli')} to update`,
+    )}\nRun ${chalk.cyan('npm i -g @truxe/cli')} to update`,
   });
 }
 
 // Configure main program
 program
-  .name('heimdall')
-  .description('Heimdall CLI - Set up authentication in 5 minutes')
+  .name('truxe')
+  .description('Truxe CLI - Set up authentication in 5 minutes')
   .version(packageJson.version)
   .option('-v, --verbose', 'Enable verbose logging')
   .option('--no-color', 'Disable colored output')

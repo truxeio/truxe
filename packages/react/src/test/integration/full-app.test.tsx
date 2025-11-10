@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { HeimdallProvider } from '../../context/HeimdallProvider';
+import { TruxeProvider } from '../../context/TruxeProvider';
 import { SignIn } from '../../components/auth/SignIn/SignIn';
 import { SignUp } from '../../components/auth/SignUp/SignUp';
 import { UserButton } from '../../components/user/UserButton/UserButton';
@@ -36,7 +36,7 @@ function FullApplicationSimulation() {
   if (!isSignedIn) {
     return (
       <div>
-        <h1>Welcome to Heimdall Demo</h1>
+        <h1>Welcome to Truxe Demo</h1>
         <SignIn mode="inline" />
         <p>Don't have an account?</p>
         <SignUp mode="inline" />
@@ -47,7 +47,7 @@ function FullApplicationSimulation() {
   return (
     <div>
       <nav>
-        <h1>Heimdall App</h1>
+        <h1>Truxe App</h1>
         <OrganizationSwitcher />
         <UserButton />
       </nav>
@@ -180,16 +180,16 @@ describe('Full Application Integration', () => {
     });
 
     const { rerender } = render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <FullApplicationSimulation />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Step 1: Verify unauthenticated state
-    expect(screen.getByText(/welcome to heimdall demo/i)).toBeInTheDocument();
+    expect(screen.getByText(/welcome to truxe demo/i)).toBeInTheDocument();
 
     // Step 2: Sign up
     const emailInput = screen.getAllByLabelText(/email/i)[0];
@@ -264,12 +264,12 @@ describe('Full Application Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <FullApplicationSimulation />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Should show authenticated state
@@ -294,25 +294,25 @@ describe('Full Application Integration', () => {
     };
 
     // Store session in localStorage
-    localStorage.setItem('heimdall_session', JSON.stringify(mockSession));
+    localStorage.setItem('truxe_session', JSON.stringify(mockSession));
 
     const { rerender } = render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <FullApplicationSimulation />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Simulate page reload
     rerender(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <FullApplicationSimulation />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Session should be restored
@@ -326,12 +326,12 @@ describe('Full Application Integration', () => {
     global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <FullApplicationSimulation />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Try to sign in with network error
@@ -365,12 +365,12 @@ describe('Full Application Integration', () => {
     });
 
     render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <FullApplicationSimulation />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Test handles organization operations
@@ -379,12 +379,12 @@ describe('Full Application Integration', () => {
 
   it('should cleanup resources on unmount', () => {
     const { unmount } = render(
-      <HeimdallProvider
+      <TruxeProvider
         apiUrl={mockApiUrl}
         publishableKey={mockPublishableKey}
       >
         <FullApplicationSimulation />
-      </HeimdallProvider>
+      </TruxeProvider>
     );
 
     // Unmount component

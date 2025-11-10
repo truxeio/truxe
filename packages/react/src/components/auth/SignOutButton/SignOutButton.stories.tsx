@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { SignOutButton } from './SignOutButton';
-import { MockHeimdallProvider } from '../../../storybook/MockHeimdallProvider';
+import { MockTruxeProvider } from '../../../storybook/MockTruxeProvider';
 
 const meta = {
   title: 'Auth/SignOutButton',
@@ -11,9 +11,9 @@ const meta = {
   tags: ['autodocs'],
   decorators: [
     (Story) => (
-      <MockHeimdallProvider isSignedIn>
+      <MockTruxeProvider isSignedIn>
         <Story />
-      </MockHeimdallProvider>
+      </MockTruxeProvider>
     ),
   ],
 } satisfies Meta<typeof SignOutButton>;

@@ -10,7 +10,8 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3003,
+    port: 3457, // Truxe Playground port (3456++ pattern)
+    strictPort: true, // Fail if port is busy instead of auto-incrementing
     host: true,
   },
   build: {

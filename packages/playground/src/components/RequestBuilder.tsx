@@ -5,6 +5,8 @@ import Editor from '@monaco-editor/react'
 import { APIEndpoint, openAPIParser } from '@/lib/openapi-parser'
 import { RequestConfig } from '@/lib/request-executor'
 import AuthenticationTab from './AuthenticationTab'
+import CodeGenerator from './CodeGenerator'
+import { environmentManager } from '@/lib/environment-manager'
 
 interface RequestBuilderProps {
   endpoint: APIEndpoint | null
@@ -20,7 +22,7 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
     { key: 'Authorization', value: '', enabled: false }
   ])
   const [body, setBody] = useState('{}')
-  const [activeTab, setActiveTab] = useState<'body' | 'headers' | 'params' | 'auth'>('body')
+  const [activeTab, setActiveTab] = useState<'body' | 'headers' | 'params' | 'auth' | 'code'>('body')
   const [params, setParams] = useState<Array<{key: string, value: string, enabled: boolean}>>([])
   const [showAuthHelper, setShowAuthHelper] = useState(false)
 
@@ -127,6 +129,39 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
     }
   }
 
+  // Helper to build current request config for code generation
+  const buildRequestConfig = (): RequestConfig => {
+    const enabledHeaders = headers
+      .filter(h => h.enabled && h.key && h.value)
+      .reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {})
+
+    const enabledParams = params
+      .filter(p => p.enabled && p.key && p.value)
+      .reduce((acc, p) => ({ ...acc, [p.key]: p.value }), {})
+
+    let requestBody
+    try {
+      requestBody = body && body.trim() !== '{}' ? JSON.parse(body) : undefined
+    } catch (e) {
+      requestBody = body && body.trim() ? body : undefined
+    }
+
+    // Get the full URL with environment base URL
+    const fullUrl = environmentManager.getFullUrl(url)
+    
+    // Merge with environment auth headers
+    const authHeaders = environmentManager.getAuthHeaders()
+    const allHeaders = { ...authHeaders, ...enabledHeaders }
+
+    return {
+      method,
+      url: fullUrl,
+      headers: allHeaders,
+      body: requestBody,
+      params: enabledParams
+    }
+  }
+
   if (!endpoint) {
     return (
       <div className="flex-1 flex items-center justify-center text-center">
@@ -188,7 +223,7 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
       {/* Tab Navigation */}
       <div className="border-b border-border">
         <nav className="flex">
-          {(['body', 'headers', 'params', 'auth'] as const).map((tab) => (
+          {(['body', 'headers', 'params', 'auth', 'code'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -337,6 +372,10 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
 
         {activeTab === 'auth' && (
           <AuthenticationTab />
+        )}
+
+        {activeTab === 'code' && (
+          <CodeGenerator request={buildRequestConfig()} />
         )}
       </div>
     </div>

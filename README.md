@@ -252,12 +252,18 @@ Need to offer Truxe as a hosted service? Contact us via [GitHub Issues](https://
     - 3 environments (Local:3456, Docker:87001, Production:api.truxe.io)
     - OpenAPI 3.1.0 specification with all endpoints
     - [@truxe/playground@0.1.0](packages/playground) - Running on port 3457
-  - ⏳ **Phase 2 In Progress** - [Issue #7](https://github.com/Wundam/truxe/issues/7)
-    - Code generation (cURL, JS, TS, Python, Go, PHP)
-    - Copy to clipboard & download
-    - Real-time updates
-  - ⏳ **Phase 3 Planned**: Collections, saved requests, guided workflows
-  - **ETA for v0.5.0**: 2-3 weeks remaining
+  - ✅ **Phase 2 Complete** - [Issue #7](https://github.com/Wundam/truxe/issues/7) (Closed)
+    - Code generation in 8 languages (cURL, JS, TS, Python, Go, PHP, Rust, Java)
+    - Copy to clipboard & download functionality
+    - Real-time code generation
+    - Monaco Editor integration with syntax highlighting
+    - 30/30 tests passing, production-ready
+  - ⏳ **Phase 3 In Progress** - [Issue #8](https://github.com/Wundam/truxe/issues/8)
+    - Request collections with folders
+    - Variables & environment management
+    - Guided authentication workflows
+    - Import/Export (Postman, OpenAPI)
+  - **ETA for v0.5.0**: 4-5 days remaining
 
 **Planned:**
 - [ ] Enhanced CLI features (templates, migrations)

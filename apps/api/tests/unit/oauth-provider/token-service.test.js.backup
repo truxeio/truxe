@@ -1,0 +1,1307 @@
+/**
+ * OAuth Token Service Unit Tests
+ *
+ * Test Coverage:
+ * - Token Generation (10 tests)
+ * - Refresh Token Flow (10 tests)
+ * - JWT Access Token (8 tests)
+ * - Token Introspection (8 tests)
+ * - Token Validation (6 tests)
+ * - Token Revocation (6 tests)
+ * - UserInfo Endpoint (6 tests)
+ * - Cleanup (4 tests)
+ * - Utility Methods (4 tests)
+ *
+ * Total: 62 tests
+ */
+
+import { describe, it, expect, beforeEach, beforeAll, jest } from '@jest/globals';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+
+// Import the actual service for integration testing
+// This test uses real database connection - it's actually an integration test
+import tokenService from '../../../src/services/oauth-provider/token-service.js';
+import clientService from '../../../src/services/oauth-provider/client-service.js';
+import { getPool } from '../../../src/database/connection.js';
+
+describe('OAuth Token Service', () => {
+  // Test data
+  let testClient;
+  let testUser;
+  let testUserId;
+  let testClientId;
+  const testScope = 'openid email profile';
+
+  // JWT keys for testing
+  const testPrivateKey = `-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC4RxfAqnVub7cB
+Yqtxg+bA4jd3PtXkrBTTCROh3Qks8UEOI3tTibi0eiMEhA4v0TId30WjakVCtVK1
+g3B0E2P+uJttwEhQjWscTDAKyIBZAHMmeo8iHrScaAg882KDmLAeXSFaNnzWPFww
+fyfj7ZfaA8Pex6fNMvKWvk3xZgKFw8qQNyo8DgLNjt3fkejhZxs1I9pLZXkHW5CL
+NNiZaBH4adrnAx9sMNyVFW6AqIL49g/LiQ0pyhMVdLt3XaXCpu8X4VJqn0se8iqj
+fTPCzLOBA8NRYTdPUiiTryF8Cn0K8KjOakLMJM/Q1knd8Q2zql+Mndo1umwHA8AJ
+h9uYwqwlAgMBAAECggEACGDlHdOyQKnwKG43zNK6Nmliq7eN6pZ/YOQAAkNGREaY
+1l97Hz57CSundXBao8ZvcKfC5w3xJboQT2PxRDnQeVej637LWuw/Izt8kLTyjvlk
+AuseIGdEf3sEat8HCuQxl8PUvSEOloAKkgLqCaU3GwjCSloKEVygZoWzDgd9FF9R
+UHD128k1skB7ow55/Pkg4DIMle992Qt0Qicv4gJJ7Q7+K5UGgNj9SK0fPhO5jCkr
+Ls2FjoexDePJFBRP1D/HYf/zslWYy1qesltN28XMAoSYrYYxxSxc6j0LyWQcvSHR
+Iu+yAzp3AMa5YExkTgrwnrKoC4cmIQsHdzm6xEM7+QKBgQD+8JRLjIYABvcHIJi7
+IPI2gPhZ23Ke5YlNXn6nYzHuEfleiGatxidAlSShmG034f3bv32muz7JI74SGYh5
+5bBtQ9i5eDXyWLEz84SsKZmb/YsCP2kUFTZhrEI8aVJIs4yCeb+NAGPUVf6jpECi
+wNxQeOXEhn8jt40w3cliebWY7QKBgQC5C0iMngrFt1l/Mm5WzRjqLKXyZwzLhhPf
+w4l+Jtb5tVjRi85fqSGL4HYlDvs2evm4YJvKFjQ1YeiUdVFjZpuvfRqD1KOKvLmJ
+29nXFUQ1D+jEqw5ipG+p5kpVhHo09vhkNZ+nN/woHM/yba/DuVRTy7i1S6Q2RgrC
+RHLkQXsRGQKBgH1t+EhDVxpkUt2a2AoZZ5IRWh87rOUooakDOOU6FLLA/SPZkEsn
+FuDbgC5RREseUTvwtu11aqqjfzyAe3kd3POlUdfOoRwfLvAUe84ImZ752467jANp
+fFwJ2HzIhMdoL1VyeR/ydStfM+1nPrXUlZCyKrnKQntcL4c/V3mvz/zxAoGAeuED
+TF2myaT3yX+zxfBsmxULHe1QkdZ3XCB9LUideTTzxjMQ2HV30Ws9CV7pc0Q2kDmX
+OpuED+70g6Fkap24xNBOyzxpXbf1fZaBElMM+C+YYwE0jEyl2i0TL7bJcGKQj/sM
+Cf8jc3+ul04/abmoRf0Cq2GPqnrYqijKIslY8AECgYEAuMtDuW5NkGUcE02hVp9G
+JSYiBUu5+o8XRs0QCyrAlU1w3GK8TcwxxPfJ2DefVix2i4OaT9sx9bVc6ScRJS7q
+xH7TTkbXwQlB7EBQaJ2yMQAV29/o6rzK6vTOMzo7VOy3OKN1GQlDKhF2nCe40qUU
+nT7rRhXVUbddmmA3onNPCYA=
+-----END PRIVATE KEY-----`;
+
+  const testPublicKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuEcXwKp1bm+3AWKrcYPm
+wOI3dz7V5KwU0wkTod0JLPFBDiN7U4m4tHojBIQOL9EyHd9Fo2pFQrVStYNwdBNj
+/ribbcBIUI1rHEwwCsiAWQBzJnqPIh60nGgIPPNig5iwHl0hWjZ81jxcMH8n4+2X
+2gPD3senzTLylr5N8WYChcPKkDcqPA4CzY7d35Ho4WcbNSPaS2V5B1uQizTYmWgR
++Gna5wMfbDDclRVugKiC+PYPy4kNKcoTFXS7d12lwqbvF+FSap9LHvIqo30zwsyz
+gQPDUWE3T1Iok68hfAp9CvCozmpCzCTP0NZJ3fENs6pfjJ3aNbpsBwPACYfbmMKs
+JQIDAQAB
+-----END PUBLIC KEY-----`;
+
+  beforeAll(async () => {
+    // Set environment variables
+    process.env.JWT_PRIVATE_KEY = testPrivateKey;
+    process.env.JWT_PUBLIC_KEY = testPublicKey;
+    process.env.JWT_ISSUER = 'https://auth.heimdall.test';
+    process.env.JWT_KID = 'test-key-2024';
+
+    const pool = getPool();
+    
+    // Clean up test data
+    await pool.query(`DELETE FROM oauth_provider_tokens WHERE client_id LIKE 'test-token-%'`);
+    await pool.query(`DELETE FROM oauth_clients WHERE client_id LIKE 'test-token-%'`);
+    await pool.query(`DELETE FROM users WHERE email LIKE 'token-service-test%'`);
+
+    // Create test user
+    const userResult = await pool.query(`
+      INSERT INTO users (email, email_verified, metadata, status)
+      VALUES (
+        'token-service-test@example.com', 
+        true, 
+        '{"name": "Token Test", "given_name": "Token", "family_name": "Test"}'::jsonb,
+        'active'
+      )
+      RETURNING id, email, email_verified, metadata
+    `);
+    testUser = userResult.rows[0];
+    testUserId = testUser.id;
+
+    // Create test OAuth client
+    const clientResult = await pool.query(`
+      INSERT INTO oauth_clients (
+        client_id,
+        client_secret_hash,
+        client_name,
+        redirect_uris,
+        allowed_scopes,
+        grant_types,
+        status
+      ) VALUES (
+        'test-token-client-' || substr(md5(random()::text), 1, 8),
+        encode(digest('test-secret', 'sha256'), 'hex'),
+        'Token Test Client',
+        ARRAY['http://localhost:3000/callback']::TEXT[],
+        ARRAY['openid', 'email', 'profile']::TEXT[],
+        ARRAY['authorization_code', 'refresh_token']::TEXT[],
+        'active'
+      )
+      RETURNING client_id, client_name, status, allowed_scopes
+    `);
+    testClient = clientResult.rows[0];
+    testClientId = testClient.client_id;
+  });
+
+  beforeEach(async () => {
+    // Clean up tokens before each test
+    const pool = getPool();
+    await pool.query(`DELETE FROM oauth_provider_tokens WHERE client_id = $1`, [testClientId]);
+  });
+
+  // ==========================================================================
+  // TOKEN GENERATION TESTS (10 tests)
+  // ==========================================================================
+
+  describe('Token Generation', () => {
+    const getUserInfo = () => ({
+      email: testUser.email,
+      email_verified: testUser.email_verified,
+      name: testUser.metadata?.name || 'Token Test',
+      given_name: testUser.metadata?.given_name || 'Token',
+      family_name: testUser.metadata?.family_name || 'Test',
+      picture: testUser.metadata?.picture || null,
+      updated_at: new Date(),
+    });
+
+    test('should generate token pair successfully', async () => {
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: getUserInfo(),
+      });
+
+      expect(result).toHaveProperty('access_token');
+      expect(result).toHaveProperty('refresh_token');
+      expect(result).toHaveProperty('token_type', 'Bearer');
+      expect(result).toHaveProperty('expires_in', 3600);
+      expect(result).toHaveProperty('scope', testScope);
+    });
+
+    test('should reject token generation for invalid client', async () => {
+      await expect(
+        tokenService.generateTokenPair({
+          clientId: 'invalid-client',
+          userId: testUserId,
+          scope: testScope,
+          userInfo: getUserInfo(),
+        })
+      ).rejects.toThrow('Invalid client_id');
+    });
+
+    test('should reject token generation for inactive client', async () => {
+      // Suspend the client
+      const pool = getPool();
+      await pool.query(`UPDATE oauth_clients SET status = 'suspended' WHERE client_id = $1`, [testClientId]);
+
+      await expect(
+        tokenService.generateTokenPair({
+          clientId: testClientId,
+          userId: testUserId,
+          scope: testScope,
+          userInfo: getUserInfo(),
+        })
+      ).rejects.toThrow('Client is suspended');
+
+      // Restore client status
+      await pool.query(`UPDATE oauth_clients SET status = 'active' WHERE client_id = $1`, [testClientId]);
+    });
+
+    test('should generate valid JWT access token', async () => {
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: getUserInfo(),
+      });
+
+      // Decode without verification to check structure
+      const decoded = jwt.decode(result.access_token);
+
+      expect(decoded).toHaveProperty('iss', 'https://auth.heimdall.test');
+      expect(decoded).toHaveProperty('sub', testUserId);
+      expect(decoded).toHaveProperty('aud', testClientId);
+      expect(decoded).toHaveProperty('exp');
+      expect(decoded).toHaveProperty('iat');
+      expect(decoded).toHaveProperty('jti');
+      expect(decoded).toHaveProperty('scope', testScope);
+    });
+
+    test('should include email claims when email scope granted', async () => {
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: 'openid email',
+        userInfo: getUserInfo(),
+      });
+
+      const decoded = jwt.decode(result.access_token);
+      const userInfo = getUserInfo();
+
+      expect(decoded).toHaveProperty('email', userInfo.email);
+      expect(decoded).toHaveProperty('email_verified', true);
+    });
+
+    test('should include profile claims when profile scope granted', async () => {
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: 'openid profile',
+        userInfo: getUserInfo(),
+      });
+
+      const decoded = jwt.decode(result.access_token);
+      const userInfo = getUserInfo();
+
+      expect(decoded).toHaveProperty('name', userInfo.name);
+      expect(decoded).toHaveProperty('given_name', userInfo.given_name);
+      expect(decoded).toHaveProperty('family_name', userInfo.family_name);
+      expect(decoded).toHaveProperty('picture', userInfo.picture);
+    });
+
+    test('should generate refresh token with correct format', async () => {
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: getUserInfo(),
+      });
+
+      expect(result.refresh_token).toMatch(/^rt_[A-Za-z0-9_-]{43}$/);
+    });
+
+    test('should generate unique JTI for each token', async () => {
+      const result1 = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: getUserInfo(),
+      });
+
+      const result2 = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: getUserInfo(),
+      });
+
+      const decoded1 = jwt.decode(result1.access_token);
+      const decoded2 = jwt.decode(result2.access_token);
+
+      expect(decoded1.jti).not.toBe(decoded2.jti);
+    });
+
+    test('should set correct token expiration times', async () => {
+      const beforeTime = Date.now();
+      
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: getUserInfo(),
+      });
+
+      const afterTime = Date.now();
+      const decoded = jwt.decode(result.access_token);
+
+      // Access token should expire in ~1 hour
+      const accessTokenExp = decoded.exp * 1000;
+      expect(accessTokenExp).toBeGreaterThanOrEqual(beforeTime + 3600 * 1000 - 1000);
+      expect(accessTokenExp).toBeLessThanOrEqual(afterTime + 3600 * 1000 + 1000);
+    });
+  });
+
+  // ==========================================================================
+  // REFRESH TOKEN FLOW TESTS (10 tests)
+  // ==========================================================================
+
+  describe('Refresh Token Flow', () => {
+    const testRefreshToken = 'rt_' + 'A'.repeat(43);
+    const testTokenData = {
+      id: 'token-id',
+      token_hash: 'hash123',
+      refresh_token_hash: 'refresh-hash123',
+      client_id: testClientId,
+      user_id: testUserId,
+      scope: testScope,
+      expires_at: new Date(Date.now() - 1000), // Expired access token
+      refresh_token_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Valid refresh token
+      revoked_at: null,
+      created_at: new Date(),
+    };
+
+    test('should refresh token successfully', async () => {
+      mockPool.query
+        .mockResolvedValueOnce({ rows: [testTokenData] }) // getTokenByRefreshToken
+        .mockResolvedValueOnce({ rows: [{ ...testUserInfo, id: testUserId }] }) // getUserInfo
+        .mockResolvedValueOnce({ rowCount: 1 }) // revokeRefreshToken
+        .mockResolvedValueOnce({ rows: [{ id: 'new-token-id' }] }); // storeTokenMetadata
+
+      mockClientService.getClientById.mockResolvedValue(testClient);
+
+      const result = await tokenService.refreshToken({
+        refreshToken: testRefreshToken,
+        clientId: testClientId,
+      });
+
+      expect(result).toHaveProperty('access_token');
+      expect(result).toHaveProperty('refresh_token');
+      expect(result.refresh_token).not.toBe(testRefreshToken);
+    });
+
+    test('should reject invalid refresh token format', async () => {
+      await expect(
+        tokenService.refreshToken({
+          refreshToken: 'invalid-format',
+          clientId: testClientId,
+        })
+      ).rejects.toThrow('Invalid refresh token format');
+    });
+
+    test('should reject non-existent refresh token', async () => {
+      await expect(
+        tokenService.refreshToken({
+          refreshToken: testRefreshToken,
+          clientId: testClientId,
+        })
+      ).rejects.toThrow('Invalid refresh token');
+    });
+
+    test('should reject expired refresh token', async () => {
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          ...testTokenData,
+          refresh_token_expires_at: new Date(Date.now() - 1000), // Expired
+        }],
+      });
+
+      await expect(
+        tokenService.refreshToken({
+          refreshToken: testRefreshToken,
+          clientId: testClientId,
+        })
+      ).rejects.toThrow('Refresh token expired');
+    });
+
+    test('should reject revoked refresh token', async () => {
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          ...testTokenData,
+          revoked_at: new Date(), // Revoked
+        }],
+      });
+
+      await expect(
+        tokenService.refreshToken({
+          refreshToken: testRefreshToken,
+          clientId: testClientId,
+        })
+      ).rejects.toThrow('Refresh token revoked');
+    });
+
+    test('should reject client ID mismatch', async () => {
+      mockPool.query.mockResolvedValue({ rows: [testTokenData] });
+
+      await expect(
+        tokenService.refreshToken({
+          refreshToken: testRefreshToken,
+          clientId: 'different-client',
+        })
+      ).rejects.toThrow('Client ID mismatch');
+    });
+
+    test('should allow scope reduction during refresh', async () => {
+      mockPool.query
+        .mockResolvedValueOnce({ rows: [testTokenData] })
+        .mockResolvedValueOnce({ rows: [{ ...testUserInfo, id: testUserId }] })
+        .mockResolvedValueOnce({ rowCount: 1 })
+        .mockResolvedValueOnce({ rows: [{ id: 'new-token-id' }] });
+
+      mockClientService.getClientById.mockResolvedValue(testClient);
+
+      const result = await tokenService.refreshToken({
+        refreshToken: testRefreshToken,
+        clientId: testClientId,
+        scope: 'openid email', // Reduced scope
+      });
+
+      const decoded = jwt.decode(result.access_token);
+      expect(decoded.scope).toBe('openid email');
+    });
+
+    test('should reject scope expansion during refresh', async () => {
+      mockPool.query.mockResolvedValue({ rows: [testTokenData] });
+
+      await expect(
+        tokenService.refreshToken({
+          refreshToken: testRefreshToken,
+          clientId: testClientId,
+          scope: 'openid email profile admin', // Added 'admin'
+        })
+      ).rejects.toThrow('Cannot expand scope');
+    });
+
+    test('should revoke old refresh token after successful refresh', async () => {
+      mockPool.query
+        .mockResolvedValueOnce({ rows: [testTokenData] })
+        .mockResolvedValueOnce({ rows: [{ ...testUserInfo, id: testUserId }] })
+        .mockResolvedValueOnce({ rowCount: 1 }) // revokeRefreshToken
+        .mockResolvedValueOnce({ rows: [{ id: 'new-token-id' }] });
+
+      mockClientService.getClientById.mockResolvedValue(testClient);
+
+      await tokenService.refreshToken({
+        refreshToken: testRefreshToken,
+        clientId: testClientId,
+      });
+
+      expect(mockPool.query).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE oauth_provider_tokens'),
+        expect.arrayContaining([expect.any(String)])
+      );
+    });
+
+    test('should maintain original scope if not specified', async () => {
+      mockPool.query
+        .mockResolvedValueOnce({ rows: [testTokenData] })
+        .mockResolvedValueOnce({ rows: [{ ...testUserInfo, id: testUserId }] })
+        .mockResolvedValueOnce({ rowCount: 1 })
+        .mockResolvedValueOnce({ rows: [{ id: 'new-token-id' }] });
+
+      mockClientService.getClientById.mockResolvedValue(testClient);
+
+      const result = await tokenService.refreshToken({
+        refreshToken: testRefreshToken,
+        clientId: testClientId,
+        // No scope specified
+      });
+
+      const decoded = jwt.decode(result.access_token);
+      expect(decoded.scope).toBe(testScope);
+    });
+  });
+
+  // ==========================================================================
+  // JWT ACCESS TOKEN TESTS (8 tests)
+  // ==========================================================================
+
+  describe('JWT Access Token', () => {
+    test('should sign JWT with RS256 algorithm', async () => {
+      mockClientService.getClientById.mockResolvedValue(testClient);
+      mockPool.query.mockResolvedValue({ rows: [{ id: 'token-id' }] });
+
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: testUserInfo,
+      });
+
+      const header = JSON.parse(
+        Buffer.from(result.access_token.split('.')[0], 'base64').toString()
+      );
+
+      expect(header.alg).toBe('RS256');
+      expect(header.typ).toBe('JWT');
+    });
+
+    test('should include key ID (kid) in JWT header', async () => {
+      mockClientService.getClientById.mockResolvedValue(testClient);
+      mockPool.query.mockResolvedValue({ rows: [{ id: 'token-id' }] });
+
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: testUserInfo,
+      });
+
+      const header = JSON.parse(
+        Buffer.from(result.access_token.split('.')[0], 'base64').toString()
+      );
+
+      expect(header.kid).toBe('test-key-2024');
+    });
+
+    test('should verify JWT signature with public key', async () => {
+      mockClientService.getClientById.mockResolvedValue(testClient);
+      mockPool.query.mockResolvedValue({ rows: [{ id: 'token-id' }] });
+
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: testUserInfo,
+      });
+
+      // Should not throw
+      const decoded = jwt.verify(result.access_token, testPublicKey, {
+        algorithms: ['RS256'],
+      });
+
+      expect(decoded.sub).toBe(testUserId);
+    });
+
+    test('should reject JWT with invalid signature', async () => {
+      const invalidToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.invalid-signature';
+
+      await expect(
+        tokenService.verifyAccessToken(invalidToken)
+      ).rejects.toThrow();
+    });
+
+    test('should reject expired JWT', async () => {
+      const expiredPayload = {
+        iss: 'https://auth.heimdall.test',
+        sub: testUserId,
+        aud: testClientId,
+        exp: Math.floor(Date.now() / 1000) - 3600, // Expired 1 hour ago
+        iat: Math.floor(Date.now() / 1000) - 7200,
+        jti: crypto.randomUUID(),
+        scope: testScope,
+      };
+
+      const expiredToken = jwt.sign(expiredPayload, testPrivateKey, {
+        algorithm: 'RS256',
+      });
+
+      await expect(
+        tokenService.verifyAccessToken(expiredToken)
+      ).rejects.toThrow('Token expired');
+    });
+
+    test('should validate all required JWT claims', async () => {
+      mockClientService.getClientById.mockResolvedValue(testClient);
+      mockPool.query.mockResolvedValue({ rows: [{ id: 'token-id' }] });
+
+      const result = await tokenService.generateTokenPair({
+        clientId: testClientId,
+        userId: testUserId,
+        scope: testScope,
+        userInfo: testUserInfo,
+      });
+
+      const decoded = jwt.decode(result.access_token);
+
+      // Required claims
+      expect(decoded).toHaveProperty('iss');
+      expect(decoded).toHaveProperty('sub');
+      expect(decoded).toHaveProperty('aud');
+      expect(decoded).toHaveProperty('exp');
+      expect(decoded).toHaveProperty('iat');
+      expect(decoded).toHaveProperty('jti');
+      expect(decoded).toHaveProperty('scope');
+    });
+
+    test('should fail when JWT_PRIVATE_KEY not configured', async () => {
+      const originalKey = process.env.JWT_PRIVATE_KEY;
+      delete process.env.JWT_PRIVATE_KEY;
+
+      mockClientService.getClientById.mockResolvedValue(testClient);
+
+      await expect(
+        tokenService.generateTokenPair({
+          clientId: testClientId,
+          userId: testUserId,
+          scope: testScope,
+          userInfo: testUserInfo,
+        })
+      ).rejects.toThrow('JWT_PRIVATE_KEY not configured');
+
+      process.env.JWT_PRIVATE_KEY = originalKey;
+    });
+
+    test('should fail verification when JWT_PUBLIC_KEY not configured', async () => {
+      const originalKey = process.env.JWT_PUBLIC_KEY;
+      delete process.env.JWT_PUBLIC_KEY;
+
+      const testToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0In0.test';
+
+      await expect(
+        tokenService.verifyAccessToken(testToken)
+      ).rejects.toThrow('JWT_PUBLIC_KEY not configured');
+
+      process.env.JWT_PUBLIC_KEY = originalKey;
+    });
+  });
+
+  // ==========================================================================
+  // TOKEN INTROSPECTION TESTS (8 tests)
+  // ==========================================================================
+
+  describe('Token Introspection', () => {
+    const testJti = crypto.randomUUID();
+    const testRefreshToken = 'rt_' + 'B'.repeat(43);
+
+    test('should return active=true for valid access token', async () => {
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti: testJti,
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          id: 'token-id',
+          token_hash: 'hash',
+          client_id: testClientId,
+          user_id: testUserId,
+          scope: testScope,
+          expires_at: new Date(Date.now() + 3600 * 1000),
+          refresh_token_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          revoked_at: null,
+          created_at: new Date(),
+        }],
+      });
+
+      const result = await tokenService.introspectToken({
+        token: validToken,
+        clientId: testClientId,
+      });
+
+      expect(result.active).toBe(true);
+      expect(result.scope).toBe(testScope);
+      expect(result.client_id).toBe(testClientId);
+    });
+
+    test('should return active=false for expired token', async () => {
+      const expiredToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) - 3600,
+          iat: Math.floor(Date.now() / 1000) - 7200,
+          jti: testJti,
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      const result = await tokenService.introspectToken({
+        token: expiredToken,
+        clientId: testClientId,
+      });
+
+      expect(result.active).toBe(false);
+    });
+
+    test('should return active=false for revoked token', async () => {
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti: testJti,
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          id: 'token-id',
+          revoked_at: new Date(), // Revoked
+          expires_at: new Date(Date.now() + 3600 * 1000),
+        }],
+      });
+
+      const result = await tokenService.introspectToken({
+        token: validToken,
+        clientId: testClientId,
+      });
+
+      expect(result.active).toBe(false);
+    });
+
+    test('should introspect refresh token with hint', async () => {
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          id: 'token-id',
+          token_hash: 'hash',
+          refresh_token_hash: 'refresh-hash',
+          client_id: testClientId,
+          user_id: testUserId,
+          scope: testScope,
+          expires_at: new Date(Date.now() + 3600 * 1000),
+          refresh_token_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          revoked_at: null,
+          created_at: new Date(),
+        }],
+      });
+
+      const result = await tokenService.introspectToken({
+        token: testRefreshToken,
+        clientId: testClientId,
+        tokenTypeHint: 'refresh_token',
+      });
+
+      expect(result.active).toBe(true);
+    });
+
+    test('should return active=false for invalid token', async () => {
+      mockPool.query.mockResolvedValue({ rows: [] });
+
+      const result = await tokenService.introspectToken({
+        token: 'invalid-token',
+        clientId: testClientId,
+      });
+
+      expect(result.active).toBe(false);
+    });
+
+    test('should include token metadata in introspection response', async () => {
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti: testJti,
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      const createdAt = new Date();
+      const expiresAt = new Date(Date.now() + 3600 * 1000);
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          id: 'token-id',
+          client_id: testClientId,
+          user_id: testUserId,
+          scope: testScope,
+          expires_at: expiresAt,
+          revoked_at: null,
+          created_at: createdAt,
+        }],
+      });
+
+      const result = await tokenService.introspectToken({
+        token: validToken,
+        clientId: testClientId,
+      });
+
+      expect(result).toHaveProperty('token_type', 'Bearer');
+      expect(result).toHaveProperty('exp');
+      expect(result).toHaveProperty('iat');
+      expect(result).toHaveProperty('sub', testUserId);
+      expect(result).toHaveProperty('username', testUserId);
+    });
+
+    test('should handle introspection errors gracefully', async () => {
+      mockPool.query.mockRejectedValue(new Error('Database error'));
+
+      const result = await tokenService.introspectToken({
+        token: 'some-token',
+        clientId: testClientId,
+      });
+
+      expect(result.active).toBe(false);
+    });
+
+    test('should auto-detect token type from format', async () => {
+      // Refresh token (starts with rt_)
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          id: 'token-id',
+          client_id: testClientId,
+          user_id: testUserId,
+          scope: testScope,
+          expires_at: new Date(Date.now() + 3600 * 1000),
+          refresh_token_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          revoked_at: null,
+          created_at: new Date(),
+        }],
+      });
+
+      const result = await tokenService.introspectToken({
+        token: testRefreshToken,
+        clientId: testClientId,
+        // No tokenTypeHint - should auto-detect
+      });
+
+      expect(result.active).toBe(true);
+    });
+  });
+
+  // ==========================================================================
+  // TOKEN VALIDATION TESTS (6 tests)
+  // ==========================================================================
+
+  describe('Token Validation', () => {
+    test('should validate and decode valid access token', async () => {
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti: crypto.randomUUID(),
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          revoked_at: null,
+        }],
+      });
+
+      const decoded = await tokenService.verifyAccessToken(validToken);
+
+      expect(decoded.sub).toBe(testUserId);
+      expect(decoded.aud).toBe(testClientId);
+    });
+
+    test('should reject token with invalid signature', async () => {
+      const invalidToken = jwt.sign(
+        {
+          sub: testUserId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+        },
+        'wrong-key',
+        { algorithm: 'HS256' } // Wrong algorithm
+      );
+
+      await expect(
+        tokenService.verifyAccessToken(invalidToken)
+      ).rejects.toThrow();
+    });
+
+    test('should reject revoked access token', async () => {
+      const jti = crypto.randomUUID();
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti,
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          revoked_at: new Date(), // Revoked
+        }],
+      });
+
+      await expect(
+        tokenService.verifyAccessToken(validToken)
+      ).rejects.toThrow('Token has been revoked');
+    });
+
+    test('should extract user ID from valid token', async () => {
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti: crypto.randomUUID(),
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          revoked_at: null,
+        }],
+      });
+
+      const userId = await tokenService.validateTokenAndGetUserId(validToken);
+
+      expect(userId).toBe(testUserId);
+    });
+
+    test('should throw specific error for expired token', async () => {
+      const expiredToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) - 3600,
+          iat: Math.floor(Date.now() / 1000) - 7200,
+          jti: crypto.randomUUID(),
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      await expect(
+        tokenService.verifyAccessToken(expiredToken)
+      ).rejects.toThrow('Token expired');
+    });
+
+    test('should throw specific error for malformed token', async () => {
+      await expect(
+        tokenService.verifyAccessToken('not-a-jwt')
+      ).rejects.toThrow();
+    });
+  });
+
+  // ==========================================================================
+  // TOKEN REVOCATION TESTS (6 tests)
+  // ==========================================================================
+
+  describe('Token Revocation', () => {
+    test('should revoke access token successfully', async () => {
+      const jti = crypto.randomUUID();
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti,
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({ rowCount: 1 });
+
+      await tokenService.revokeToken({
+        token: validToken,
+        clientId: testClientId,
+        tokenTypeHint: 'access_token',
+      });
+
+      expect(mockPool.query).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE oauth_provider_tokens'),
+        expect.arrayContaining([expect.any(String)])
+      );
+    });
+
+    test('should revoke refresh token successfully', async () => {
+      const refreshToken = 'rt_' + 'C'.repeat(43);
+
+      mockPool.query.mockResolvedValue({ rowCount: 1 });
+
+      await tokenService.revokeToken({
+        token: refreshToken,
+        clientId: testClientId,
+        tokenTypeHint: 'refresh_token',
+      });
+
+      expect(mockPool.query).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE oauth_provider_tokens'),
+        expect.arrayContaining([expect.any(String)])
+      );
+    });
+
+    test('should be idempotent - no error if token already revoked', async () => {
+      const refreshToken = 'rt_' + 'D'.repeat(43);
+
+      mockPool.query.mockResolvedValue({ rowCount: 0 }); // Already revoked
+
+      // Should not throw
+      await tokenService.revokeToken({
+        token: refreshToken,
+        clientId: testClientId,
+      });
+    });
+
+    test('should be idempotent - no error if token does not exist', async () => {
+      mockPool.query.mockResolvedValue({ rowCount: 0 });
+
+      // Should not throw
+      await tokenService.revokeToken({
+        token: 'non-existent-token',
+        clientId: testClientId,
+      });
+    });
+
+    test('should auto-detect token type for revocation', async () => {
+      const refreshToken = 'rt_' + 'E'.repeat(43);
+
+      mockPool.query.mockResolvedValue({ rowCount: 1 });
+
+      await tokenService.revokeToken({
+        token: refreshToken,
+        clientId: testClientId,
+        // No tokenTypeHint - should auto-detect from rt_ prefix
+      });
+
+      expect(mockPool.query).toHaveBeenCalled();
+    });
+
+    test('should handle revocation errors gracefully', async () => {
+      const jti = crypto.randomUUID();
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti,
+          scope: testScope,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockRejectedValue(new Error('Database error'));
+
+      // Should not throw - revocation is idempotent
+      await tokenService.revokeToken({
+        token: validToken,
+        clientId: testClientId,
+      });
+    });
+  });
+
+  // ==========================================================================
+  // USERINFO ENDPOINT TESTS (6 tests)
+  // ==========================================================================
+
+  describe('UserInfo Endpoint', () => {
+    test('should return user info for valid token', async () => {
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti: crypto.randomUUID(),
+          scope: 'openid email profile',
+          email: testUserInfo.email,
+          email_verified: true,
+          name: 'John Doe',
+          picture: testUserInfo.avatar_url,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          revoked_at: null,
+        }],
+      });
+
+      const userInfo = await tokenService.getUserInfoByToken(validToken);
+
+      expect(userInfo).toHaveProperty('sub', testUserId);
+      expect(userInfo).toHaveProperty('email', testUserInfo.email);
+      expect(userInfo).toHaveProperty('name', 'John Doe');
+    });
+
+    test('should return only sub for openid scope', async () => {
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti: crypto.randomUUID(),
+          scope: 'openid', // Only openid
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          revoked_at: null,
+        }],
+      });
+
+      const userInfo = await tokenService.getUserInfoByToken(validToken);
+
+      expect(userInfo).toHaveProperty('sub', testUserId);
+      expect(userInfo).not.toHaveProperty('email');
+      expect(userInfo).not.toHaveProperty('name');
+    });
+
+    test('should include email claims with email scope', async () => {
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti: crypto.randomUUID(),
+          scope: 'openid email',
+          email: testUserInfo.email,
+          email_verified: true,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          revoked_at: null,
+        }],
+      });
+
+      const userInfo = await tokenService.getUserInfoByToken(validToken);
+
+      expect(userInfo).toHaveProperty('email', testUserInfo.email);
+      expect(userInfo).toHaveProperty('email_verified', true);
+    });
+
+    test('should include profile claims with profile scope', async () => {
+      const validToken = jwt.sign(
+        {
+          iss: 'https://auth.heimdall.test',
+          sub: testUserId,
+          aud: testClientId,
+          exp: Math.floor(Date.now() / 1000) + 3600,
+          iat: Math.floor(Date.now() / 1000),
+          jti: crypto.randomUUID(),
+          scope: 'openid profile',
+          name: 'John Doe',
+          given_name: 'John',
+          family_name: 'Doe',
+          picture: testUserInfo.avatar_url,
+        },
+        testPrivateKey,
+        { algorithm: 'RS256' }
+      );
+
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          revoked_at: null,
+        }],
+      });
+
+      const userInfo = await tokenService.getUserInfoByToken(validToken);
+
+      expect(userInfo).toHaveProperty('name', 'John Doe');
+      expect(userInfo).toHaveProperty('given_name', 'John');
+      expect(userInfo).toHaveProperty('family_name', 'Doe');
+      expect(userInfo).toHaveProperty('picture', testUserInfo.avatar_url);
+    });
+
+    test('should reject invalid token for userinfo', async () => {
+      await expect(
+        tokenService.getUserInfoByToken('invalid-token')
+      ).rejects.toThrow();
+    });
+
+    test('should fetch user info from database', async () => {
+      mockPool.query.mockResolvedValue({
+        rows: [{
+          id: testUserId,
+          email: testUserInfo.email,
+          email_verified: true,
+          first_name: 'John',
+          last_name: 'Doe',
+          avatar_url: testUserInfo.avatar_url,
+          updated_at: new Date(),
+        }],
+      });
+
+      const userInfo = await tokenService.getUserInfo(testUserId);
+
+      expect(userInfo).toHaveProperty('email', testUserInfo.email);
+      expect(userInfo).toHaveProperty('name', 'John Doe');
+      expect(userInfo).toHaveProperty('given_name', 'John');
+      expect(userInfo).toHaveProperty('family_name', 'Doe');
+    });
+  });
+
+  // ==========================================================================
+  // CLEANUP TESTS (4 tests)
+  // ==========================================================================
+
+  describe('Cleanup', () => {
+    test('should delete expired tokens', async () => {
+      mockPool.query.mockResolvedValue({ rowCount: 5 });
+
+      const count = await tokenService.deleteExpiredTokens();
+
+      expect(count).toBe(5);
+      expect(mockPool.query).toHaveBeenCalledWith(
+        expect.stringContaining('DELETE FROM oauth_provider_tokens')
+      );
+    });
+
+    test('should delete old revoked tokens', async () => {
+      mockPool.query.mockResolvedValue({ rowCount: 3 });
+
+      const count = await tokenService.deleteOldRevokedTokens();
+
+      expect(count).toBe(3);
+      expect(mockPool.query).toHaveBeenCalledWith(
+        expect.stringContaining('revoked_at < NOW() - INTERVAL')
+      );
+    });
+
+    test('should return 0 if no tokens to delete', async () => {
+      mockPool.query.mockResolvedValue({ rowCount: 0 });
+
+      const count = await tokenService.deleteExpiredTokens();
+
+      expect(count).toBe(0);
+    });
+
+    test('should handle cleanup errors gracefully', async () => {
+      mockPool.query.mockRejectedValue(new Error('Database error'));
+
+      await expect(
+        tokenService.deleteExpiredTokens()
+      ).rejects.toThrow('Database error');
+    });
+  });
+
+  // ==========================================================================
+  // UTILITY METHODS TESTS (4 tests)
+  // ==========================================================================
+
+  describe('Utility Methods', () => {
+    test('should hash token with SHA-256', () => {
+      const token = 'test-token-123';
+      const hash = tokenService.hashToken(token);
+
+      expect(hash).toHaveLength(64); // SHA-256 hex = 64 chars
+      expect(hash).toMatch(/^[a-f0-9]{64}$/);
+    });
+
+    test('should produce consistent hashes', () => {
+      const token = 'test-token-456';
+      const hash1 = tokenService.hashToken(token);
+      const hash2 = tokenService.hashToken(token);
+
+      expect(hash1).toBe(hash2);
+    });
+
+    test('should encode and decode base64URL', () => {
+      const original = Buffer.from('Hello, World!');
+      const encoded = tokenService.base64URLEncode(original);
+      const decoded = tokenService.base64URLDecode(encoded);
+
+      expect(decoded.toString()).toBe('Hello, World!');
+      expect(encoded).not.toContain('+');
+      expect(encoded).not.toContain('/');
+      expect(encoded).not.toContain('=');
+    });
+
+    test('should generate JTI in UUID format', () => {
+      const jti = tokenService.generateJti();
+
+      expect(jti).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      );
+    });
+  });
+});

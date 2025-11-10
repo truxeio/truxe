@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Graphite + Electric Blue Theme */
+  --color-background: #ffffff;
+  --color-foreground: #0B0F14; /* Graphite 900 */
+  --color-muted: #94A3B8; /* Graphite 400 */
+  --color-border: #E2E8F0; /* Graphite 200 */
+  --color-ring: #3B82F6; /* Electric Blue */
+  --color-primary: #3B82F6; /* Electric Blue */
+  --color-primary-dark: #2563EB;
+  --color-primary-light: #0EA5E9; /* Sky */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --shadow-soft: 0 30px 60px -20px rgba(11, 15, 20, 0.2);
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background-image: radial-gradient(800px at 20% 0%, rgba(37, 99, 235, 0.08), transparent),
+      radial-gradient(600px at 80% 0%, rgba(14, 165, 233, 0.06), transparent);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  * {
+    @apply border-border;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply mx-auto w-full max-w-6xl px-6 md:px-12 lg:max-w-7xl;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+
+  .card {
+    @apply rounded-2xl border bg-white/60 p-6 shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-lg;
+  }
+}

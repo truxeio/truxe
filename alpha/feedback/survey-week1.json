@@ -1,0 +1,357 @@
+{
+  "title": "Heimdall Alpha - Week 1 Feedback",
+  "description": "Help us improve Heimdall by sharing your first week experience",
+  "version": "1.0",
+  "sections": [
+    {
+      "id": "setup_experience",
+      "title": "Setup Experience",
+      "description": "Tell us about your initial setup experience",
+      "questions": [
+        {
+          "id": "setup_time",
+          "type": "multiple_choice",
+          "question": "How long did it take you to get Heimdall running?",
+          "required": true,
+          "options": [
+            "Less than 5 minutes",
+            "5-15 minutes",
+            "15-30 minutes",
+            "30-60 minutes",
+            "More than 1 hour",
+            "I haven't completed setup yet"
+          ]
+        },
+        {
+          "id": "setup_difficulty",
+          "type": "scale",
+          "question": "How would you rate the setup difficulty?",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "min_label": "Very Easy",
+            "max_label": "Very Difficult"
+          }
+        },
+        {
+          "id": "setup_blockers",
+          "type": "multiple_choice",
+          "question": "What were the main challenges during setup? (Select all that apply)",
+          "required": false,
+          "multiple": true,
+          "options": [
+            "Documentation unclear",
+            "Missing dependencies",
+            "Configuration issues",
+            "Database setup",
+            "Environment variables",
+            "Docker/containerization",
+            "Network/firewall issues",
+            "No major challenges",
+            "Other"
+          ]
+        },
+        {
+          "id": "setup_feedback",
+          "type": "text",
+          "question": "Any specific feedback on the setup process?",
+          "required": false,
+          "multiline": true,
+          "placeholder": "What could we improve to make setup even easier?"
+        }
+      ]
+    },
+    {
+      "id": "documentation",
+      "title": "Documentation Quality",
+      "description": "Help us improve our documentation",
+      "questions": [
+        {
+          "id": "docs_clarity",
+          "type": "scale",
+          "question": "How clear and helpful is our documentation?",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "min_label": "Very Unclear",
+            "max_label": "Very Clear"
+          }
+        },
+        {
+          "id": "docs_completeness",
+          "type": "scale",
+          "question": "How complete is our documentation?",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "min_label": "Missing a lot",
+            "max_label": "Very Complete"
+          }
+        },
+        {
+          "id": "docs_missing",
+          "type": "text",
+          "question": "What documentation is missing or needs improvement?",
+          "required": false,
+          "multiline": true,
+          "placeholder": "Specific topics, examples, or guides you'd like to see"
+        },
+        {
+          "id": "docs_format",
+          "type": "multiple_choice",
+          "question": "What documentation format would be most helpful?",
+          "required": false,
+          "multiple": true,
+          "options": [
+            "More code examples",
+            "Video tutorials",
+            "Interactive guides",
+            "API playground",
+            "Migration guides",
+            "Troubleshooting flowcharts",
+            "Architecture diagrams",
+            "Best practices guides"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "features",
+      "title": "Feature Experience",
+      "description": "Tell us about the features you've tried",
+      "questions": [
+        {
+          "id": "features_used",
+          "type": "multiple_choice",
+          "question": "Which features have you tried? (Select all that apply)",
+          "required": true,
+          "multiple": true,
+          "options": [
+            "Magic link authentication",
+            "JWT token management",
+            "Multi-tenancy/Organizations",
+            "Role-based access control (RBAC)",
+            "Rate limiting",
+            "Session management",
+            "Webhooks",
+            "API integration",
+            "CLI tools",
+            "None yet"
+          ]
+        },
+        {
+          "id": "feature_satisfaction",
+          "type": "scale",
+          "question": "Overall, how satisfied are you with the features you've tried?",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "min_label": "Very Unsatisfied",
+            "max_label": "Very Satisfied"
+          }
+        },
+        {
+          "id": "missing_features",
+          "type": "text",
+          "question": "What features are you missing most?",
+          "required": false,
+          "multiline": true,
+          "placeholder": "Features that would make Heimdall perfect for your use case"
+        },
+        {
+          "id": "feature_priority",
+          "type": "multiple_choice",
+          "question": "What should we prioritize next? (Select top 3)",
+          "required": false,
+          "multiple": true,
+          "max_selections": 3,
+          "options": [
+            "OAuth providers (Google, GitHub, etc.)",
+            "TOTP/MFA support",
+            "Passkeys/WebAuthn",
+            "SAML/SCIM for enterprise",
+            "Advanced analytics",
+            "Mobile SDK",
+            "More framework integrations",
+            "Better admin dashboard",
+            "Audit logs",
+            "Custom email templates"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "performance",
+      "title": "Performance & Reliability",
+      "description": "How is Heimdall performing for you?",
+      "questions": [
+        {
+          "id": "performance_rating",
+          "type": "scale",
+          "question": "How would you rate Heimdall's performance?",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "min_label": "Very Slow",
+            "max_label": "Very Fast"
+          }
+        },
+        {
+          "id": "reliability_rating",
+          "type": "scale",
+          "question": "How reliable has Heimdall been?",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "min_label": "Very Unreliable",
+            "max_label": "Very Reliable"
+          }
+        },
+        {
+          "id": "performance_issues",
+          "type": "multiple_choice",
+          "question": "Have you experienced any performance issues? (Select all that apply)",
+          "required": false,
+          "multiple": true,
+          "options": [
+            "Slow response times",
+            "High memory usage",
+            "High CPU usage",
+            "Database connection issues",
+            "Email delivery delays",
+            "Token generation delays",
+            "No issues",
+            "Other"
+          ]
+        },
+        {
+          "id": "load_testing",
+          "type": "multiple_choice",
+          "question": "What's your current usage level?",
+          "required": false,
+          "options": [
+            "Just testing/development",
+            "Low traffic (< 100 users)",
+            "Medium traffic (100-1000 users)",
+            "High traffic (1000+ users)",
+            "Haven't deployed yet"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "comparison",
+      "title": "Competitive Comparison",
+      "description": "How does Heimdall compare to alternatives?",
+      "questions": [
+        {
+          "id": "current_solution",
+          "type": "multiple_choice",
+          "question": "What authentication solution are you currently using or comparing against?",
+          "required": false,
+          "multiple": true,
+          "options": [
+            "Clerk",
+            "Auth0",
+            "Firebase Auth",
+            "Supabase Auth",
+            "AWS Cognito",
+            "Custom solution",
+            "None (new project)",
+            "Other"
+          ]
+        },
+        {
+          "id": "heimdall_advantages",
+          "type": "text",
+          "question": "What are Heimdall's main advantages over alternatives?",
+          "required": false,
+          "multiline": true,
+          "placeholder": "What makes Heimdall better for your use case?"
+        },
+        {
+          "id": "heimdall_disadvantages",
+          "type": "text",
+          "question": "What are Heimdall's main disadvantages compared to alternatives?",
+          "required": false,
+          "multiline": true,
+          "placeholder": "Where do other solutions excel over Heimdall?"
+        },
+        {
+          "id": "migration_likelihood",
+          "type": "scale",
+          "question": "How likely are you to migrate to Heimdall for production use?",
+          "required": true,
+          "scale": {
+            "min": 1,
+            "max": 5,
+            "min_label": "Very Unlikely",
+            "max_label": "Very Likely"
+          }
+        }
+      ]
+    },
+    {
+      "id": "overall",
+      "title": "Overall Feedback",
+      "description": "Your general thoughts and suggestions",
+      "questions": [
+        {
+          "id": "nps_score",
+          "type": "scale",
+          "question": "How likely are you to recommend Heimdall to a colleague?",
+          "required": true,
+          "scale": {
+            "min": 0,
+            "max": 10,
+            "min_label": "Not at all likely",
+            "max_label": "Extremely likely"
+          }
+        },
+        {
+          "id": "biggest_concern",
+          "type": "text",
+          "question": "What's your biggest concern about using Heimdall?",
+          "required": false,
+          "multiline": true,
+          "placeholder": "Security, performance, support, features, etc."
+        },
+        {
+          "id": "most_excited",
+          "type": "text",
+          "question": "What are you most excited about with Heimdall?",
+          "required": false,
+          "multiline": true,
+          "placeholder": "What potential do you see?"
+        },
+        {
+          "id": "general_feedback",
+          "type": "text",
+          "question": "Any other feedback, suggestions, or comments?",
+          "required": false,
+          "multiline": true,
+          "placeholder": "Anything else you'd like to share with the team"
+        },
+        {
+          "id": "contact_followup",
+          "type": "boolean",
+          "question": "Would you be interested in a follow-up call with our team?",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "estimated_time": "5-7 minutes",
+    "anonymous": false,
+    "save_progress": true,
+    "thank_you_message": "Thank you for your valuable feedback! Your insights help us build a better authentication platform. We'll be in touch with updates and may reach out for follow-up questions.",
+    "incentive": "All alpha users who complete this survey will receive a special Heimdall t-shirt and stickers!"
+  }
+}

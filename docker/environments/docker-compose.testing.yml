@@ -1,0 +1,460 @@
+# Truxe - Testing Environment Docker Compose
+# Environment: Testing (23000-23999 port range)
+# Maximum isolation with comprehensive testing infrastructure
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  database:
+    build: 
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: truxe-db-testing
+    environment:
+      POSTGRES_DB: truxe_testing
+      POSTGRES_USER: truxe_test
+      POSTGRES_PASSWORD: test_password_isolated
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "23432:5432"
+    volumes:
+      - postgres_testing_data:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d:ro
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U truxe_test -d truxe_testing"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: truxe-redis-testing
+    ports:
+      - "23379:6379"
+    volumes:
+      - redis_testing_data:/data
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 3
+    command: redis-server --appendonly yes --requirepass test_redis_password
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.1'
+
+  # Test Database (Separate from main database)
+  test-database:
+    image: postgres:15-alpine
+    container_name: truxe-test-db-testing
+    environment:
+      POSTGRES_DB: truxe_test_isolated
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_isolated_password
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "23406:5432"
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d truxe_test_isolated"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # Truxe API
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: truxe-api-testing
+    environment:
+      NODE_ENV: test
+      PORT: 3001
+      # Environment Configuration
+      TRUXE_ENV: testing
+      TRUXE_PORT_RANGE_START: 23000
+      TRUXE_PORT_RANGE_END: 23999
+      TRUXE_API_PORT: 23001
+      TRUXE_DATABASE_PORT: 23432
+      TRUXE_REDIS_PORT: 23379
+      # Database Configuration
+      DATABASE_URL: postgresql://truxe_test:test_password_isolated@database:5432/truxe_testing
+      TEST_DATABASE_URL: postgresql://test_user:test_isolated_password@test-database:5432/truxe_test_isolated
+      REDIS_URL: redis://:test_redis_password@redis:6379
+      # JWT Configuration
+      JWT_ISSUER: truxe-testing
+      JWT_PRIVATE_KEY_FILE: /run/secrets/jwt_private_key
+      JWT_PUBLIC_KEY_FILE: /run/secrets/jwt_public_key
+      # Email Configuration (Mock)
+      EMAIL_PROVIDER: mock
+      EMAIL_FROM: test@truxe.local
+      # CORS Configuration
+      CORS_ORIGIN: http://localhost:23001,http://test.truxe.local
+      LOG_LEVEL: warn
+      # Port Management & Isolation
+      TRUXE_PORT_VALIDATION: true
+      TRUXE_PORT_CONFLICT_CHECK: true
+      TRUXE_ISOLATION_STRICT: true
+      TRUXE_ISOLATION_MAXIMUM: true
+      TRUXE_ENVIRONMENT_CONFIRMATION: false
+      # Testing Configuration
+      TRUXE_TESTING_MODE: true
+      TRUXE_MOCK_EXTERNAL_SERVICES: true
+      TRUXE_RESET_DATA_ON_START: true
+      # Monitoring
+      TRUXE_MONITORING_ENABLED: true
+      TRUXE_METRICS_COLLECTION: true
+      TRUXE_PERFORMANCE_TRACKING: true
+    ports:
+      - "23001:3001"
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      test-database:
+        condition: service_healthy
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    secrets:
+      - jwt_private_key
+      - jwt_public_key
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # MailHog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: truxe-mailhog-testing
+    ports:
+      - "23025:1025"  # SMTP
+      - "23825:8025"  # Web UI
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: '0.05'
+
+  # Documentation Server
+  docs:
+    image: nginx:alpine
+    container_name: truxe-docs-testing
+    ports:
+      - "23002:80"
+    volumes:
+      - ./docs:/usr/share/nginx/html:ro
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+          cpus: '0.05'
+
+  # Test Runner Service
+  test-runner:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: truxe-test-runner-testing
+    ports:
+      - "23401:3000"
+    environment:
+      NODE_ENV: test
+      TRUXE_ENV: testing
+      DATABASE_URL: postgresql://test_user:test_isolated_password@test-database:5432/truxe_test_isolated
+      REDIS_URL: redis://:test_redis_password@redis:6379
+      API_BASE_URL: http://api:3001
+      TEST_TIMEOUT: 30000
+      TEST_PARALLEL: true
+    volumes:
+      - ./api/tests:/app/tests:ro
+      - ./api/src:/app/src:ro
+      - test_results:/app/test-results
+    networks:
+      - truxe-testing-network
+    depends_on:
+      - api
+      - test-database
+    command: ["npm", "run", "test:watch"]
+    profiles:
+      - testing
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # Mock Server for External Services
+  mock-server:
+    image: mockserver/mockserver:latest
+    container_name: truxe-mock-server-testing
+    ports:
+      - "23402:1080"
+    environment:
+      MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/expectations.json
+    volumes:
+      - ./tests/mocks:/config:ro
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.1'
+
+  # Load Testing Service
+  load-tester:
+    image: loadimpact/k6:latest
+    container_name: truxe-load-tester-testing
+    ports:
+      - "23403:6565"
+    volumes:
+      - ./tests/load:/scripts:ro
+      - load_test_results:/results
+    networks:
+      - truxe-testing-network
+    environment:
+      K6_OUT: json=/results/load-test-results.json
+      API_BASE_URL: http://api:3001
+    profiles:
+      - load-testing
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.1'
+
+  # End-to-End Test Runner
+  e2e-runner:
+    build:
+      context: ./tests/e2e
+      dockerfile: Dockerfile
+    container_name: truxe-e2e-runner-testing
+    ports:
+      - "23404:3000"
+    environment:
+      BASE_URL: http://api:3001
+      HEADLESS: true
+      BROWSER: chromium
+      TEST_TIMEOUT: 60000
+    volumes:
+      - ./tests/e2e:/app/tests:ro
+      - e2e_results:/app/results
+    networks:
+      - truxe-testing-network
+    depends_on:
+      - api
+      - selenium-hub
+    profiles:
+      - e2e-testing
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # Selenium Hub for Browser Testing
+  selenium-hub:
+    image: selenium/hub:latest
+    container_name: truxe-selenium-hub-testing
+    ports:
+      - "23405:4444"
+    environment:
+      GRID_MAX_SESSION: 4
+      GRID_BROWSER_TIMEOUT: 30000
+      GRID_TIMEOUT: 30000
+    networks:
+      - truxe-testing-network
+    profiles:
+      - e2e-testing
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  # Chrome Node for Selenium
+  selenium-chrome:
+    image: selenium/node-chrome:latest
+    container_name: truxe-selenium-chrome-testing
+    environment:
+      HUB_HOST: selenium-hub
+      HUB_PORT: 4444
+      NODE_MAX_INSTANCES: 2
+      NODE_MAX_SESSION: 2
+    networks:
+      - truxe-testing-network
+    depends_on:
+      - selenium-hub
+    profiles:
+      - e2e-testing
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: truxe-prometheus-testing
+    ports:
+      - "23005:9090"
+    volumes:
+      - ./deploy/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_testing_data:/prometheus
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=1d'
+      - '--web.enable-lifecycle'
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.1'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: truxe-grafana-testing
+    ports:
+      - "23004:3000"
+    volumes:
+      - grafana_testing_data:/var/lib/grafana
+      - ./deploy/monitoring/grafana:/etc/grafana/provisioning:ro
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: testing_grafana_password
+      GF_INSTALL_PLUGINS: grafana-clock-panel
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.1'
+
+  # Environment Port Monitor
+  port-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile.port-monitor
+    container_name: truxe-port-monitor-testing
+    environment:
+      TRUXE_ENV: testing
+      MONITORING_INTERVAL: 15000
+      ALERT_THRESHOLDS_PORT_UTILIZATION: 60
+      ALERT_THRESHOLDS_CONFLICTS: 0
+      ISOLATION_VALIDATION_STRICT: true
+    volumes:
+      - ./config:/app/config:ro
+      - ./reports:/app/reports
+    networks:
+      - truxe-testing-network
+    restart: unless-stopped
+    depends_on:
+      - api
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: '0.05'
+
+  # Test Data Seeder
+  test-seeder:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: truxe-test-seeder-testing
+    environment:
+      DATABASE_URL: postgresql://test_user:test_isolated_password@test-database:5432/truxe_test_isolated
+      SEED_DATA: testing
+    volumes:
+      - ./tests/fixtures:/app/fixtures:ro
+    networks:
+      - truxe-testing-network
+    depends_on:
+      test-database:
+        condition: service_healthy
+    command: ["npm", "run", "seed:test"]
+    profiles:
+      - testing
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.1'
+
+volumes:
+  postgres_testing_data:
+    driver: local
+  test_postgres_data:
+    driver: local
+  redis_testing_data:
+    driver: local
+  prometheus_testing_data:
+    driver: local
+  grafana_testing_data:
+    driver: local
+  test_results:
+    driver: local
+  load_test_results:
+    driver: local
+  e2e_results:
+    driver: local
+
+networks:
+  truxe-testing-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.23.0.0/16
+
+secrets:
+  jwt_private_key:
+    file: ./secrets/jwt-private-key.pem
+  jwt_public_key:
+    file: ./secrets/jwt-public-key.pem

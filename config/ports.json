@@ -1,0 +1,107 @@
+{
+  "environments": {
+    "development": {
+      "base_port": 21000,
+      "range": {
+        "start": 21000,
+        "end": 21999
+      },
+      "services": {
+        "api": 21001,
+        "database": 21432,
+        "redis": 21379,
+        "mailhog_smtp": 21025,
+        "mailhog_web": 21825,
+        "docs": 21002,
+        "monitoring": 21003,
+        "grafana": 21004,
+        "prometheus": 21005
+      }
+    },
+    "staging": {
+      "base_port": 22000,
+      "range": {
+        "start": 22000,
+        "end": 22999
+      },
+      "services": {
+        "api": 22001,
+        "database": 22432,
+        "redis": 22379,
+        "mailhog_smtp": 22025,
+        "mailhog_web": 22825,
+        "docs": 22002,
+        "monitoring": 22003,
+        "grafana": 22004,
+        "prometheus": 22005
+      }
+    },
+    "testing": {
+      "base_port": 23000,
+      "range": {
+        "start": 23000,
+        "end": 23999
+      },
+      "services": {
+        "api": 23001,
+        "database": 23432,
+        "redis": 23379,
+        "mailhog_smtp": 23025,
+        "mailhog_web": 23825,
+        "docs": 23002,
+        "monitoring": 23003,
+        "grafana": 23004,
+        "prometheus": 23005
+      }
+    },
+    "alpha": {
+      "base_port": 21000,
+      "range": {
+        "start": 21000,
+        "end": 21999
+      },
+      "services": {
+        "api": 21001,
+        "database": 21432,
+        "redis": 21379,
+        "mailhog_smtp": 21025,
+        "mailhog_web": 21825,
+        "port_monitor": 21080,
+        "prometheus": 21005,
+        "grafana": 21004,
+        "docs": 21002,
+        "monitoring": 21003
+      }
+    },
+    "production": {
+      "base_port": 80,
+      "range": {
+        "start": 80,
+        "end": 65535
+      },
+      "services": {
+        "api": 80,
+        "database": 5432,
+        "redis": 6379,
+        "docs": 443,
+        "monitoring": 9090,
+        "grafana": 3000,
+        "prometheus": 9090
+      }
+    }
+  },
+  "conflict_detection": {
+    "enabled": true,
+    "check_system_ports": true,
+    "reserved_ranges": [
+      {"start": 1, "end": 1023, "description": "System reserved ports"},
+      {"start": 3000, "end": 3010, "description": "Common development ports"},
+      {"start": 8000, "end": 8010, "description": "Common web server ports"}
+    ]
+  },
+  "validation": {
+    "require_range_compliance": true,
+    "allow_port_override": false,
+    "max_port_gap": 100
+  }
+}

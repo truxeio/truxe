@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login with Heimdall</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <p>Click the button below to login.</p>
+    <a href="{% url 'oauth_login' %}">
+        <button>Login with Heimdall</button>
+    </a>
+</body>
+</html>

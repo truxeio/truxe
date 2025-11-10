@@ -1,0 +1,207 @@
+# Truxe - Enhanced Docker Compose with Port Management
+# Implements centralized port configuration with zero-conflict guarantee
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  database:
+    build: 
+      context: ./database
+      dockerfile: Dockerfile
+    container_name: truxe-db-dev
+    environment:
+      POSTGRES_DB: truxe.io
+      POSTGRES_USER: truxe
+      POSTGRES_PASSWORD: dev_password_change_me
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "${TRUXE_DB_PORT:-21432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d:ro
+    networks:
+      - truxe-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U truxe -d truxe.io"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: truxe-redis-dev
+    ports:
+      - "${TRUXE_REDIS_PORT:-21379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - truxe-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    command: redis-server --appendonly yes --requirepass dev_redis_password
+
+  # Truxe API
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: truxe-api-dev
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://truxe.io_password_change_me@database:5432/truxe.io
+      REDIS_URL: redis://:dev_redis_password@redis:6379
+      JWT_ISSUER: truxe.io
+      JWT_PRIVATE_KEY_FILE: /run/secrets/jwt_private_key
+      JWT_PUBLIC_KEY_FILE: /run/secrets/jwt_public_key
+      EMAIL_PROVIDER: smtp
+      EMAIL_FROM: noreply@truxe.local
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
+      SMTP_USER: ""
+      SMTP_PASSWORD: ""
+      SMTP_SECURE: false
+      CORS_ORIGIN: http://localhost:3000,http://localhost:3002
+      LOG_LEVEL: debug
+      # Port Management
+      TRUXE_PORT_ENVIRONMENT: ${TRUXE_PORT_ENVIRONMENT:-development}
+      TRUXE_PORT_VALIDATION: ${TRUXE_PORT_VALIDATION:-true}
+    ports:
+      - "${TRUXE_API_PORT:-21001}:3001"
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - truxe-network
+    restart: unless-stopped
+    volumes:
+      - ./api/src:/app/src:ro  # Hot reload for development
+    secrets:
+      - jwt_private_key
+      - jwt_public_key
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MailHog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: truxe-mailhog-dev
+    ports:
+      - "${TRUXE_MAILHOG_SMTP_PORT:-21025}:1025"  # SMTP
+      - "${TRUXE_MAILHOG_WEB_PORT:-21825}:8025"   # Web UI
+    networks:
+      - truxe-network
+    restart: unless-stopped
+
+  # Documentation Server
+  docs:
+    image: nginx:alpine
+    container_name: truxe-docs-dev
+    ports:
+      - "${TRUXE_DOCS_PORT:-21002}:80"
+    volumes:
+      - ./docs:/usr/share/nginx/html:ro
+    networks:
+      - truxe-network
+    restart: unless-stopped
+    profiles:
+      - docs
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: truxe-prometheus-dev
+    ports:
+      - "${TRUXE_PROMETHEUS_PORT:-21005}:9090"
+    volumes:
+      - ./deploy/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - truxe-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: truxe-grafana-dev
+    ports:
+      - "${TRUXE_GRAFANA_PORT:-21004}:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./deploy/monitoring/grafana:/etc/grafana/provisioning:ro
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: false
+    networks:
+      - truxe-network
+    restart: unless-stopped
+    profiles:
+      - monitoring
+
+  # CLI for testing
+  cli:
+    build:
+      context: ./cli
+      dockerfile: Dockerfile
+    container_name: truxe-cli-dev
+    environment:
+      NODE_ENV: development
+      TRUXE_API_URL: http://api:3001
+    depends_on:
+      - api
+    networks:
+      - truxe-network
+    volumes:
+      - ./examples:/workspace/examples:ro
+    profiles:
+      - tools
+
+  # Port Manager Service
+  port-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile.port-manager
+    container_name: truxe-port-manager
+    volumes:
+      - ./config:/app/config:ro
+      - ./scripts:/app/scripts:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      TRUXE_PORT_ENVIRONMENT: ${TRUXE_PORT_ENVIRONMENT:-development}
+    networks:
+      - truxe-network
+    profiles:
+      - port-management
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  truxe-network:
+    driver: bridge
+
+secrets:
+  jwt_private_key:
+    file: ./secrets/jwt-private-key.pem
+  jwt_public_key:
+    file: ./secrets/jwt-public-key.pem

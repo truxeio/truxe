@@ -1,0 +1,23 @@
+#!/bin/bash
+# Script to setup passwordless sudo for deployer user
+
+echo "Setting up passwordless sudo for deployer user..."
+echo ""
+echo "Run these commands on your server:"
+echo ""
+echo "# First, connect to your server as deployer"
+echo "ssh deployer@your_server_ip"
+echo ""
+echo "# Then run this command (it will ask for password once):"
+echo "echo 'deployer ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/deployer"
+echo ""
+echo "# Set proper permissions:"
+echo "sudo chmod 0440 /etc/sudoers.d/deployer"
+echo ""
+echo "# Verify the configuration:"
+echo "sudo visudo -c"
+echo ""
+echo "# Test it (should not ask for password):"
+echo "sudo whoami"
+echo ""
+echo "After this, you can use 'sudo su -' without password"

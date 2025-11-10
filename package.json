@@ -1,0 +1,64 @@
+{
+  "name": "@truxe/monorepo",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Truxe - Open-source authentication & authorization platform (Monorepo)",
+  "type": "module",
+  "packageManager": "pnpm@10.20.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm exec turbo run dev",
+    "build": "pnpm exec turbo run build",
+    "lint": "pnpm exec turbo run lint",
+    "test": "pnpm exec turbo run test",
+    "type-check": "pnpm exec turbo run type-check",
+    "clean": "pnpm exec turbo run clean && rm -rf node_modules .turbo",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
+    "api:dev": "pnpm --filter @truxe/api dev",
+    "website:dev": "pnpm --filter @truxe/website dev",
+    "admin:dev": "pnpm --filter @truxe/admin dev",
+    "react:dev": "pnpm --filter @truxe/react dev",
+    "port:check": "node scripts/port-management-cli.js check",
+    "port:validate": "node scripts/startup-validator.js --env development",
+    "port:status": "node scripts/port-management-cli.js status",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "db:migrate": "pnpm --filter @truxe/api db:migrate",
+    "db:optimize": "cd database && npm run optimize",
+    "db:health": "cd database && npm run health",
+    "production:validate": "pnpm --filter @truxe/api validate-config",
+    "production:deploy": "npm run port:validate && npm run test:load:smoke && npm run backup:create",
+    "backup:create": "node scripts/disaster-recovery.js create-backup --type=full",
+    "backup:status": "node scripts/disaster-recovery.js status",
+    "test:load": "k6 run scripts/load-testing.js",
+    "prepare": "node -e \"console.log('🚀 Truxe monorepo initialized')\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "prettier": "^3.2.0",
+    "turbo": "^2.6.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "authentication",
+    "authorization",
+    "oauth",
+    "mfa",
+    "rbac",
+    "multi-tenant",
+    "open-source",
+    "monorepo",
+    "truxe"
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/truxeio/truxe.git"
+  },
+  "homepage": "https://github.com/truxeio/truxe"
+}

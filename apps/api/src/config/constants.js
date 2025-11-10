@@ -1,0 +1,503 @@
+/**
+ * Heimdall Configuration Constants
+ * 
+ * Centralized constants and default values for all configuration options.
+ * This file serves as the single source of truth for all hardcoded values
+ * and makes them easily configurable through environment variables.
+ * 
+ * @author Wundam LLC
+ * @version 1.0.0
+ */
+
+/**
+ * Application Constants
+ */
+export const APP_CONSTANTS = {
+  // Application Info
+  NAME: process.env.APP_NAME || 'Heimdall API',
+  VERSION: process.env.APP_VERSION || process.env.npm_package_version || '1.0.0',
+  DESCRIPTION: process.env.APP_DESCRIPTION || 'Secure, scalable authentication service',
+  
+  // Default Hosts and Ports
+  DEFAULT_HOST: process.env.DEFAULT_HOST || '0.0.0.0',
+  DEFAULT_PORT: parseInt(process.env.DEFAULT_PORT) || 3001,
+  DEFAULT_API_VERSION: process.env.DEFAULT_API_VERSION || 'v1',
+  
+  // Environment Detection
+  DEFAULT_ENVIRONMENT: process.env.DEFAULT_ENVIRONMENT || 'development',
+  DEFAULT_LOG_LEVEL: process.env.DEFAULT_LOG_LEVEL || 'info',
+}
+
+/**
+ * Port Management Constants
+ * Updated to use 87000-87999 range for Heimdall services
+ * Following industry best practices for on-premise deployments
+ */
+export const PORT_CONSTANTS = {
+  // Port Ranges (87000-87999 for Heimdall services)
+  DEVELOPMENT_RANGE_START: parseInt(process.env.DEV_PORT_RANGE_START) || 87000,
+  DEVELOPMENT_RANGE_END: parseInt(process.env.DEV_PORT_RANGE_END) || 87099,
+  TESTING_RANGE_START: parseInt(process.env.TEST_PORT_RANGE_START) || 87100,
+  TESTING_RANGE_END: parseInt(process.env.TEST_PORT_RANGE_END) || 87199,
+  STAGING_RANGE_START: parseInt(process.env.STAGING_PORT_RANGE_START) || 87200,
+  STAGING_RANGE_END: parseInt(process.env.STAGING_PORT_RANGE_END) || 87299,
+  PRODUCTION_RANGE_START: parseInt(process.env.PROD_PORT_RANGE_START) || 87300,
+  PRODUCTION_RANGE_END: parseInt(process.env.PROD_PORT_RANGE_END) || 87399,
+
+  // Service Ports - Development (87000-87099)
+  DEV_HEALTH_PORT: parseInt(process.env.TRUXE_HEALTH_PORT || process.env.DEV_HEALTH_PORT) || 87000,
+  DEV_API_PORT: parseInt(process.env.TRUXE_API_PORT || process.env.DEV_API_PORT) || 87001,
+  DEV_DATABASE_PORT: parseInt(process.env.TRUXE_DB_PORT || process.env.DEV_DATABASE_PORT) || 87032,
+  DEV_REDIS_PORT: parseInt(process.env.TRUXE_REDIS_PORT || process.env.DEV_REDIS_PORT) || 87079,
+  DEV_MAILHOG_SMTP_PORT: parseInt(process.env.TRUXE_MAILHOG_SMTP_PORT || process.env.DEV_MAILHOG_SMTP_PORT) || 87025,
+  DEV_MAILHOG_WEB_PORT: parseInt(process.env.TRUXE_MAILHOG_WEB_PORT || process.env.DEV_MAILHOG_WEB_PORT) || 87825,
+  DEV_DOCS_PORT: parseInt(process.env.TRUXE_DOCS_PORT || process.env.DEV_DOCS_PORT) || 87002,
+  DEV_MONITORING_PORT: parseInt(process.env.TRUXE_MONITORING_PORT || process.env.DEV_MONITORING_PORT) || 87090,
+  DEV_GRAFANA_PORT: parseInt(process.env.TRUXE_GRAFANA_PORT || process.env.DEV_GRAFANA_PORT) || 87091,
+  DEV_PROMETHEUS_PORT: parseInt(process.env.TRUXE_PROMETHEUS_PORT || process.env.DEV_PROMETHEUS_PORT) || 87092,
+
+  // Service Ports - Testing (87100-87199)
+  TEST_HEALTH_PORT: parseInt(process.env.TRUXE_HEALTH_PORT || process.env.TEST_HEALTH_PORT) || 87100,
+  TEST_API_PORT: parseInt(process.env.TRUXE_API_PORT || process.env.TEST_API_PORT) || 87101,
+  TEST_DATABASE_PORT: parseInt(process.env.TRUXE_DB_PORT || process.env.TEST_DATABASE_PORT) || 87132,
+  TEST_REDIS_PORT: parseInt(process.env.TRUXE_REDIS_PORT || process.env.TEST_REDIS_PORT) || 87179,
+  TEST_MAILHOG_SMTP_PORT: parseInt(process.env.TRUXE_MAILHOG_SMTP_PORT || process.env.TEST_MAILHOG_SMTP_PORT) || 87125,
+  TEST_MAILHOG_WEB_PORT: parseInt(process.env.TRUXE_MAILHOG_WEB_PORT || process.env.TEST_MAILHOG_WEB_PORT) || 87925,
+
+  // Service Ports - Staging (87200-87299)
+  STAGING_HEALTH_PORT: parseInt(process.env.TRUXE_HEALTH_PORT || process.env.STAGING_HEALTH_PORT) || 87200,
+  STAGING_API_PORT: parseInt(process.env.TRUXE_API_PORT || process.env.STAGING_API_PORT) || 87201,
+  STAGING_DATABASE_PORT: parseInt(process.env.TRUXE_DB_PORT || process.env.STAGING_DATABASE_PORT) || 87232,
+  STAGING_REDIS_PORT: parseInt(process.env.TRUXE_REDIS_PORT || process.env.STAGING_REDIS_PORT) || 87279,
+  STAGING_MONITORING_PORT: parseInt(process.env.TRUXE_MONITORING_PORT || process.env.STAGING_MONITORING_PORT) || 87290,
+
+  // Service Ports - Production (87300-87399)
+  PROD_HEALTH_PORT: parseInt(process.env.TRUXE_HEALTH_PORT || process.env.PROD_HEALTH_PORT) || 87300,
+  PROD_API_PORT: parseInt(process.env.TRUXE_API_PORT || process.env.PROD_API_PORT) || 87301,
+  PROD_DATABASE_PORT: parseInt(process.env.TRUXE_DB_PORT || process.env.PROD_DATABASE_PORT) || 87332,
+  PROD_REDIS_PORT: parseInt(process.env.TRUXE_REDIS_PORT || process.env.PROD_REDIS_PORT) || 87379,
+  PROD_HTTPS_PORT: parseInt(process.env.PROD_HTTPS_PORT) || 443,
+  PROD_MONITORING_PORT: parseInt(process.env.TRUXE_MONITORING_PORT || process.env.PROD_MONITORING_PORT) || 87390,
+  PROD_GRAFANA_PORT: parseInt(process.env.TRUXE_GRAFANA_PORT || process.env.PROD_GRAFANA_PORT) || 87391,
+
+  // Internal Container Ports (industry standard defaults)
+  // These are used inside Docker containers and should NOT be changed
+  INTERNAL_API_PORT: parseInt(process.env.INTERNAL_API_PORT) || 3001,
+  INTERNAL_DATABASE_PORT: parseInt(process.env.INTERNAL_DATABASE_PORT) || 5432,
+  INTERNAL_REDIS_PORT: parseInt(process.env.INTERNAL_REDIS_PORT) || 6379,
+  INTERNAL_MAILHOG_SMTP_PORT: parseInt(process.env.INTERNAL_MAILHOG_SMTP_PORT) || 1025,
+  INTERNAL_MAILHOG_WEB_PORT: parseInt(process.env.INTERNAL_MAILHOG_WEB_PORT) || 8025,
+  INTERNAL_DOCS_PORT: parseInt(process.env.INTERNAL_DOCS_PORT) || 80,
+  INTERNAL_MONITORING_PORT: parseInt(process.env.INTERNAL_MONITORING_PORT) || 3000,
+  INTERNAL_GRAFANA_PORT: parseInt(process.env.INTERNAL_GRAFANA_PORT) || 3000,
+  INTERNAL_PROMETHEUS_PORT: parseInt(process.env.INTERNAL_PROMETHEUS_PORT) || 9090,
+}
+
+/**
+ * Database Constants
+ */
+export const DATABASE_CONSTANTS = {
+  // Connection Settings
+  DEFAULT_SSL: process.env.DATABASE_DEFAULT_SSL === 'true' || false,
+  DEFAULT_POOL_MIN: parseInt(process.env.DATABASE_DEFAULT_POOL_MIN) || 2,
+  DEFAULT_POOL_MAX: parseInt(process.env.DATABASE_DEFAULT_POOL_MAX) || 10,
+  DEFAULT_CONNECTION_TIMEOUT: process.env.DATABASE_DEFAULT_CONNECTION_TIMEOUT || '10s',
+  DEFAULT_STATEMENT_TIMEOUT: process.env.DATABASE_DEFAULT_STATEMENT_TIMEOUT || '30s',
+  
+  // Production Settings
+  PROD_POOL_MIN: parseInt(process.env.DATABASE_PROD_POOL_MIN) || 10,
+  PROD_POOL_MAX: parseInt(process.env.DATABASE_PROD_POOL_MAX) || 100,
+  PROD_SSL: process.env.DATABASE_PROD_SSL === 'true' || true,
+}
+
+/**
+ * Redis Constants
+ */
+export const REDIS_CONSTANTS = {
+  DEFAULT_URL: process.env.REDIS_DEFAULT_URL || 'redis://localhost:6379',
+  DEFAULT_KEY_PREFIX: process.env.REDIS_DEFAULT_KEY_PREFIX || 'heimdall:',
+  DEFAULT_RETRY_DELAY: parseInt(process.env.REDIS_DEFAULT_RETRY_DELAY) || 100,
+  DEFAULT_MAX_RETRIES: parseInt(process.env.REDIS_DEFAULT_MAX_RETRIES) || 3,
+}
+
+/**
+ * JWT Constants
+ */
+export const JWT_CONSTANTS = {
+  DEFAULT_ALGORITHM: process.env.JWT_DEFAULT_ALGORITHM || 'RS256',
+  DEFAULT_AUDIENCE: process.env.JWT_DEFAULT_AUDIENCE || 'truxe-api',
+  DEFAULT_ACCESS_TOKEN_TTL: process.env.JWT_DEFAULT_ACCESS_TOKEN_TTL || '15m',
+  DEFAULT_REFRESH_TOKEN_TTL: process.env.JWT_DEFAULT_REFRESH_TOKEN_TTL || '30d',
+  DEFAULT_KEY_ID: process.env.JWT_DEFAULT_KEY_ID || 'truxe-rsa-2025',
+}
+
+/**
+ * Email Constants
+ */
+export const EMAIL_CONSTANTS = {
+  DEFAULT_PROVIDER: process.env.EMAIL_DEFAULT_PROVIDER || 'resend',
+  DEFAULT_FROM: process.env.EMAIL_DEFAULT_FROM || 'noreply@truxe.io',
+  DEFAULT_FROM_NAME: process.env.EMAIL_DEFAULT_FROM_NAME || 'Truxe Auth',
+  
+  // SMTP Defaults
+  DEFAULT_SMTP_PORT: parseInt(process.env.EMAIL_DEFAULT_SMTP_PORT) || 587,
+  DEFAULT_SMTP_SECURE: process.env.EMAIL_DEFAULT_SMTP_SECURE === 'true' || false,
+  
+  // AWS SES Defaults
+  DEFAULT_AWS_REGION: process.env.EMAIL_DEFAULT_AWS_REGION || 'us-east-1',
+}
+
+/**
+ * Email Verification Constants
+ */
+export const EMAIL_VERIFICATION_CONSTANTS = {
+  DEFAULT_BASE_URL: process.env.EMAIL_VERIFICATION_DEFAULT_BASE_URL || '',
+  DEFAULT_PATH: process.env.EMAIL_VERIFICATION_DEFAULT_PATH || '/api/auth/email/verify',
+}
+
+/**
+ * Magic Link Constants
+ */
+export const MAGIC_LINK_CONSTANTS = {
+  DEFAULT_TTL: process.env.MAGIC_LINK_DEFAULT_TTL || '15m',
+  DEFAULT_BASE_URL: process.env.MAGIC_LINK_DEFAULT_BASE_URL || 'http://localhost:3000',
+  DEFAULT_TOKEN_LENGTH: parseInt(process.env.MAGIC_LINK_DEFAULT_TOKEN_LENGTH) || 32,
+  DEFAULT_EXPIRES_IN_TEXT: process.env.MAGIC_LINK_DEFAULT_EXPIRES_IN_TEXT || '15 minutes',
+}
+
+/**
+ * OAuth Constants
+ */
+export const OAUTH_CONSTANTS = {
+  DEFAULT_ENABLED: process.env.OAUTH_DEFAULT_ENABLED === 'true' || true,
+  DEFAULT_STATE_TTL: parseInt(process.env.OAUTH_DEFAULT_STATE_TTL) || 600000, // 10 minutes
+  DEFAULT_STATE_LENGTH: parseInt(process.env.OAUTH_DEFAULT_STATE_LENGTH) || 32,
+  DEFAULT_CALLBACK_BASE_URL: process.env.OAUTH_DEFAULT_CALLBACK_BASE_URL || 'http://localhost:3001',
+  DEFAULT_STATE_KEY_PREFIX: process.env.OAUTH_DEFAULT_STATE_KEY_PREFIX || 'oauth:state:',
+  DEFAULT_TOKEN_ENCRYPTION_ALGORITHM: process.env.OAUTH_DEFAULT_TOKEN_ENCRYPTION_ALGORITHM || 'aes-256-gcm',
+  DEFAULT_SCOPE_SEPARATOR: process.env.OAUTH_DEFAULT_SCOPE_SEPARATOR || ' ',
+  DEFAULT_ALLOWED_REDIRECT_HOSTS: process.env.OAUTH_DEFAULT_ALLOWED_REDIRECT_HOSTS
+    ? process.env.OAUTH_DEFAULT_ALLOWED_REDIRECT_HOSTS.split(',').map(host => host.trim()).filter(Boolean)
+    : [],
+  DEFAULT_TENANT_PARAMETER: process.env.OAUTH_DEFAULT_TENANT_PARAMETER || 'tenant',
+  DEFAULT_SUPPORTED_PROVIDERS: process.env.OAUTH_DEFAULT_SUPPORTED_PROVIDERS
+    ? process.env.OAUTH_DEFAULT_SUPPORTED_PROVIDERS.split(',').map(provider => provider.trim()).filter(Boolean)
+    : ['google', 'github', 'apple'],
+}
+
+/**
+ * Rate Limiting Constants
+ */
+export const RATE_LIMIT_CONSTANTS = {
+  // Magic Link Limits
+  MAGIC_LINK_PER_IP: parseInt(process.env.RATE_LIMIT_MAGIC_LINK_PER_IP) || 5,
+  MAGIC_LINK_WINDOW_IP: process.env.RATE_LIMIT_MAGIC_LINK_WINDOW_IP || '1m',
+  MAGIC_LINK_PER_EMAIL: parseInt(process.env.RATE_LIMIT_MAGIC_LINK_PER_EMAIL) || 3,
+  MAGIC_LINK_WINDOW_EMAIL: process.env.RATE_LIMIT_MAGIC_LINK_WINDOW_EMAIL || '1h',
+  
+  // Verify Limits
+  VERIFY_PER_IP: parseInt(process.env.RATE_LIMIT_VERIFY_PER_IP) || 10,
+  VERIFY_WINDOW_IP: process.env.RATE_LIMIT_VERIFY_WINDOW_IP || '1m',
+  VERIFY_PER_TOKEN: parseInt(process.env.RATE_LIMIT_VERIFY_PER_TOKEN) || 3,
+  
+  // Refresh Limits
+  REFRESH_PER_USER: parseInt(process.env.RATE_LIMIT_REFRESH_PER_USER) || 60,
+  REFRESH_WINDOW: process.env.RATE_LIMIT_REFRESH_WINDOW || '1h',
+  
+  // Global Limits
+  GLOBAL_MAX: parseInt(process.env.RATE_LIMIT_GLOBAL_MAX) || 1000,
+  GLOBAL_WINDOW: process.env.RATE_LIMIT_GLOBAL_WINDOW || '1h',
+  
+  // MFA/TOTP Limits
+  TOTP_VERIFY_PER_USER: parseInt(process.env.RATE_LIMIT_TOTP_VERIFY_PER_USER) || 5,
+  TOTP_VERIFY_WINDOW: process.env.RATE_LIMIT_TOTP_VERIFY_WINDOW || '5m',
+  BACKUP_VERIFY_PER_USER: parseInt(process.env.RATE_LIMIT_BACKUP_VERIFY_PER_USER) || 3,
+  BACKUP_VERIFY_WINDOW: process.env.RATE_LIMIT_BACKUP_VERIFY_WINDOW || '5m',
+  TOTP_SETUP_PER_USER: parseInt(process.env.RATE_LIMIT_TOTP_SETUP_PER_USER) || 3,
+  TOTP_SETUP_WINDOW: process.env.RATE_LIMIT_TOTP_SETUP_WINDOW || '1h',
+  
+  // DDoS Protection
+  DDOS_SUSPICIOUS_IP_THRESHOLD: parseInt(process.env.DDOS_SUSPICIOUS_IP_THRESHOLD) || 1000,
+  DDOS_GLOBAL_SPIKE_THRESHOLD: parseInt(process.env.DDOS_GLOBAL_SPIKE_THRESHOLD) || 10000,
+  DDOS_FAILED_AUTH_THRESHOLD: parseInt(process.env.DDOS_FAILED_AUTH_THRESHOLD) || 50,
+  DDOS_CIRCUIT_BREAKER_THRESHOLD: parseInt(process.env.DDOS_CIRCUIT_BREAKER_THRESHOLD) || 5,
+  DDOS_CIRCUIT_BREAKER_TIMEOUT: process.env.DDOS_CIRCUIT_BREAKER_TIMEOUT || '1m',
+}
+
+/**
+ * Security Constants
+ */
+export const SECURITY_CONSTANTS = {
+  DEFAULT_BCRYPT_ROUNDS: parseInt(process.env.SECURITY_DEFAULT_BCRYPT_ROUNDS) || 12,
+  DEFAULT_CORS_ORIGIN: process.env.SECURITY_DEFAULT_CORS_ORIGIN || 'http://localhost:3000',
+  DEFAULT_CORS_CREDENTIALS: process.env.SECURITY_DEFAULT_CORS_CREDENTIALS === 'true' || true,
+  
+  // Session Settings
+  DEFAULT_MAX_CONCURRENT_SESSIONS: parseInt(process.env.SECURITY_DEFAULT_MAX_CONCURRENT_SESSIONS) || 5,
+  DEFAULT_SESSION_CLEANUP_INTERVAL: process.env.SECURITY_DEFAULT_SESSION_CLEANUP_INTERVAL || '1h',
+  DEFAULT_SESSION_EXTEND_ON_USE: process.env.SECURITY_DEFAULT_SESSION_EXTEND_ON_USE === 'true' || true,
+  
+  // Threat Detection
+  DEFAULT_IMPOSSIBLE_TRAVEL_THRESHOLD: parseInt(process.env.SECURITY_DEFAULT_IMPOSSIBLE_TRAVEL_THRESHOLD) || 500,
+  DEFAULT_NEW_DEVICE_NOTIFICATION: process.env.SECURITY_DEFAULT_NEW_DEVICE_NOTIFICATION === 'true' || true,
+  DEFAULT_JTI_BLACKLIST_TTL: process.env.SECURITY_DEFAULT_JTI_BLACKLIST_TTL || '30d',
+  
+  // Session Scoring Weights
+  SESSION_SCORING_AGE_WEIGHT: parseInt(process.env.SECURITY_SESSION_SCORING_AGE_WEIGHT) || 10,
+  SESSION_SCORING_INACTIVITY_WEIGHT: parseInt(process.env.SECURITY_SESSION_SCORING_INACTIVITY_WEIGHT) || 20,
+  SESSION_SCORING_SAME_DEVICE_BONUS: parseInt(process.env.SECURITY_SESSION_SCORING_SAME_DEVICE_BONUS) || 5000,
+  SESSION_SCORING_SAME_BROWSER_BONUS: parseInt(process.env.SECURITY_SESSION_SCORING_SAME_BROWSER_BONUS) || 1000,
+  SESSION_SCORING_SAME_OS_BONUS: parseInt(process.env.SECURITY_SESSION_SCORING_SAME_OS_BONUS) || 500,
+  SESSION_SCORING_SAME_IP_BONUS: parseInt(process.env.SECURITY_SESSION_SCORING_SAME_IP_BONUS) || 2000,
+}
+
+/**
+ * Health Check Constants
+ */
+export const HEALTH_CHECK_CONSTANTS = {
+  DEFAULT_INTERVAL: process.env.HEALTH_CHECK_DEFAULT_INTERVAL || '10s',
+  DEFAULT_TIMEOUT: process.env.HEALTH_CHECK_DEFAULT_TIMEOUT || '5s',
+  DEFAULT_RETRIES: parseInt(process.env.HEALTH_CHECK_DEFAULT_RETRIES) || 5,
+  DEFAULT_START_PERIOD: process.env.HEALTH_CHECK_DEFAULT_START_PERIOD || '30s',
+  
+  // API Health Check
+  API_INTERVAL: process.env.HEALTH_CHECK_API_INTERVAL || '30s',
+  API_TIMEOUT: process.env.HEALTH_CHECK_API_TIMEOUT || '10s',
+  API_RETRIES: parseInt(process.env.HEALTH_CHECK_API_RETRIES) || 3,
+  
+  // Database Health Check
+  DB_INTERVAL: process.env.HEALTH_CHECK_DB_INTERVAL || '10s',
+  DB_TIMEOUT: process.env.HEALTH_CHECK_DB_TIMEOUT || '5s',
+  DB_RETRIES: parseInt(process.env.HEALTH_CHECK_DB_RETRIES) || 5,
+  
+  // Redis Health Check
+  REDIS_INTERVAL: process.env.HEALTH_CHECK_REDIS_INTERVAL || '10s',
+  REDIS_TIMEOUT: process.env.HEALTH_CHECK_REDIS_TIMEOUT || '3s',
+  REDIS_RETRIES: parseInt(process.env.HEALTH_CHECK_REDIS_RETRIES) || 3,
+}
+
+/**
+ * UI/UX Constants
+ */
+export const UI_CONSTANTS = {
+  // Email Template Styling
+  EMAIL_CONTAINER_MAX_WIDTH: process.env.UI_EMAIL_CONTAINER_MAX_WIDTH || '600px',
+  EMAIL_CONTAINER_PADDING: process.env.UI_EMAIL_CONTAINER_PADDING || '20px',
+  EMAIL_HEADER_MARGIN_BOTTOM: process.env.UI_EMAIL_HEADER_MARGIN_BOTTOM || '40px',
+  EMAIL_LOGO_FONT_SIZE: process.env.UI_EMAIL_LOGO_FONT_SIZE || '24px',
+  EMAIL_CONTENT_PADDING: process.env.UI_EMAIL_CONTENT_PADDING || '30px',
+  EMAIL_BUTTON_PADDING: process.env.UI_EMAIL_BUTTON_PADDING || '12px 24px',
+  EMAIL_FOOTER_FONT_SIZE: process.env.UI_EMAIL_FOOTER_FONT_SIZE || '14px',
+  EMAIL_SECURITY_NOTE_PADDING: process.env.UI_EMAIL_SECURITY_NOTE_PADDING || '15px',
+  
+  // Colors
+  PRIMARY_COLOR: process.env.UI_PRIMARY_COLOR || '#007bff',
+  PRIMARY_COLOR_HOVER: process.env.UI_PRIMARY_COLOR_HOVER || '#0056b3',
+  SUCCESS_COLOR: process.env.UI_SUCCESS_COLOR || '#28a745',
+  SUCCESS_COLOR_HOVER: process.env.UI_SUCCESS_COLOR_HOVER || '#218838',
+  WARNING_COLOR: process.env.UI_WARNING_COLOR || '#fff3cd',
+  WARNING_BORDER_COLOR: process.env.UI_WARNING_BORDER_COLOR || '#ffeaa7',
+  TEXT_COLOR: process.env.UI_TEXT_COLOR || '#333',
+  MUTED_TEXT_COLOR: process.env.UI_MUTED_TEXT_COLOR || '#666',
+  BACKGROUND_COLOR: process.env.UI_BACKGROUND_COLOR || '#f8f9fa',
+  BORDER_RADIUS: process.env.UI_BORDER_RADIUS || '8px',
+  BUTTON_BORDER_RADIUS: process.env.UI_BUTTON_BORDER_RADIUS || '6px',
+  SECURITY_NOTE_BORDER_RADIUS: process.env.UI_SECURITY_NOTE_BORDER_RADIUS || '4px',
+}
+
+/**
+ * Plan-based Quotas Constants
+ */
+export const PLAN_CONSTANTS = {
+  // Free Plan
+  FREE_EMAILS_PER_MONTH: parseInt(process.env.PLAN_FREE_EMAILS_PER_MONTH) || 1000,
+  FREE_EMAILS_PER_USER_PER_DAY: parseInt(process.env.PLAN_FREE_EMAILS_PER_USER_PER_DAY) || 10,
+  FREE_API_REQUESTS_PER_HOUR: parseInt(process.env.PLAN_FREE_API_REQUESTS_PER_HOUR) || 1000,
+  FREE_MAGIC_LINKS_PER_HOUR: parseInt(process.env.PLAN_FREE_MAGIC_LINKS_PER_HOUR) || 5,
+  FREE_REFRESH_TOKENS_PER_HOUR: parseInt(process.env.PLAN_FREE_REFRESH_TOKENS_PER_HOUR) || 60,
+  FREE_CONCURRENT_SESSIONS: parseInt(process.env.PLAN_FREE_CONCURRENT_SESSIONS) || 3,
+  
+  // Starter Plan
+  STARTER_EMAILS_PER_MONTH: parseInt(process.env.PLAN_STARTER_EMAILS_PER_MONTH) || 10000,
+  STARTER_EMAILS_PER_USER_PER_DAY: parseInt(process.env.PLAN_STARTER_EMAILS_PER_USER_PER_DAY) || 50,
+  STARTER_API_REQUESTS_PER_HOUR: parseInt(process.env.PLAN_STARTER_API_REQUESTS_PER_HOUR) || 10000,
+  STARTER_MAGIC_LINKS_PER_HOUR: parseInt(process.env.PLAN_STARTER_MAGIC_LINKS_PER_HOUR) || 20,
+  STARTER_REFRESH_TOKENS_PER_HOUR: parseInt(process.env.PLAN_STARTER_REFRESH_TOKENS_PER_HOUR) || 300,
+  STARTER_CONCURRENT_SESSIONS: parseInt(process.env.PLAN_STARTER_CONCURRENT_SESSIONS) || 5,
+  
+  // Pro Plan
+  PRO_EMAILS_PER_MONTH: parseInt(process.env.PLAN_PRO_EMAILS_PER_MONTH) || 100000,
+  PRO_EMAILS_PER_USER_PER_DAY: parseInt(process.env.PLAN_PRO_EMAILS_PER_USER_PER_DAY) || 200,
+  PRO_API_REQUESTS_PER_HOUR: parseInt(process.env.PLAN_PRO_API_REQUESTS_PER_HOUR) || 100000,
+  PRO_MAGIC_LINKS_PER_HOUR: parseInt(process.env.PLAN_PRO_MAGIC_LINKS_PER_HOUR) || 100,
+  PRO_REFRESH_TOKENS_PER_HOUR: parseInt(process.env.PLAN_PRO_REFRESH_TOKENS_PER_HOUR) || 1000,
+  PRO_CONCURRENT_SESSIONS: parseInt(process.env.PLAN_PRO_CONCURRENT_SESSIONS) || 10,
+}
+
+/**
+ * Threat Detection Constants
+ */
+export const THREAT_DETECTION_CONSTANTS = {
+  // Brute Force Detection
+  BRUTE_FORCE_MAX_ATTEMPTS: parseInt(process.env.THREAT_DETECTION_BRUTE_FORCE_MAX_ATTEMPTS) || 5,
+  BRUTE_FORCE_WINDOW_MINUTES: parseInt(process.env.THREAT_DETECTION_BRUTE_FORCE_WINDOW_MINUTES) || 15,
+  BRUTE_FORCE_LOCKOUT_DURATION: parseInt(process.env.THREAT_DETECTION_BRUTE_FORCE_LOCKOUT_DURATION) || 900, // 15 minutes
+  BRUTE_FORCE_PROGRESSIVE_DELAY: process.env.THREAT_DETECTION_BRUTE_FORCE_PROGRESSIVE_DELAY === 'true' || true,
+  
+  // Account Takeover Detection
+  ACCOUNT_TAKEOVER_THRESHOLD: parseInt(process.env.THREAT_DETECTION_ACCOUNT_TAKEOVER_THRESHOLD) || 3,
+  ACCOUNT_TAKEOVER_TIME_WINDOW: parseInt(process.env.THREAT_DETECTION_ACCOUNT_TAKEOVER_TIME_WINDOW) || 24,
+  ACCOUNT_TAKEOVER_GEO_DISTANCE: parseInt(process.env.THREAT_DETECTION_ACCOUNT_TAKEOVER_GEO_DISTANCE) || 1000, // km
+  ACCOUNT_TAKEOVER_DEVICE_CHANGE: parseInt(process.env.THREAT_DETECTION_ACCOUNT_TAKEOVER_DEVICE_CHANGE) || 2,
+  
+  // Impossible Travel Detection
+  IMPOSSIBLE_TRAVEL_MAX_SPEED: parseInt(process.env.THREAT_DETECTION_IMPOSSIBLE_TRAVEL_MAX_SPEED) || 500,
+  IMPOSSIBLE_TRAVEL_MIN_TIME: parseInt(process.env.THREAT_DETECTION_IMPOSSIBLE_TRAVEL_MIN_TIME) || 1, // hours
+  
+  // Suspicious Activity Detection
+  SUSPICIOUS_ACTIVITY_RAPID_SESSIONS: parseInt(process.env.THREAT_DETECTION_SUSPICIOUS_ACTIVITY_RAPID_SESSIONS) || 10,
+  SUSPICIOUS_ACTIVITY_TIME_WINDOW: parseInt(process.env.THREAT_DETECTION_SUSPICIOUS_ACTIVITY_TIME_WINDOW) || 60,
+  SUSPICIOUS_ACTIVITY_UNUSUAL_IP: process.env.THREAT_DETECTION_SUSPICIOUS_ACTIVITY_UNUSUAL_IP === 'true' || true,
+  SUSPICIOUS_ACTIVITY_DEVICE_CHANGES: process.env.THREAT_DETECTION_SUSPICIOUS_ACTIVITY_DEVICE_CHANGES === 'true' || true,
+}
+
+/**
+ * Refresh Token Constants
+ */
+export const REFRESH_TOKEN_CONSTANTS = {
+  DEFAULT_GRACE_PERIOD: parseInt(process.env.REFRESH_TOKEN_DEFAULT_GRACE_PERIOD) || 300, // 5 minutes
+  DEFAULT_MAX_CONCURRENT: parseInt(process.env.REFRESH_TOKEN_DEFAULT_MAX_CONCURRENT) || 3,
+  DEFAULT_FAMILY_SIZE_LIMIT: parseInt(process.env.REFRESH_TOKEN_DEFAULT_FAMILY_SIZE_LIMIT) || 10,
+  DEFAULT_ROTATION_WINDOW: parseInt(process.env.REFRESH_TOKEN_DEFAULT_ROTATION_WINDOW) || 1000, // 1 second
+  DEFAULT_ROTATION_ENABLED: process.env.REFRESH_TOKEN_DEFAULT_ROTATION_ENABLED === 'true' || true,
+  DEFAULT_CONCURRENT_PROTECTION: process.env.REFRESH_TOKEN_DEFAULT_CONCURRENT_PROTECTION === 'true' || true,
+  DEFAULT_FAMILY_TRACKING: process.env.REFRESH_TOKEN_DEFAULT_FAMILY_TRACKING === 'true' || true,
+}
+
+/**
+ * Monitoring Constants
+ */
+export const MONITORING_CONSTANTS = {
+  DEFAULT_METRICS_RETENTION: parseInt(process.env.MONITORING_DEFAULT_METRICS_RETENTION) || 30, // days
+  DEFAULT_DASHBOARD_REFRESH: parseInt(process.env.MONITORING_DEFAULT_DASHBOARD_REFRESH) || 30000, // 30 seconds
+  DEFAULT_REAL_TIME_ALERTS: process.env.MONITORING_DEFAULT_REAL_TIME_ALERTS === 'true' || true,
+  
+  // Alert Thresholds
+  ALERT_HIGH_RISK_INCIDENTS: parseInt(process.env.MONITORING_ALERT_HIGH_RISK_INCIDENTS) || 5,
+  ALERT_FAILED_LOGINS: parseInt(process.env.MONITORING_ALERT_FAILED_LOGINS) || 100,
+  ALERT_SUSPICIOUS_ACTIVITIES: parseInt(process.env.MONITORING_ALERT_SUSPICIOUS_ACTIVITIES) || 20,
+  ALERT_TOKEN_COMPROMISES: parseInt(process.env.MONITORING_ALERT_TOKEN_COMPROMISES) || 3,
+  
+  // Metrics Retention
+  RETENTION_MINUTE: process.env.MONITORING_RETENTION_MINUTE || '1h',
+  RETENTION_HOUR: process.env.MONITORING_RETENTION_HOUR || '24h',
+  RETENTION_DAY: process.env.MONITORING_RETENTION_DAY || '30d',
+}
+
+/**
+ * Alert Notification Constants
+ */
+export const ALERT_NOTIFICATION_CONSTANTS = {
+  DEFAULT_ENABLED: process.env.ALERT_NOTIFICATIONS_DEFAULT_ENABLED === 'true' || true,
+  DEFAULT_DEDUP_WINDOW: process.env.ALERT_NOTIFICATIONS_DEFAULT_DEDUP_WINDOW || '5m',
+  DEFAULT_MAX_RETRIES: parseInt(process.env.ALERT_NOTIFICATIONS_DEFAULT_MAX_RETRIES) || 3,
+  DEFAULT_RETRY_DELAY: process.env.ALERT_NOTIFICATIONS_DEFAULT_RETRY_DELAY || '5s',
+  DEFAULT_RETRY_BACKOFF: process.env.ALERT_NOTIFICATIONS_DEFAULT_RETRY_BACKOFF || '15s',
+  DEFAULT_EMAIL_ENABLED: process.env.ALERT_EMAIL_DEFAULT_ENABLED === 'true' || true,
+  DEFAULT_SLACK_ENABLED: process.env.ALERT_SLACK_DEFAULT_ENABLED === 'true' || false,
+  DEFAULT_PAGERDUTY_ENABLED: process.env.ALERT_PAGERDUTY_DEFAULT_ENABLED === 'true' || false,
+  DEFAULT_EMAIL_RECIPIENTS: process.env.ALERT_EMAIL_DEFAULT_RECIPIENTS || '',
+  DEFAULT_SLACK_CHANNEL: process.env.ALERT_SLACK_DEFAULT_CHANNEL || '#alerts',
+}
+
+/**
+ * Webhook Constants
+ */
+export const WEBHOOK_CONSTANTS = {
+  DEFAULT_TIMEOUT: process.env.WEBHOOK_DEFAULT_TIMEOUT || '10s',
+  DEFAULT_RETRY_ATTEMPTS: parseInt(process.env.WEBHOOK_DEFAULT_RETRY_ATTEMPTS) || 3,
+  DEFAULT_RETRY_DELAY: process.env.WEBHOOK_DEFAULT_RETRY_DELAY || '1s',
+}
+
+/**
+ * Client Token Refresh Constants
+ */
+export const CLIENT_TOKEN_REFRESH_CONSTANTS = {
+  DEFAULT_REFRESH_THRESHOLD: parseInt(process.env.CLIENT_TOKEN_REFRESH_DEFAULT_THRESHOLD) || 300, // 5 minutes
+  DEFAULT_MAX_RETRIES: parseInt(process.env.CLIENT_TOKEN_REFRESH_DEFAULT_MAX_RETRIES) || 3,
+  DEFAULT_RETRY_DELAY: parseInt(process.env.CLIENT_TOKEN_REFRESH_DEFAULT_RETRY_DELAY) || 1000, // 1 second
+  DEFAULT_MAX_RETRY_DELAY: parseInt(process.env.CLIENT_TOKEN_REFRESH_DEFAULT_MAX_RETRY_DELAY) || 30000, // 30 seconds
+  DEFAULT_CONCURRENT_PROTECTION: process.env.CLIENT_TOKEN_REFRESH_DEFAULT_CONCURRENT_PROTECTION === 'true' || true,
+  DEFAULT_EXPONENTIAL_BACKOFF: process.env.CLIENT_TOKEN_REFRESH_DEFAULT_EXPONENTIAL_BACKOFF === 'true' || true,
+}
+
+/**
+ * Feature Flags Constants
+ */
+export const FEATURE_FLAGS_CONSTANTS = {
+  DEFAULT_SIGNUP: process.env.FEATURE_DEFAULT_SIGNUP === 'true' || true,
+  DEFAULT_MAGIC_LINKS: process.env.FEATURE_DEFAULT_MAGIC_LINKS === 'true' || true,
+  DEFAULT_WEBHOOKS: process.env.FEATURE_DEFAULT_WEBHOOKS === 'true' || false,
+  DEFAULT_AUDIT_LOGS: process.env.FEATURE_DEFAULT_AUDIT_LOGS === 'true' || true,
+  DEFAULT_SWAGGER: process.env.FEATURE_DEFAULT_SWAGGER === 'true' || false,
+  DEFAULT_REQUEST_LOGGING: process.env.FEATURE_DEFAULT_REQUEST_LOGGING === 'true' || true,
+  DEFAULT_METRICS: process.env.FEATURE_DEFAULT_METRICS === 'true' || true,
+  DEFAULT_HELMET: process.env.FEATURE_DEFAULT_HELMET === 'true' || true,
+  DEFAULT_RATE_LIMITING: process.env.FEATURE_DEFAULT_RATE_LIMITING === 'true' || true,
+  DEFAULT_OAUTH: process.env.FEATURE_DEFAULT_OAUTH === 'true' || true,
+}
+
+/**
+ * Admin Constants
+ */
+export const ADMIN_CONSTANTS = {
+  DEFAULT_RATE_LIMIT_BYPASS: process.env.ADMIN_DEFAULT_RATE_LIMIT_BYPASS === 'true' || true,
+  DEFAULT_ALLOWED_IPS: process.env.ADMIN_DEFAULT_ALLOWED_IPS ? process.env.ADMIN_DEFAULT_ALLOWED_IPS.split(',') : [],
+}
+
+/**
+ * Security Incident Response Constants
+ */
+export const SECURITY_INCIDENT_RESPONSE_CONSTANTS = {
+  DEFAULT_ENABLED: process.env.SECURITY_INCIDENT_RESPONSE_DEFAULT_ENABLED === 'true' || true,
+  DEFAULT_AUTO_CLASSIFICATION: process.env.SECURITY_INCIDENT_RESPONSE_DEFAULT_AUTO_CLASSIFICATION === 'true' || true,
+  DEFAULT_NOTIFICATION_CHANNELS: process.env.SECURITY_INCIDENT_RESPONSE_DEFAULT_NOTIFICATION_CHANNELS 
+    ? process.env.SECURITY_INCIDENT_RESPONSE_DEFAULT_NOTIFICATION_CHANNELS.split(',')
+    : ['log', 'email'],
+  
+  // Response Timeouts
+  TIMEOUT_LEVEL1: parseInt(process.env.SECURITY_INCIDENT_RESPONSE_TIMEOUT_LEVEL1) || 300, // 5 minutes
+  TIMEOUT_LEVEL2: parseInt(process.env.SECURITY_INCIDENT_RESPONSE_TIMEOUT_LEVEL2) || 600, // 10 minutes
+  TIMEOUT_LEVEL3: parseInt(process.env.SECURITY_INCIDENT_RESPONSE_TIMEOUT_LEVEL3) || 1800, // 30 minutes
+  TIMEOUT_LEVEL4: parseInt(process.env.SECURITY_INCIDENT_RESPONSE_TIMEOUT_LEVEL4) || 3600, // 1 hour
+}
+
+/**
+ * Export all constants as a single object for easy access
+ */
+export const ALL_CONSTANTS = {
+  APP: APP_CONSTANTS,
+  PORT: PORT_CONSTANTS,
+  DATABASE: DATABASE_CONSTANTS,
+  REDIS: REDIS_CONSTANTS,
+  JWT: JWT_CONSTANTS,
+  EMAIL: EMAIL_CONSTANTS,
+  MAGIC_LINK: MAGIC_LINK_CONSTANTS,
+  OAUTH: OAUTH_CONSTANTS,
+  RATE_LIMIT: RATE_LIMIT_CONSTANTS,
+  SECURITY: SECURITY_CONSTANTS,
+  HEALTH_CHECK: HEALTH_CHECK_CONSTANTS,
+  UI: UI_CONSTANTS,
+  PLAN: PLAN_CONSTANTS,
+  THREAT_DETECTION: THREAT_DETECTION_CONSTANTS,
+  REFRESH_TOKEN: REFRESH_TOKEN_CONSTANTS,
+  MONITORING: MONITORING_CONSTANTS,
+  ALERT_NOTIFICATIONS: ALERT_NOTIFICATION_CONSTANTS,
+  WEBHOOK: WEBHOOK_CONSTANTS,
+  CLIENT_TOKEN_REFRESH: CLIENT_TOKEN_REFRESH_CONSTANTS,
+  FEATURE_FLAGS: FEATURE_FLAGS_CONSTANTS,
+  ADMIN: ADMIN_CONSTANTS,
+  SECURITY_INCIDENT_RESPONSE: SECURITY_INCIDENT_RESPONSE_CONSTANTS,
+}
+
+export default ALL_CONSTANTS

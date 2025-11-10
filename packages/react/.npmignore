@@ -1,0 +1,80 @@
+# Source files
+src/
+test/
+tests/
+
+# Test files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+**/__tests__/
+**/__mocks__/
+
+# Storybook
+.storybook/
+stories/
+**/*.stories.tsx
+**/*.stories.ts
+
+# Config files
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
+vitest.config.ts
+jest.config.js
+.eslintrc*
+.prettierrc*
+
+# Build artifacts
+node_modules/
+coverage/
+.vite/
+dist-ssr/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (keep README.md, CHANGELOG.md, LICENSE)
+*.md
+!README.md
+!CHANGELOG.md
+!API.md
+
+# Examples (optional - keep for reference)
+examples/
+
+# Reports
+*_REPORT.md
+*_SUMMARY.md
+*_COMPLETION*.md
+*_VALIDATION*.md
+IMPLEMENTATION_SUMMARY.md
+TESTING_REPORT.md
+QUICKSTART.md
+USAGE.md
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

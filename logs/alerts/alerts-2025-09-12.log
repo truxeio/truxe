@@ -1,0 +1,102 @@
+2025-09-12T09:33:20.324Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:33:20.325Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:33:33.960Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:33:49.005Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:33:49.005Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:33:49.005Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:33:51.048Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:33:51.049Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:34:18.952Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:34:20.382Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:34:20.382Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:34:49.038Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:34:49.039Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:34:49.039Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:34:51.073Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:34:51.073Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:35:03.958Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:35:20.448Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:35:20.448Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:35:48.952Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:35:49.677Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:35:49.677Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:35:49.677Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:35:51.709Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:35:51.709Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:36:21.070Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:36:21.070Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:36:33.965Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:36:49.713Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:36:49.714Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:36:49.714Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:36:51.750Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:36:51.750Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:37:19.046Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:37:21.198Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:37:21.198Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:37:49.728Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:37:49.729Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:37:49.729Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:37:51.814Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:37:51.815Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:38:03.979Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:38:21.134Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:38:21.134Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:38:49.010Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:38:49.740Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:38:49.740Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:38:49.740Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:38:51.824Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:38:51.825Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:39:21.182Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:39:21.183Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:39:34.040Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:39:49.777Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:39:49.778Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:39:49.778Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:39:51.857Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:39:51.857Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:40:19.015Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:40:21.186Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:40:21.186Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:40:49.801Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:40:49.801Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:40:49.801Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:40:51.926Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:40:51.926Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:41:04.313Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:41:21.232Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:41:21.233Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:41:49.052Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:41:49.804Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:41:49.805Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:41:49.805Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:41:52.171Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:41:52.171Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:42:21.310Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:42:21.310Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:42:34.063Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:42:49.831Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:42:49.832Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:42:49.832Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:42:51.923Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:42:51.923Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:43:19.071Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:43:21.275Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:43:21.275Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:43:50.007Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:43:50.008Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:43:50.008Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:43:52.423Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:43:52.423Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:44:04.075Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:44:21.417Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:44:21.418Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:44:49.020Z [CRITICAL] compliance_violation: Compliance violations detected: 7
+2025-09-12T09:44:49.997Z [WARNING] security_issue: Unauthorized ports detected: 52933, 52933, 7000, 7000, 5000, 5000, 6379, 6379, 5432, 5432, 8080, 7004, 6333, 7101, 5434, 7100, 7070, 6379, 11211, 9090, 3001, 7007, 5432, 5433, 11434, 6380, 5440, 7102, 7005, 7006, 7020, 7003, 7001, 42050
+2025-09-12T09:44:49.998Z [WARNING] security_issue: File secrets/jwt-private-key.pem has overly permissive permissions
+2025-09-12T09:44:49.998Z [WARNING] security_issue: File secrets/jwt-public-key.pem has overly permissive permissions
+2025-09-12T09:44:52.050Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:44:52.050Z [CRITICAL] isolation_violations: Critical isolation violations: 7
+2025-09-12T09:45:21.459Z [CRITICAL] port_conflicts: Critical number of port conflicts: 5
+2025-09-12T09:45:21.460Z [CRITICAL] isolation_violations: Critical isolation violations: 7

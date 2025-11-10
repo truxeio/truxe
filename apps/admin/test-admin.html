@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heimdall Enhanced Admin Dashboard - Test</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for testing */
+        .test-container {
+            min-height: 100vh;
+            background: #f9fafb;
+        }
+        
+        /* Performance monitoring */
+        .performance-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #10b981;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .performance-indicator.slow {
+            background: #f59e0b;
+        }
+        
+        .performance-indicator.fast {
+            background: #10b981;
+        }
+        
+        /* Responsive test indicators */
+        .responsive-indicator {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            z-index: 1000;
+        }
+        
+        /* Loading animation */
+        .loading-spinner {
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root" class="test-container">
+        <div class="flex items-center justify-center min-h-screen">
+            <div class="text-center">
+                <div class="loading-spinner mx-auto mb-4"></div>
+                <p class="text-gray-600">Loading Enhanced Admin Dashboard...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance indicator -->
+    <div id="performance-indicator" class="performance-indicator">
+        Loading...
+    </div>
+
+    <!-- Responsive indicator -->
+    <div id="responsive-indicator" class="responsive-indicator">
+        <span id="screen-size">Loading...</span>
+    </div>
+
+    <!-- Load the enhanced admin dashboard -->
+    <script src="dist/enhanced-admin.umd.js"></script>
+    
+    <script>
+        // Performance monitoring
+        const startTime = performance.now();
+        const performanceIndicator = document.getElementById('performance-indicator');
+        const responsiveIndicator = document.getElementById('responsive-indicator');
+        const screenSizeSpan = document.getElementById('screen-size');
+        
+        // Track load time
+        function updatePerformanceIndicator() {
+            const loadTime = performance.now() - startTime;
+            const indicator = document.getElementById('performance-indicator');
+            
+            if (loadTime < 2000) {
+                indicator.textContent = `⚡ ${loadTime.toFixed(0)}ms - Fast`;
+                indicator.className = 'performance-indicator fast';
+            } else if (loadTime < 3000) {
+                indicator.textContent = `⚠️ ${loadTime.toFixed(0)}ms - Slow`;
+                indicator.className = 'performance-indicator slow';
+            } else {
+                indicator.textContent = `🐌 ${loadTime.toFixed(0)}ms - Very Slow`;
+                indicator.className = 'performance-indicator slow';
+            }
+        }
+        
+        // Update responsive indicator
+        function updateResponsiveIndicator() {
+            const width = window.innerWidth;
+            let size = '';
+            
+            if (width < 640) {
+                size = 'Mobile (< 640px)';
+            } else if (width < 768) {
+                size = 'Small (640-768px)';
+            } else if (width < 1024) {
+                size = 'Medium (768-1024px)';
+            } else if (width < 1280) {
+                size = 'Large (1024-1280px)';
+            } else {
+                size = 'XL (1280px+)';
+            }
+            
+            screenSizeSpan.textContent = size;
+        }
+        
+        // Update on resize
+        window.addEventListener('resize', updateResponsiveIndicator);
+        updateResponsiveIndicator();
+        
+        // Sample user data
+        const sampleUser = {
+            id: '1',
+            name: 'Admin User',
+            email: 'admin@truxe.io',
+            role: 'admin',
+            avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face'
+        };
+        
+        // Render the enhanced admin dashboard
+        function renderAdminDashboard() {
+            try {
+                const { EnhancedAdminDashboard } = HeimdallEnhancedAdmin;
+                
+                const root = ReactDOM.createRoot(document.getElementById('root'));
+                root.render(
+                    React.createElement(EnhancedAdminDashboard, {
+                        user: sampleUser,
+                        onLogout: () => {
+                            console.log('Logout clicked');
+                            alert('Logout functionality would be implemented here');
+                        }
+                    })
+                );
+                
+                // Update performance indicator after render
+                setTimeout(updatePerformanceIndicator, 100);
+                
+            } catch (error) {
+                console.error('Error rendering admin dashboard:', error);
+                document.getElementById('root').innerHTML = `
+                    <div class="flex items-center justify-center min-h-screen">
+                        <div class="text-center">
+                            <div class="text-red-600 text-xl mb-4">❌ Error Loading Dashboard</div>
+                            <p class="text-gray-600">${error.message}</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Wait for the script to load and then render
+        if (typeof HeimdallEnhancedAdmin !== 'undefined') {
+            renderAdminDashboard();
+        } else {
+            // Wait for script to load
+            const checkForLibrary = setInterval(() => {
+                if (typeof HeimdallEnhancedAdmin !== 'undefined') {
+                    clearInterval(checkForLibrary);
+                    renderAdminDashboard();
+                }
+            }, 100);
+            
+            // Timeout after 10 seconds
+            setTimeout(() => {
+                clearInterval(checkForLibrary);
+                if (typeof HeimdallEnhancedAdmin === 'undefined') {
+                    document.getElementById('root').innerHTML = `
+                        <div class="flex items-center justify-center min-h-screen">
+                            <div class="text-center">
+                                <div class="text-red-600 text-xl mb-4">❌ Failed to Load Library</div>
+                                <p class="text-gray-600">The enhanced admin dashboard library could not be loaded.</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }, 10000);
+        }
+        
+        // Test responsive design at different breakpoints
+        function testResponsiveDesign() {
+            const breakpoints = [320, 640, 768, 1024, 1280, 1920];
+            let currentIndex = 0;
+            
+            function testNextBreakpoint() {
+                if (currentIndex < breakpoints.length) {
+                    const width = breakpoints[currentIndex];
+                    console.log(`Testing responsive design at ${width}px`);
+                    
+                    // Simulate window resize
+                    window.resizeTo(width, 800);
+                    updateResponsiveIndicator();
+                    
+                    currentIndex++;
+                    setTimeout(testNextBreakpoint, 2000);
+                } else {
+                    console.log('Responsive design testing complete');
+                }
+            }
+            
+            // Start testing after initial load
+            setTimeout(testNextBreakpoint, 3000);
+        }
+        
+        // Start responsive testing
+        testResponsiveDesign();
+        
+        // Log performance metrics
+        window.addEventListener('load', () => {
+            const loadTime = performance.now() - startTime;
+            console.log(`🚀 Admin Dashboard loaded in ${loadTime.toFixed(2)}ms`);
+            
+            // Check if it meets the <2 second requirement
+            if (loadTime < 2000) {
+                console.log('✅ Performance requirement met: <2 seconds');
+            } else {
+                console.log('❌ Performance requirement not met: >2 seconds');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+#!/bin/bash
+# Heimdall Docker Manager Wrapper
+# Provides easy access to docker management from project root
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "$SCRIPT_DIR/docker/docker-manager.sh" "$@"
+

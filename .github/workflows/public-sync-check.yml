@@ -1,0 +1,102 @@
+name: Public Sync Safety Check
+
+on:
+  push:
+    branches:
+      - 'public-sync*'
+  pull_request:
+    branches:
+      - 'public-sync*'
+
+jobs:
+  check-internal-files:
+    name: Verify no internal docs in public-sync branch
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for internal strategy docs
+        run: |
+          echo "🔍 Checking for internal files..."
+
+          FOUND_INTERNAL=false
+
+          # Check for strategy docs
+          if [ -d "docs/00-strategy" ]; then
+            echo "❌ Found: docs/00-strategy/"
+            FOUND_INTERNAL=true
+          fi
+
+          # Check for tickets
+          if [ -d "docs/v0.3/tickets" ]; then
+            echo "❌ Found: docs/v0.3/tickets/"
+            FOUND_INTERNAL=true
+          fi
+
+          # Check for specific files
+          INTERNAL_FILES=(
+            "MARKETING_ROADMAP.md"
+            "STRATEGIC_ROADMAP_2025.md"
+            "STRATEGY.md"
+            "README.FULL.md"
+            "DUAL_REPO_STRATEGY.md"
+            ".public-audit.md"
+          )
+
+          for file in "${INTERNAL_FILES[@]}"; do
+            if [ -f "$file" ]; then
+              echo "❌ Found: $file"
+              FOUND_INTERNAL=true
+            fi
+          done
+
+          # Check for EXECUTION_PLAN files
+          if ls EXECUTION_PLAN_*.md 1> /dev/null 2>&1; then
+            echo "❌ Found: EXECUTION_PLAN_*.md files"
+            ls EXECUTION_PLAN_*.md
+            FOUND_INTERNAL=true
+          fi
+
+          # Check for Hippoc references
+          if find . -name "*HIPPOC*.md" -o -name "*hippoc*" -type d | grep -q .; then
+            echo "❌ Found: Client-specific (Hippoc) files"
+            find . -name "*HIPPOC*.md" -o -name "*hippoc*" -type d
+            FOUND_INTERNAL=true
+          fi
+
+          if [ "$FOUND_INTERNAL" = true ]; then
+            echo ""
+            echo "❌ ERROR: Internal files detected in public-sync branch!"
+            echo ""
+            echo "These files should not be synced to public repository."
+            echo "Review DUAL_REPO_STRATEGY.md for sync guidelines."
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ No internal files detected - safe to sync"
+
+      - name: Check for production secrets
+        run: |
+          echo "🔍 Checking for production secrets..."
+
+          # Check for common secret patterns (basic check)
+          if grep -r "xkeysib-" . --include="*.md" --include="*.js" --include="*.env*" 2>/dev/null; then
+            echo "⚠️ Warning: Found potential Brevo API key"
+          fi
+
+          if grep -r "truxe_prod_2025" . --include="*.md" --include="*.js" --include="*.env*" 2>/dev/null; then
+            echo "❌ ERROR: Found production password"
+            exit 1
+          fi
+
+          echo "✅ No obvious secrets detected"
+
+      - name: Summary
+        if: success()
+        run: |
+          echo ""
+          echo "✅ Public Sync Safety Check PASSED"
+          echo ""
+          echo "This branch is safe to sync to public repository (truxeio/truxe)"

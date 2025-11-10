@@ -1,0 +1,179 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for Truxe
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please provide as much detail as possible.
+        
+        **Before submitting**, please:
+        - Search existing issues to avoid duplicates
+        - Check our [roadmap](https://docs.truxe.io/roadmap) to see if it's already planned
+        - Consider if this fits with Truxe's goals and philosophy
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I have searched existing issues
+          required: true
+        - label: I have checked the roadmap
+          required: true
+        - label: This feature aligns with Truxe's goals
+          required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Feature Category
+      description: What category does this feature belong to?
+      options:
+        - Authentication
+        - Authorization/RBAC
+        - Security
+        - Performance
+        - Developer Experience
+        - API
+        - CLI
+        - Documentation
+        - Deployment
+        - Monitoring
+        - Integration
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature?
+      options:
+        - Critical (Blocking adoption)
+        - High (Important for many users)
+        - Medium (Nice to have)
+        - Low (Minor improvement)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: |
+        As a [type of user], I want [goal] so that [benefit].
+        
+        Currently, [describe the problem or limitation]...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your proposed solution
+      placeholder: |
+        I would like to see [describe the feature]...
+        
+        This would work by [describe how it works]...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What alternatives have you considered?
+      placeholder: |
+        Alternative 1: [describe]
+        Alternative 2: [describe]
+        
+        Why the proposed solution is better: [explain]
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Usage Examples
+      description: Provide examples of how this feature would be used
+      placeholder: |
+        ```javascript
+        // Example usage
+        const result = await truxe.newFeature({
+          option: 'value'
+        });
+        ```
+        
+        ```bash
+        # CLI usage
+        truxe new-command --option value
+        ```
+      render: javascript
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: What criteria must be met for this feature to be complete?
+      placeholder: |
+        - [ ] Feature works as described
+        - [ ] Documentation is updated
+        - [ ] Tests are added
+        - [ ] Backward compatibility is maintained
+        - [ ] Performance impact is acceptable
+
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: Breaking Change
+      description: Would this be a breaking change?
+      options:
+        - "No"
+        - "Yes"
+        - "Potentially"
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact Assessment
+      description: What's the impact of this feature?
+      placeholder: |
+        **Benefits:**
+        - [List benefits]
+        
+        **Risks:**
+        - [List potential risks]
+        
+        **Effort:**
+        - [Estimate complexity: Small/Medium/Large]
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, mockups, or references
+      placeholder: |
+        Links to similar features in other tools:
+        - [Tool name]: [link]
+        
+        Related issues:
+        - #123
+        
+        Additional notes:
+        - [Any other relevant information]
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I would be willing to implement this feature
+        - label: I would be willing to help with testing
+        - label: I would be willing to help with documentation

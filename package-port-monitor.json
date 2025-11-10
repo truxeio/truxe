@@ -1,0 +1,19 @@
+{
+  "name": "truxe-port-monitor",
+  "version": "1.0.0",
+  "description": "Truxe Port Monitor Service",
+  "main": "scripts/port-monitor-entrypoint.js",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/port-monitor-entrypoint.js"
+  },
+  "dependencies": {
+    "node-cron": "^3.0.3",
+    "uuid": "^8.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Wundam LLC",
+  "license": "MIT"
+}

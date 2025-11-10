@@ -1,0 +1,83 @@
+# Truxe Dual License
+
+Copyright (c) 2025 Wundam LLC. All rights reserved.
+
+Truxe is licensed under a dual-license model:
+
+## Community Edition (MIT License)
+
+The Community Edition includes core authentication features and is licensed under the MIT License.
+
+**Included Features:**
+- Magic Link Authentication
+- Password Authentication
+- Basic OAuth Consumer (Google, GitHub)
+- Basic Sessions
+- Basic Organizations
+- Basic RBAC
+- Basic API
+
+See [LICENSE-MIT](LICENSE-MIT) for full license text.
+
+## Professional/Enterprise Edition (Business Source License 1.1)
+
+The Professional and Enterprise Editions include advanced features and are licensed under the Business Source License 1.1 (BSL).
+
+**Additional Features:**
+- OAuth Provider (Login with Truxe)
+- Passkeys/WebAuthn
+- SAML SSO
+- SCIM Directory Sync
+- Advanced RBAC
+- Advanced Security (Threat Detection, Anomaly Detection)
+- Admin Dashboard
+- React Component Library (@truxe/react)
+- JavaScript SDK (@truxe/js)
+- Priority Support
+
+See [LICENSE-BSL](LICENSE-BSL) for full license text.
+
+### BSL Key Terms
+
+**Production Use License:** Professional ($79/month) or Enterprise ($499/month)
+
+**Development & Evaluation:** FREE - Test, develop, and evaluate without any licensing fees.
+
+**Change Date:** January 1, 2029 (4 years from first production release)
+
+**Change License:** MIT License - After the Change Date, the Professional/Enterprise Edition will automatically convert to MIT License.
+
+## Choosing Your License
+
+- **For development, testing, or evaluation:** FREE (both editions)
+- **For production use (self-hosted):** $79/month (Professional) or $499/month (Enterprise)
+- **For managed cloud hosting:** Truxe Cloud (coming soon)
+- **To resell or offer as a service:** Contact sales@wundam.com for authorization
+
+## Additional Use Grant
+
+We grant additional permissions for:
+- ✅ Academic and research use
+- ✅ Non-profit and open-source projects
+- ✅ Evaluation and testing
+- ✅ Integration into commercial products (not as CIAM service)
+
+## Questions?
+
+For licensing questions, contact: sales@wundam.com
+
+For technical support: support@wundam.com
+
+## Trademarks
+
+"Truxe" and the Truxe logo are trademarks of Wundam LLC. Use of these trademarks is subject to our trademark policy.
+
+---
+
+**Summary:**
+- Community Edition: MIT License (40% of features) - FREE for all uses
+- Professional Edition: BSL 1.1 ($79/month for production) - Full feature access
+- Enterprise Edition: BSL 1.1 ($499/month for production) - Premium features + support
+- After 4 years: Everything becomes MIT License
+
+For the complete legal text, see LICENSE-MIT and LICENSE-BSL.

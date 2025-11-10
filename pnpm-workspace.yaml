@@ -1,0 +1,14 @@
+# Truxe Monorepo Workspace Configuration
+# This file defines which directories are treated as workspace packages
+
+packages:
+  # Applications (standalone apps that can be deployed)
+  - 'apps/*'
+
+  # Shared packages (libraries, utilities, types)
+  - 'packages/*'
+
+  # Exclude build outputs and node_modules
+  - '!**/node_modules/**'
+  - '!**/dist/**'
+  - '!**/.next/**'

@@ -1,0 +1,29 @@
+
+# ============================================================================
+# Environment Files (Security Best Practice)
+# ============================================================================
+
+# NEVER commit these files - they contain secrets
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.test
+.env.*.local
+
+# Backup files
+.env.old-backup
+.env.backup*
+*.env.backup
+
+# Keep these - they are templates
+!.env.example
+
+# JWT key files (generated, should not be committed)
+jwt-keys.env
+jwt-keys-*.env
+jwt-*.pem
+*.pem
+
+# ============================================================================

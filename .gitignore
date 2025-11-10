@@ -1,0 +1,157 @@
+# Dependencies
+node_modules/
+*/node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+.nyc_output/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config/environments/*.env
+!config/environments/*.template
+
+# Logs
+logs/*.log
+logs/monitoring/*.json
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Next.js build output
+.next
+
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Secrets and sensitive files
+secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker volumes
+docker-volumes/
+
+# Monitoring and reports (keep structure, ignore content)
+logs/monitoring/*.json
+reports/*.json
+
+# Build artifacts
+*.map
+*.min.js
+*.min.css
+.env.local
+.env.vps
+
+# Production deployment secrets
+deployment/.env.production
+.env.production
+
+# Internal docs (never sync to public repo)
+# These files contain business strategy, competitive analysis,
+# and internal planning that should remain private
+docs/00-strategy/
+docs/v0.3/tickets/
+MARKETING_ROADMAP.md
+STRATEGIC_ROADMAP_2025.md
+EXECUTION_PLAN_*.md
+STRATEGY.md
+README.FULL.md
+**/HIPPOC*.md
+**/hippoc/
+DUAL_REPO_STRATEGY.md
+.public-audit.md
+.turbo/
+
+# Security audit documents (internal only)
+SECURITY-AUDIT-REPORT.md
+SECRET-ROTATION-CHECKLIST.md
+*-AUDIT-*.md
+*-ROTATION-*.md

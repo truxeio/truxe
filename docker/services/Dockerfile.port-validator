@@ -1,0 +1,48 @@
+# Dockerfile for Truxe Port Validation Service
+# Lightweight container for running port validation before service startup
+
+FROM node:18-alpine
+
+# Install system dependencies for port checking
+RUN apk add --no-cache \
+    curl \
+    lsof \
+    netstat-nat \
+    docker-cli \
+    && rm -rf /var/cache/apk/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files (if they exist)
+COPY package*.json ./
+
+# Install Node.js dependencies
+RUN npm ci --only=production || echo "No package.json found, skipping npm install"
+
+# Copy application files
+COPY config/ ./config/
+COPY scripts/ ./scripts/
+
+# Create reports directory
+RUN mkdir -p ./reports
+
+# Set permissions
+RUN chmod +x ./scripts/*.js
+
+# Create non-root user
+RUN addgroup -g 1001 -S truxe && \
+    adduser -S truxe -u 1001 -G truxe
+
+# Change ownership
+RUN chown -R truxe:truxe /app
+
+# Switch to non-root user
+USER truxe
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD node -e "console.log('Port validator is healthy')" || exit 1
+
+# Default command
+CMD ["node", "./scripts/startup-validator.js", "--env", "development", "--verbose"]

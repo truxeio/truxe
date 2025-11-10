@@ -1,0 +1,715 @@
+openapi: 3.1.0
+info:
+  title: Truxe Authentication API
+  description: |
+    Truxe is an open-source authentication and authorization platform that provides
+    comprehensive user management, multi-factor authentication, OAuth integration,
+    and role-based access control (RBAC) capabilities.
+    
+    ## Authentication Methods
+    - Magic Links (passwordless)
+    - Password-based authentication  
+    - OAuth providers (Google, GitHub, etc.)
+    - Multi-factor authentication (TOTP)
+    
+    ## Features
+    - Multi-tenant organization support
+    - Role-based access control (RBAC)
+    - Session management with refresh tokens
+    - Webhook notifications
+    - API key management
+    - Audit logging and security monitoring
+  version: 0.4.0
+  contact:
+    name: Truxe Support
+    url: https://truxe.io/support
+    email: support@truxe.io
+  license:
+    name: MIT License
+    url: https://github.com/truxeio/truxe/blob/main/LICENSE
+
+servers:
+  - url: http://localhost:3001
+    description: Local development server
+  - url: https://staging-api.truxe.io
+    description: Staging environment
+  - url: https://api.truxe.io
+    description: Production environment
+
+security:
+  - bearerAuth: []
+  - apiKey: []
+
+paths:
+  # Authentication Endpoints
+  /auth/magic-link:
+    post:
+      tags: [Authentication]
+      summary: Send magic link email
+      description: |
+        Sends a passwordless authentication magic link to the specified email address.
+        The magic link contains a secure token that can be used to authenticate the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User email address
+                  example: "user@example.com"
+                orgSlug:
+                  type: string
+                  pattern: '^[a-z0-9][a-z0-9-]*[a-z0-9]$'
+                  description: Organization slug for direct login
+                  example: "acme-corp"
+                redirectUri:
+                  type: string
+                  format: uri
+                  description: Custom redirect URI for magic link callback
+                  example: "https://app.example.com/auth/callback"
+            examples:
+              basic:
+                summary: Basic magic link request
+                value:
+                  email: "user@example.com"
+              with-org:
+                summary: Organization-specific login
+                value:
+                  email: "admin@acme.com"
+                  orgSlug: "acme-corp"
+      responses:
+        '200':
+          description: Magic link sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Magic link sent to user@example.com"
+                  email:
+                    type: string
+                    example: "user@example.com"
+                  expiresIn:
+                    type: number
+                    description: Time until magic link expires (in seconds)
+                    example: 600
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /auth/verify:
+    get:
+      tags: [Authentication]
+      summary: Verify magic link token
+      description: |
+        Verifies a magic link token and authenticates the user.
+        Returns JWT access and refresh tokens upon successful verification.
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The magic link token from the email
+          example: "ml_1234567890abcdef"
+        - name: redirect_uri
+          in: query
+          schema:
+            type: string
+            format: uri
+          description: Optional redirect URI after verification
+      responses:
+        '200':
+          description: Token verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      description: |
+        Exchanges a refresh token for a new access token and refresh token pair.
+        Implements refresh token rotation for enhanced security.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+                  description: Valid refresh token
+                  example: "rt_1234567890abcdef"
+      responses:
+        '200':
+          description: Tokens refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get current user profile
+      description: |
+        Returns the profile information for the currently authenticated user,
+        including organization memberships and permissions.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout user
+      description: |
+        Invalidates the current session and refresh token, effectively logging out the user.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Multi-Factor Authentication
+  /auth/mfa/setup:
+    post:
+      tags: [Multi-Factor Authentication]
+      summary: Setup TOTP MFA
+      description: |
+        Initiates TOTP (Time-based One-Time Password) MFA setup by generating a secret key,
+        QR code, and backup codes for the authenticated user.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: MFA setup initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  secret:
+                    type: string
+                    description: Base32-encoded TOTP secret
+                    example: "JBSWY3DPEHPK3PXP"
+                  qrCode:
+                    type: string
+                    description: Data URL of QR code image
+                    example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+                  otpauthUrl:
+                    type: string
+                    description: otpauth:// URL for manual entry
+                    example: "otpauth://totp/Truxe:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Truxe"
+                  manualEntryCode:
+                    type: string
+                    description: Human-readable secret for manual entry
+                    example: "JBSW Y3DP EHPK 3PXP"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/mfa/enable:
+    post:
+      tags: [Multi-Factor Authentication]
+      summary: Enable MFA with token verification
+      description: |
+        Verifies a TOTP token and permanently enables MFA for the user.
+        Returns backup codes that should be securely stored.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+                  pattern: '^[0-9]{6}$'
+                  description: 6-digit TOTP verification code
+                  example: "123456"
+      responses:
+        '200':
+          description: MFA enabled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "MFA enabled successfully"
+                  backupCodes:
+                    type: array
+                    items:
+                      type: string
+                    description: One-time backup codes (store securely)
+                    example: ["12345678", "87654321", "11223344"]
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/mfa/verify:
+    post:
+      tags: [Multi-Factor Authentication]
+      summary: Verify MFA token during login
+      description: |
+        Verifies a TOTP token or backup code during the authentication flow.
+        Required when a user has MFA enabled.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+                  description: 6-digit TOTP code or 8-digit backup code
+                  example: "123456"
+                sessionId:
+                  type: string
+                  description: Temporary session ID from initial auth step
+                  example: "temp_session_123"
+      responses:
+        '200':
+          description: MFA verification successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # OAuth Authentication
+  /auth/oauth/authorize:
+    get:
+      tags: [OAuth]
+      summary: Get OAuth authorization URL
+      description: |
+        Initiates an OAuth authorization flow by returning the authorization URL
+        for the specified provider. Users should be redirected to this URL.
+      parameters:
+        - name: provider
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [google, github, microsoft]
+          description: OAuth provider name
+          example: "google"
+        - name: redirect_uri
+          in: query
+          schema:
+            type: string
+            format: uri
+          description: Callback URI after OAuth authorization
+          example: "https://app.example.com/auth/callback"
+        - name: state
+          in: query
+          schema:
+            type: string
+          description: Optional state parameter for CSRF protection
+        - name: scopes
+          in: query
+          schema:
+            type: string
+          description: Comma-separated list of requested scopes
+          example: "profile,email"
+      responses:
+        '200':
+          description: Authorization URL generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authorizationUrl:
+                    type: string
+                    format: uri
+                    description: URL to redirect user for OAuth authorization
+                    example: "https://accounts.google.com/oauth/authorize?client_id=..."
+                  state:
+                    type: string
+                    description: State parameter for verification
+                    example: "csrf_token_123"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /auth/oauth/callback:
+    post:
+      tags: [OAuth]
+      summary: Handle OAuth callback
+      description: |
+        Processes the OAuth authorization callback, exchanges the authorization code
+        for tokens, and creates or links the user account.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, provider]
+              properties:
+                code:
+                  type: string
+                  description: Authorization code from OAuth provider
+                  example: "4/0AY0e-g7..."
+                provider:
+                  type: string
+                  enum: [google, github, microsoft]
+                  description: OAuth provider name
+                  example: "google"
+                state:
+                  type: string
+                  description: State parameter for CSRF verification
+                  example: "csrf_token_123"
+      responses:
+        '200':
+          description: OAuth authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Session Management
+  /auth/sessions:
+    get:
+      tags: [Session Management]
+      summary: List active sessions
+      description: |
+        Returns a list of all active sessions for the authenticated user,
+        including device information and last activity timestamps.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Sessions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Session'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/sessions/{sessionId}:
+    delete:
+      tags: [Session Management]
+      summary: Revoke specific session
+      description: |
+        Revokes a specific session by ID. The user will be logged out
+        from that device/browser.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Session ID to revoke
+          example: "sess_1234567890"
+      responses:
+        '200':
+          description: Session revoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Session revoked successfully"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT access token obtained from authentication endpoints
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API key for service-to-service authentication
+
+  schemas:
+    AuthTokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        refreshToken:
+          type: string
+          description: Refresh token for obtaining new access tokens
+          example: "rt_1234567890abcdef"
+        tokenType:
+          type: string
+          example: "Bearer"
+        expiresIn:
+          type: number
+          description: Access token expiration time in seconds
+          example: 3600
+        user:
+          $ref: '#/components/schemas/UserProfile'
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique user identifier
+          example: "user_1234567890"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        emailVerified:
+          type: boolean
+          example: true
+        name:
+          type: string
+          example: "John Doe"
+        givenName:
+          type: string
+          example: "John"
+        familyName:
+          type: string
+          example: "Doe"
+        avatarUrl:
+          type: string
+          format: uri
+          nullable: true
+          example: "https://example.com/avatar.jpg"
+        mfaEnabled:
+          type: boolean
+          description: Whether MFA is enabled for this user
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-15T09:30:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-15T09:30:00Z"
+        organizations:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserOrganization'
+
+    UserOrganization:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "org_1234567890"
+        slug:
+          type: string
+          example: "acme-corp"
+        name:
+          type: string
+          example: "Acme Corporation"
+        role:
+          type: string
+          example: "admin"
+        permissions:
+          type: array
+          items:
+            type: string
+          example: ["users:read", "users:write", "org:admin"]
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "sess_1234567890"
+        deviceInfo:
+          type: object
+          properties:
+            userAgent:
+              type: string
+              example: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)..."
+            ip:
+              type: string
+              example: "192.168.1.100"
+            country:
+              type: string
+              example: "United States"
+            city:
+              type: string
+              example: "San Francisco"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-15T09:30:00Z"
+        lastActivity:
+          type: string
+          format: date-time
+          example: "2023-01-15T14:45:00Z"
+        isCurrent:
+          type: boolean
+          description: Whether this is the current session
+          example: true
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: "INVALID_TOKEN"
+        message:
+          type: string
+          description: Human-readable error message
+          example: "The provided token is invalid or expired"
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid input parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            invalidEmail:
+              summary: Invalid email format
+              value:
+                error: "INVALID_EMAIL"
+                message: "Please provide a valid email address"
+            missingField:
+              summary: Required field missing
+              value:
+                error: "MISSING_FIELD"
+                message: "Required field 'email' is missing"
+
+    Unauthorized:
+      description: Unauthorized - authentication required or failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            invalidToken:
+              summary: Invalid or expired token
+              value:
+                error: "INVALID_TOKEN"
+                message: "The provided token is invalid or expired"
+            mfaRequired:
+              summary: MFA verification required
+              value:
+                error: "MFA_REQUIRED"
+                message: "Multi-factor authentication is required"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "NOT_FOUND"
+            message: "The requested resource was not found"
+
+    TooManyRequests:
+      description: Too many requests - rate limit exceeded
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Error'
+              - type: object
+                properties:
+                  retryAfter:
+                    type: number
+                    description: Seconds to wait before retrying
+          example:
+            error: "RATE_LIMIT_EXCEEDED"
+            message: "Too many magic link requests. Please try again later."
+            retryAfter: 300
+
+tags:
+  - name: Authentication
+    description: Core authentication endpoints for magic links, password auth, and session management
+  - name: Multi-Factor Authentication
+    description: TOTP-based multi-factor authentication setup and verification
+  - name: OAuth
+    description: OAuth 2.0 integration with third-party providers
+  - name: Session Management
+    description: Manage active user sessions across devices

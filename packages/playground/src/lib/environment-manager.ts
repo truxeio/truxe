@@ -24,21 +24,14 @@ export const DEFAULT_ENVIRONMENTS: Environment[] = [
     id: 'local-docker',
     name: 'Local (Docker)',
     baseUrl: 'http://localhost:87001',
-    description: 'Docker deployment port',
+    description: 'Docker deployment (production-like)',
     color: 'cyan'
-  },
-  {
-    id: 'custom',
-    name: 'Custom',
-    baseUrl: 'http://localhost:3000',
-    description: 'Custom API endpoint (editable)',
-    color: 'purple'
   },
   {
     id: 'production',
     name: 'Production',
     baseUrl: 'https://api.truxe.io',
-    description: 'Production environment (when available)',
+    description: 'Production Truxe API',
     color: 'red'
   }
 ]

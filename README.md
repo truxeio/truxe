@@ -244,17 +244,20 @@ Need to offer Truxe as a hosted service? Contact us via [GitHub Issues](https://
 ### 🚀 Current Sprint: v0.5 - Developer Experience (Q4 2025)
 
 **In Progress:**
-- 🎮 Interactive API Playground - [Issue #6](https://github.com/Wundam/truxe/issues/6)
-  - ✅ **Phase 1 Complete**: Core playground implementation
+- 🎮 Interactive API Playground
+  - ✅ **Phase 1 Complete** - [Issue #6](https://github.com/Wundam/truxe/issues/6) (Closed)
     - Three-panel responsive UI (Navigator | Builder | Viewer)
     - Monaco Editor integration with syntax highlighting
     - Request/Response management with full HTTP support
-    - 4 pre-configured environments (Local:3456, Docker:87001, Staging, Production)
+    - 3 environments (Local:3456, Docker:87001, Production:api.truxe.io)
     - OpenAPI 3.1.0 specification with all endpoints
-    - [@truxe/playground@0.1.0](packages/playground) - Dev server ready
-  - ⏳ **Phase 2 Next**: Code generation (cURL, JS, TS, Python, Go, PHP)
-  - ⏳ **Phase 3**: Collections, saved requests, guided workflows
-  - **ETA for v0.5.0**: 3-4 weeks remaining
+    - [@truxe/playground@0.1.0](packages/playground) - Running on port 3457
+  - ⏳ **Phase 2 In Progress** - [Issue #7](https://github.com/Wundam/truxe/issues/7)
+    - Code generation (cURL, JS, TS, Python, Go, PHP)
+    - Copy to clipboard & download
+    - Real-time updates
+  - ⏳ **Phase 3 Planned**: Collections, saved requests, guided workflows
+  - **ETA for v0.5.0**: 2-3 weeks remaining
 
 **Planned:**
 - [ ] Enhanced CLI features (templates, migrations)

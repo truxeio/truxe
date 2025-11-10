@@ -250,13 +250,6 @@ See [SECURITY.md](SECURITY.md) for our security policy and responsible disclosur
 
 ---
 
-## Credits
-
-Built with love by the [Wundam](https://wundam.com) team.
-
-
----
-
 <div align="center">
 
 **[Documentation](docs/)** • **[Examples](docs/03-integration-guides/examples/)** • **[Contributing](CONTRIBUTING.md)**

@@ -28,17 +28,17 @@ export const DEFAULT_ENVIRONMENTS: Environment[] = [
     color: 'cyan'
   },
   {
-    id: 'staging',
-    name: 'Staging',
-    baseUrl: 'https://staging-api.truxe.io',
-    description: 'Staging environment',
-    color: 'orange'
+    id: 'custom',
+    name: 'Custom',
+    baseUrl: 'http://localhost:3000',
+    description: 'Custom API endpoint (editable)',
+    color: 'purple'
   },
   {
     id: 'production',
     name: 'Production',
     baseUrl: 'https://api.truxe.io',
-    description: 'Production environment',
+    description: 'Production environment (when available)',
     color: 'red'
   }
 ]

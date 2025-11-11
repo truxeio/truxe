@@ -68,9 +68,9 @@ if [ "$1" == "remote" ]; then
     # Execute deployment on remote server
     print_info "Building and starting containers on remote server..."
     ssh $SERVER_USER@$SERVER_HOST "cd /opt/truxe/deployment && \
-        docker-compose -f docker-compose.production.yml build website && \
-        docker-compose -f docker-compose.production.yml up -d website && \
-        docker-compose -f docker-compose.production.yml restart nginx"
+        docker-compose -f docker-compose.production.yml --env-file .env.production build website && \
+        docker-compose -f docker-compose.production.yml --env-file .env.production up -d website && \
+        docker-compose -f docker-compose.production.yml --env-file .env.production restart nginx"
 
     print_success "Remote deployment completed!"
 
@@ -79,34 +79,34 @@ else
 
     # Build the website container
     print_info "Building website container..."
-    docker-compose -f docker-compose.production.yml build website
+    docker-compose -f docker-compose.production.yml --env-file .env.production build website
 
     print_success "Website container built"
 
     # Start the website container
     print_info "Starting website container..."
-    docker-compose -f docker-compose.production.yml up -d website
+    docker-compose -f docker-compose.production.yml --env-file .env.production up -d website
 
     print_success "Website container started"
 
     # Restart nginx to pick up new configuration
     print_info "Restarting nginx..."
-    docker-compose -f docker-compose.production.yml restart nginx
+    docker-compose -f docker-compose.production.yml --env-file .env.production restart nginx
 
     print_success "Nginx restarted"
 
     # Show container status
     print_info "Container status:"
-    docker-compose -f docker-compose.production.yml ps website nginx
+    docker-compose -f docker-compose.production.yml --env-file .env.production ps website nginx
 
     # Check website health
     print_info "Checking website health..."
     sleep 5
 
-    if docker-compose -f docker-compose.production.yml exec -T website wget --quiet --tries=1 --spider http://localhost:3000/; then
+    if docker-compose -f docker-compose.production.yml --env-file .env.production exec -T website wget --quiet --tries=1 --spider http://localhost:3000/; then
         print_success "Website is healthy!"
     else
-        print_warning "Website health check failed. Check logs with: docker-compose -f docker-compose.production.yml logs website"
+        print_warning "Website health check failed. Check logs with: docker-compose -f docker-compose.production.yml --env-file .env.production logs website"
     fi
 fi
 
@@ -115,7 +115,7 @@ print_success "Deployment completed!"
 # Show helpful commands
 echo ""
 print_info "Useful commands:"
-echo "  View logs: docker-compose -f docker-compose.production.yml logs -f website"
-echo "  Stop website: docker-compose -f docker-compose.production.yml stop website"
-echo "  Restart website: docker-compose -f docker-compose.production.yml restart website"
-echo "  View all containers: docker-compose -f docker-compose.production.yml ps"
+echo "  View logs: docker-compose -f docker-compose.production.yml --env-file .env.production logs -f website"
+echo "  Stop website: docker-compose -f docker-compose.production.yml --env-file .env.production stop website"
+echo "  Restart website: docker-compose -f docker-compose.production.yml --env-file .env.production restart website"
+echo "  View all containers: docker-compose -f docker-compose.production.yml --env-file .env.production ps"

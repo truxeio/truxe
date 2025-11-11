@@ -27,7 +27,20 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Waitlist API error", error);
+    console.error("[Waitlist API] Error:", error);
+
+    // Provide more specific error messages
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+
+    // Check if it's a configuration error
+    if (errorMessage.includes("environment variables")) {
+      console.error("[Waitlist API] Configuration error - Brevo env vars missing");
+      return NextResponse.json(
+        { error: "Service temporarily unavailable. Please contact support." },
+        { status: 503 },
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to join the waitlist. Please try again later." },
       { status: 500 },

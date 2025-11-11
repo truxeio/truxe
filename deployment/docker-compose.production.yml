@@ -42,11 +42,10 @@ services:
 
   # Truxe API
   api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
+    image: ghcr.io/wundam/truxe:latest
     container_name: truxe-api
     restart: unless-stopped
+    pull_policy: always
     environment:
       NODE_ENV: production
       PORT: 3001

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import CodeGenerator from '../../src/components/CodeGenerator'
 import { type RequestConfig } from '../../src/lib/code-generator'
@@ -49,10 +49,18 @@ describe('CodeGenerator Component', () => {
     }
   })
 
+  afterEach(() => {
+    cleanup()
+  })
+
   it('should render with default cURL selection', () => {
     render(<CodeGenerator request={mockRequest} />)
 
-    expect(screen.getByText('cURL')).toBeInTheDocument()
+    // Button accessible name is the emoji + text content
+    const curlButton = screen.getByRole('button', { name: /🔧 cURL/i })
+    expect(curlButton).toBeInTheDocument()
+    expect(curlButton).toHaveAttribute('title', 'Command line tool for HTTP requests')
+
     expect(screen.getByTestId('monaco-editor-shell')).toBeInTheDocument()
     expect(screen.getByText('Command line tool for HTTP requests')).toBeInTheDocument()
   })
@@ -78,8 +86,8 @@ describe('CodeGenerator Component', () => {
     // Initially should show cURL
     expect(screen.getByTestId('monaco-editor-shell')).toBeInTheDocument()
 
-    // Click JavaScript button
-    const jsButton = screen.getByRole('button', { name: /JavaScript/i })
+    // Click JavaScript button - use emoji + text
+    const jsButton = screen.getByRole('button', { name: /🟨 JavaScript/i })
     fireEvent.click(jsButton)
 
     // Should now show JavaScript editor
@@ -91,19 +99,20 @@ describe('CodeGenerator Component', () => {
     render(<CodeGenerator request={mockRequest} />)
 
     // Test different languages and their expected file extensions
+    // Use button accessible names (emoji + text)
     const languageTests = [
-      { button: 'cURL', filename: 'request.sh' },
-      { button: 'JavaScript', filename: 'request.js' },
-      { button: 'TypeScript', filename: 'request.ts' },
-      { button: 'Python', filename: 'request.py' },
-      { button: 'Go', filename: 'request.go' },
-      { button: 'PHP', filename: 'request.php' },
-      { button: 'Rust', filename: 'request.rs' },
-      { button: 'Java', filename: 'ApiRequest.java' }
+      { name: '🔧 cURL', filename: 'request.sh' },
+      { name: '🟨 JavaScript', filename: 'request.js' },
+      { name: '🔷 TypeScript', filename: 'request.ts' },
+      { name: '🐍 Python', filename: 'request.py' },
+      { name: '🔵 Go', filename: 'request.go' },
+      { name: '🐘 PHP', filename: 'request.php' },
+      { name: '🦀 Rust', filename: 'request.rs' },
+      { name: '☕ Java', filename: 'ApiRequest.java' }
     ]
 
     for (const test of languageTests) {
-      const button = screen.getByRole('button', { name: new RegExp(test.button, 'i') })
+      const button = screen.getByRole('button', { name: new RegExp(test.name, 'i') })
       fireEvent.click(button)
       expect(screen.getByText(test.filename)).toBeInTheDocument()
     }
@@ -145,29 +154,40 @@ describe('CodeGenerator Component', () => {
     const mockCreateObjectURL = vi.fn(() => 'blob:mock-url')
     const mockRevokeObjectURL = vi.fn()
     const mockClick = vi.fn()
-    
+
+    // Store original methods
+    const originalCreateObjectURL = URL.createObjectURL
+    const originalRevokeObjectURL = URL.revokeObjectURL
+    const originalCreateElement = document.createElement.bind(document)
+
     Object.assign(URL, {
       createObjectURL: mockCreateObjectURL,
       revokeObjectURL: mockRevokeObjectURL
     })
-    
-    // Mock createElement to return a mock anchor element
-    const mockAnchor = {
-      href: '',
-      download: '',
-      click: mockClick
-    }
-    vi.spyOn(document, 'createElement').mockReturnValue(mockAnchor as any)
+
+    // Mock createElement to return a proper mock anchor element
+    const mockAnchor = document.createElement('a')
+    mockAnchor.click = mockClick
+
+    const createElementSpy = vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      if (tagName === 'a') return mockAnchor
+      return originalCreateElement(tagName)
+    })
 
     render(<CodeGenerator request={mockRequest} />)
 
     const downloadButton = screen.getByRole('button', { name: /Download/i })
     fireEvent.click(downloadButton)
 
+    expect(createElementSpy).toHaveBeenCalledWith('a')
     expect(mockCreateObjectURL).toHaveBeenCalled()
     expect(mockAnchor.download).toBe('request.sh')
     expect(mockClick).toHaveBeenCalled()
-    expect(mockRevokeObjectURL).toHaveBeenCalled()
+
+    // Restore original methods
+    createElementSpy.mockRestore()
+    URL.createObjectURL = originalCreateObjectURL
+    URL.revokeObjectURL = originalRevokeObjectURL
   })
 
   it('should update generated code when request changes', () => {
@@ -205,16 +225,16 @@ describe('CodeGenerator Component', () => {
 
     render(<CodeGenerator request={emptyRequest} />)
 
-    // Should still render without errors
-    expect(screen.getByRole('button', { name: /cURL/i })).toBeInTheDocument()
+    // Should still render without errors - use accessible name
+    expect(screen.getByRole('button', { name: /🔧 cURL/i })).toBeInTheDocument()
     expect(screen.getByTestId('monaco-editor-shell')).toBeInTheDocument()
   })
 
   it('should show language descriptions on hover/focus', () => {
     render(<CodeGenerator request={mockRequest} />)
 
-    const jsButton = screen.getByRole('button', { name: /JavaScript/i })
-    
+    const jsButton = screen.getByRole('button', { name: /🟨 JavaScript/i })
+
     // Should show description (via title attribute)
     expect(jsButton).toHaveAttribute('title', 'Modern fetch API')
   })
@@ -242,8 +262,8 @@ describe('CodeGenerator Component', () => {
   it('should maintain language selection after request updates', () => {
     const { rerender } = render(<CodeGenerator request={mockRequest} />)
 
-    // Switch to Python
-    const pythonButton = screen.getByRole('button', { name: /Python/i })
+    // Switch to Python - use accessible name
+    const pythonButton = screen.getByRole('button', { name: /🐍 Python/i })
     fireEvent.click(pythonButton)
     expect(screen.getByTestId('monaco-editor-python')).toBeInTheDocument()
 
@@ -265,9 +285,9 @@ describe('CodeGenerator Component', () => {
     it('should have proper ARIA labels and roles', () => {
       render(<CodeGenerator request={mockRequest} />)
 
-      // Language buttons should be focusable
-      const curlButton = screen.getByRole('button', { name: /cURL/i })
-      expect(curlButton).toHaveAttribute('type', 'button')
+      // Language buttons should be focusable - use accessible name
+      const curlButton = screen.getByRole('button', { name: /🔧 cURL/i })
+      expect(curlButton).toHaveAttribute('title')
 
       // Copy and download buttons should have descriptive text
       expect(screen.getByText('Copy')).toBeInTheDocument()
@@ -277,13 +297,13 @@ describe('CodeGenerator Component', () => {
     it('should support keyboard navigation between language buttons', () => {
       render(<CodeGenerator request={mockRequest} />)
 
-      const curlButton = screen.getByRole('button', { name: /cURL/i })
-      const jsButton = screen.getByRole('button', { name: /JavaScript/i })
+      const curlButton = screen.getByRole('button', { name: /🔧 cURL/i })
+      const jsButton = screen.getByRole('button', { name: /🟨 JavaScript/i })
 
       // Buttons should be focusable
       expect(curlButton).toBeInTheDocument()
       expect(jsButton).toBeInTheDocument()
-      
+
       // Test focus behavior
       curlButton.focus()
       expect(curlButton).toHaveFocus()

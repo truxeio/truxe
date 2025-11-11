@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="border-t bg-white/80">
       <div className="container-custom section-padding space-y-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <div className="relative h-10 w-10 flex items-center justify-center flex-shrink-0">
@@ -35,6 +35,39 @@ export function Footer() {
               </Link>
               .
             </p>
+          </div>
+
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+              Resources
+            </h4>
+            <ul className="space-y-2 text-sm text-muted">
+              <li>
+                <Link className="hover:text-primary" href="/docs">
+                  Documentation
+                </Link>
+              </li>
+              <li>
+                <a
+                  className="hover:text-primary"
+                  href={SITE_CONFIG.links.playground}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  API Playground
+                </a>
+              </li>
+              <li>
+                <a
+                  className="hover:text-primary"
+                  href={SITE_CONFIG.links.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  GitHub
+                </a>
+              </li>
+            </ul>
           </div>
 
           <div className="space-y-3">

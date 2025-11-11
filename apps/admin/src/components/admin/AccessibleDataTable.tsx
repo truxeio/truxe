@@ -207,7 +207,7 @@ export const AccessibleDataTable: React.FC<AccessibleDataTableProps> = ({
                 <th
                   role="columnheader"
                   className="px-4 py-2 text-left border-b border-gray-200 bg-gray-50"
-                  aria-sort={isAllSelected ? 'ascending' : isPartiallySelected ? 'mixed' : 'none'}
+                  aria-sort={isAllSelected ? 'ascending' : isPartiallySelected ? 'other' : 'none'}
                 >
                   <input
                     type="checkbox"
@@ -236,7 +236,7 @@ export const AccessibleDataTable: React.FC<AccessibleDataTableProps> = ({
                         handleSort(column.key);
                       }
                     }}
-                    aria-sort={sortColumn === column.key ? sortDirection : 'none'}
+                    aria-sort={sortColumn === column.key ? (sortDirection === 'asc' ? 'ascending' : 'descending') : 'none'}
                     aria-label={`Sort by ${column.label}`}
                   >
                     <div className="flex items-center gap-2">

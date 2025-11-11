@@ -7,7 +7,7 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import chalk from 'chalk';
 import { logger } from '../utils/logger';
-import { exec, commandExists } from '../utils/exec';
+import { exec } from '../utils/exec';
 import { isDockerInstalled, isDockerRunning } from '../utils/docker';
 import { checkTruxePorts, TRUXE_DEFAULT_PORTS } from '../utils/ports';
 import { loadEnv } from '../utils/env';
@@ -358,7 +358,7 @@ function printDevInfo(port: number): void {
 /**
  * Start the Truxe API server (placeholder)
  */
-async function startTruxeServer(port: number): Promise<void> {
+async function startTruxeServer(_port: number): Promise<void> {
   logger.info('Starting Truxe API server...');
 
   // TODO: This is a placeholder. In a real implementation, this would:

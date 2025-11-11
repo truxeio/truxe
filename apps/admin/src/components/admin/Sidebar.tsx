@@ -18,6 +18,8 @@ export interface SidebarProps {
   isCollapsed?: boolean;
   onToggle?: () => void;
   currentRoute?: string;
+  onRouteChange?: (route: string) => void;
+  onClose?: () => void;
   user?: {
     id: string;
     name: string;
@@ -84,12 +86,15 @@ const navigationItems: NavigationItem[] = [
   }
 ];
 
-export function Sidebar({ 
-  isCollapsed = false, 
-  onToggle, 
-  user, 
-  onLogout, 
-  className 
+export function Sidebar({
+  isCollapsed = false,
+  onToggle,
+  currentRoute,
+  onRouteChange,
+  onClose,
+  user,
+  onLogout,
+  className
 }: SidebarProps) {
   // Filter navigation items based on user role
   const filteredNavigationItems = navigationItems.filter(item => 

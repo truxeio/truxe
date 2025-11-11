@@ -680,21 +680,19 @@ export class PlaygroundStorage {
     operation: () => IDBRequest<T> | T | void
   ): Promise<T> {
     return new Promise((resolve, reject) => {
-      transaction.oncomplete = () => {
-        const result = operation()
-        if (result instanceof IDBRequest) {
-          resolve(result.result)
-        } else {
-          resolve(result as T)
-        }
-      }
       transaction.onerror = () => reject(transaction.error)
-      
+
       try {
+        // Execute operation once during active transaction
         const result = operation()
+
         if (result instanceof IDBRequest) {
+          // For IDBRequest, wait for the request to complete
           result.onsuccess = () => resolve(result.result)
           result.onerror = () => reject(result.error)
+        } else {
+          // For non-request results, resolve immediately
+          resolve(result as T)
         }
       } catch (error) {
         reject(error)

@@ -24,7 +24,7 @@ export function debounce<T extends (...args: any[]) => any>(
   wait: number
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
+  return function(this: any, ...args: Parameters<T>) {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
@@ -50,8 +50,8 @@ export function isFocusable(element: HTMLElement): boolean {
     return element.matches(selector);
   });
   
-  return (isNativelyFocusable || isTabIndexFocusable) && 
-         !element.disabled && 
+  return (isNativelyFocusable || isTabIndexFocusable) &&
+         !('disabled' in element && (element as any).disabled) &&
          !element.hidden &&
          element.offsetParent !== null;
 }

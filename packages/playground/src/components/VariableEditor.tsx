@@ -151,7 +151,7 @@ export default function VariableEditor({
       {
         scope: 'environment',
         title: 'Environment Variables',
-        icon: <Globe className="w-4 h-4 text-green-500" />,
+        icon: <Globe className="w-4 h-4 text-primary" />,
         variables: [],
         canAdd: true
       },
@@ -653,7 +653,7 @@ function VariableCard({
             
             {isSecret && <Lock className="w-3 h-3 text-amber-500" />}
             {!variable.enabled && <X className="w-3 h-3 text-red-500" />}
-            {variable.enabled && <Check className="w-3 h-3 text-green-500" />}
+            {variable.enabled && <Check className="w-3 h-3 text-primary" />}
             
             <span className="text-xs px-1.5 py-0.5 bg-muted rounded">
               {variable.type}

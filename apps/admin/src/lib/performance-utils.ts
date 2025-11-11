@@ -320,7 +320,11 @@ export function measureWebVitals(): void {
   // First Input Delay
   new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      console.log('FID:', entry.processingStart - entry.startTime);
+      // Type assertion for PerformanceEventTiming which has processingStart
+      const eventTiming = entry as any;
+      if ('processingStart' in eventTiming) {
+        console.log('FID:', eventTiming.processingStart - entry.startTime);
+      }
     }
   }).observe({ entryTypes: ['first-input'] });
   

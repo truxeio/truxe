@@ -13,6 +13,7 @@ export const SITE_CONFIG = {
     wundam: "https://wundam.com",
     hippoc: "https://hippoc.io",
     github: "https://github.com/truxeio/truxe",
+    playground: "https://try.truxe.io",
     email: "support@truxe.io",
     privacy: "/privacy",
     terms: "/terms",
@@ -28,6 +29,7 @@ export const NAV_ITEMS = [
   { label: "Features", href: "#features" },
   { label: "How It Works", href: "#how-it-works" },
   { label: "Pricing", href: "#pricing" },
+  { label: "Playground", href: "https://try.truxe.io", external: true },
   { label: "Trust Center", href: "/trust" },
   { label: "Docs", href: "/docs" },
 ] as const;

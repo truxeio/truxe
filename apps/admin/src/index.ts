@@ -61,17 +61,16 @@ export {
   AccessibleAdminLayout,
   AccessibleDataTable
 } from './components/admin';
-export type { 
-  AdminLayoutProps, 
-  AdminDashboardProps, 
-  DataTableProps, 
-  Column, 
-  UserManagementProps, 
+export type {
+  AdminLayoutProps,
+  AdminDashboardProps,
+  DataTableProps,
+  Column,
+  UserManagementProps,
   SecurityMonitoringProps,
   SidebarProps,
   TopBarProps,
   StatsCardProps,
-  ModalProps,
   FormFieldProps,
   BadgeProps,
   CardProps,
@@ -82,35 +81,33 @@ export type {
   AdminRouterContextType,
   BreadcrumbProps,
   BreadcrumbItem,
-  AdminDashboardCompleteProps,
-  PerformanceMonitorProps,
-  PerformanceOptimizedAdminProps,
-  AccessibilityTesterProps,
-  AccessibleAdminLayoutProps,
-  AccessibleDataTableProps
+  AdminDashboardCompleteProps
 } from './components/admin';
 
 // Utilities
 export { cn, generateId, debounce, isFocusable, getFocusableElements, createFocusTrap, formatErrorMessage, isValidEmail, getInitials, prefersReducedMotion, prefersHighContrast, prefersDarkTheme, announceToScreenReader } from './lib/utils';
 export { ARIA_LABELS, KEYS, THEME_VARIANTS, SIZES, ANIMATION_DURATION, BREAKPOINTS, Z_INDEX, FOCUS_STYLES, ERROR_MESSAGES, SUCCESS_MESSAGES } from './lib/constants';
 export { 
-  measurePerformance, 
-  getPerformanceMetrics, 
-  createLazyComponent, 
-  preloadComponent, 
-  preloadComponents,
-  usePerformanceOptimization,
+  measurePerformance,
+  getPerformanceMetrics,
+  createLazyComponent,
+  preloadComponent,
+  usePerformanceOptimization
+} from './lib/performance-utils';
+export type {
   PerformanceMetrics,
   PerformanceOptimizationConfig
 } from './lib/performance-utils';
-export { 
-  PerformanceTester, 
-  runQuickPerformanceTest, 
-  runPerformanceTestWithCustomThresholds, 
+export {
+  PerformanceTester,
+  runQuickPerformanceTest,
+  runPerformanceTestWithCustomThresholds,
   generatePerformanceReport,
-  PerformanceTestResult,
-  PerformanceThreshold,
   DEFAULT_THRESHOLDS
+} from './lib/performance-testing';
+export type {
+  PerformanceTestResult,
+  PerformanceThreshold
 } from './lib/performance-testing';
 export { 
   ARIA_ROLES,

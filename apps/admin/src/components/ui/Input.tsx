@@ -51,7 +51,7 @@ const inputVariants = cva(
 );
 
 export interface InputProps
-  extends InputHTMLAttributes<HTMLInputElement>,
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'>,
     VariantProps<typeof inputVariants> {
   label?: string;
   description?: string;

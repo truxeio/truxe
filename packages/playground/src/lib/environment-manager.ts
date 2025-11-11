@@ -14,6 +14,13 @@ export interface EnvironmentConfig {
 
 export const DEFAULT_ENVIRONMENTS: Environment[] = [
   {
+    id: 'demo',
+    name: 'Demo Mode',
+    baseUrl: 'https://demo.truxe.io',
+    description: 'Try Truxe with mock responses - no backend required',
+    color: 'green'
+  },
+  {
     id: 'local',
     name: 'Local',
     baseUrl: 'http://localhost:3456',
@@ -86,6 +93,11 @@ class EnvironmentManager {
     }
 
     return headers
+  }
+
+  isDemoMode(): boolean {
+    return this.currentEnvironment.id === 'demo' ||
+           this.currentEnvironment.baseUrl.includes('demo')
   }
 
   private saveToStorage(): void {

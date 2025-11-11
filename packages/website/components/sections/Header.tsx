@@ -13,7 +13,14 @@ import { Button } from "@/components/ui/Button";
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleNavClick = (href: string) => {
+  const handleNavClick = (href: string, external?: boolean) => {
+    // If it's an external link, open in new tab
+    if (external || href.startsWith("http")) {
+      window.open(href, "_blank", "noopener,noreferrer");
+      setIsOpen(false);
+      return;
+    }
+
     // If it's a route path (starts with /), navigate using Next.js router
     if (href.startsWith("/")) {
       window.location.href = href;
@@ -55,7 +62,7 @@ export function Header() {
           {NAV_ITEMS.map((item) => (
             <button
               key={item.href}
-              onClick={() => handleNavClick(item.href)}
+              onClick={() => handleNavClick(item.href, (item as any).external)}
               className="transition hover:text-foreground"
               type="button"
             >

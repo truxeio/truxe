@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdminProvider, AdminRouter, useAdmin } from '../index';
+import { AdminProvider, AdminRouter, useAdmin } from '../../index';
 
 export interface AdminDashboardCompleteProps {
   className?: string;

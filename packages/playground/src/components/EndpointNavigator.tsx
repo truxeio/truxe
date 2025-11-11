@@ -64,11 +64,11 @@ export default function EndpointNavigator({ onSelectEndpoint, selectedEndpoint }
 
   const getMethodColor = (method: string) => {
     switch (method) {
-      case 'GET': return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30'
-      case 'POST': return 'text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30'
-      case 'PUT': return 'text-orange-600 bg-orange-100 dark:text-orange-400 dark:bg-orange-900/30'
-      case 'DELETE': return 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30'
-      case 'PATCH': return 'text-purple-600 bg-purple-100 dark:text-purple-400 dark:bg-purple-900/30'
+      case 'GET': return 'text-green-700 bg-green-50 dark:text-green-300 dark:bg-green-900/40 font-semibold'
+      case 'POST': return 'text-blue-700 bg-blue-50 dark:text-blue-300 dark:bg-blue-900/40 font-semibold'
+      case 'PUT': return 'text-orange-700 bg-orange-50 dark:text-orange-300 dark:bg-orange-900/40 font-semibold'
+      case 'DELETE': return 'text-red-700 bg-red-50 dark:text-red-300 dark:bg-red-900/40 font-semibold'
+      case 'PATCH': return 'text-purple-700 bg-purple-50 dark:text-purple-300 dark:bg-purple-900/40 font-semibold'
       default: return 'text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900/30'
     }
   }
@@ -147,6 +147,25 @@ export default function EndpointNavigator({ onSelectEndpoint, selectedEndpoint }
       {/* Quick Actions */}
       <div className="p-4 border-t border-border">
         <div className="space-y-2">
+          {/* Demo Mode Indicator - Truxe Electric Blue */}
+          {environmentManager.isDemoMode() && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-primary/30 rounded-md p-3 mb-2">
+              <div className="flex items-start space-x-2">
+                <div className="flex-shrink-0">
+                  <div className="w-2 h-2 bg-primary rounded-full mt-1 animate-pulse"></div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-primary dark:text-primary">
+                    Demo Mode Active
+                  </p>
+                  <p className="text-xs text-primary/80 dark:text-primary/80 mt-0.5">
+                    Using mock responses - no backend required
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <select
             value={currentEnvironment.id}
             onChange={(e) => {

@@ -11,7 +11,6 @@
 
 import { Command } from 'commander';
 import { existsSync } from 'fs';
-import { join } from 'path';
 import chalk from 'chalk';
 import { logger } from '../utils/logger';
 import { loadEnv } from '../utils/env';
@@ -86,7 +85,7 @@ async function checkDatabaseConnection(): Promise<boolean> {
 /**
  * Migrate up command handler
  */
-async function migrateUpCommand(options: MigrateOptions): Promise<void> {
+async function migrateUpCommand(_options: MigrateOptions): Promise<void> {
   logger.section('Run Database Migrations');
 
   // Check database connection
@@ -142,7 +141,7 @@ async function migrateUpCommand(options: MigrateOptions): Promise<void> {
 /**
  * Migrate down command handler
  */
-async function migrateDownCommand(options: MigrateOptions): Promise<void> {
+async function migrateDownCommand(_options: MigrateOptions): Promise<void> {
   logger.section('Rollback Database Migration');
 
   // Check database connection

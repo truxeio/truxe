@@ -58,14 +58,9 @@ export type { AdminDashboardCompleteProps } from './AdminDashboardComplete';
 // Performance-optimized components
 export { LazyAdminComponents } from './LazyAdminComponents';
 export { PerformanceMonitor } from './PerformanceMonitor';
-export type { PerformanceMonitorProps } from './PerformanceMonitor';
 export { PerformanceOptimizedAdmin } from './PerformanceOptimizedAdmin';
-export type { PerformanceOptimizedAdminProps } from './PerformanceOptimizedAdmin';
 
 // Accessibility components
 export { AccessibilityTester } from './AccessibilityTester';
-export type { AccessibilityTesterProps } from './AccessibilityTester';
 export { AccessibleAdminLayout } from './AccessibleAdminLayout';
-export type { AccessibleAdminLayoutProps } from './AccessibleAdminLayout';
 export { AccessibleDataTable } from './AccessibleDataTable';
-export type { AccessibleDataTableProps } from './AccessibleDataTable';

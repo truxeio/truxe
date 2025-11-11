@@ -1,8 +1,18 @@
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { ProtectedRoute, type ProtectedRouteProps } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
 import type { User, Membership } from '../types';
+
+// Conditional import for Next.js - only works when next is installed
+let useRouter: any;
+try {
+  // @ts-ignore - Dynamic import for optional dependency
+  useRouter = require('next/navigation').useRouter;
+} catch (e) {
+  useRouter = () => {
+    throw new Error('next/navigation is not installed. Install Next.js to use Next.js adapters.');
+  };
+}
 
 /**
  * Next.js specific protected route component

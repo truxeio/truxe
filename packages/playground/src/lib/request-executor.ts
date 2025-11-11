@@ -1,5 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from 'axios'
 import { environmentManager } from './environment-manager'
+import { findMockResponse, mockErrorResponse } from './mock-responses'
 
 export interface RequestConfig {
   method: string
@@ -25,11 +26,16 @@ export interface ExecutionError extends ExecutionResponse {
 class RequestExecutor {
   async execute(config: RequestConfig): Promise<ExecutionResponse> {
     const startTime = performance.now()
-    
+
     try {
+      // Check if we're in demo mode
+      if (environmentManager.isDemoMode()) {
+        return await this.executeMockRequest(config, startTime)
+      }
+
       // Build full URL
       const fullUrl = environmentManager.getFullUrl(config.url)
-      
+
       // Merge headers with environment auth headers
       const authHeaders = environmentManager.getAuthHeaders()
       const headers = {
@@ -147,7 +153,53 @@ class RequestExecutor {
     }
   }
 
+  private async executeMockRequest(config: RequestConfig, startTime: number): Promise<ExecutionResponse> {
+    // Find matching mock response
+    const fullUrl = environmentManager.getFullUrl(config.url)
+    const mockResponse = findMockResponse(config.method, fullUrl)
+
+    // Simulate network delay
+    const delay = mockResponse?.delay || 200
+    await new Promise(resolve => setTimeout(resolve, delay))
+
+    const endTime = performance.now()
+    const responseTime = Math.round(endTime - startTime)
+
+    if (!mockResponse) {
+      // No mock found - return 404
+      const notFoundResponse = mockErrorResponse(404, 'Endpoint not found in demo mode')
+      const size = new Blob([JSON.stringify(notFoundResponse.data)]).size
+
+      return {
+        status: notFoundResponse.status,
+        statusText: notFoundResponse.statusText || 'Not Found',
+        headers: notFoundResponse.headers || { 'content-type': 'application/json' },
+        data: notFoundResponse.data,
+        responseTime,
+        size
+      }
+    }
+
+    // Calculate response size
+    const responseText = JSON.stringify(mockResponse.data)
+    const size = new Blob([responseText]).size
+
+    return {
+      status: mockResponse.status,
+      statusText: mockResponse.statusText || 'OK',
+      headers: mockResponse.headers || { 'content-type': 'application/json' },
+      data: mockResponse.data,
+      responseTime,
+      size
+    }
+  }
+
   async validateEndpoint(url: string): Promise<boolean> {
+    // In demo mode, all endpoints are "valid"
+    if (environmentManager.isDemoMode()) {
+      return true
+    }
+
     try {
       const fullUrl = environmentManager.getFullUrl(url)
       await axios.head(fullUrl, { timeout: 5000 })

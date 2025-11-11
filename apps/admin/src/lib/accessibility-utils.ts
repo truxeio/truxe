@@ -305,10 +305,10 @@ export const accessibilityTesting = {
    */
   hasProperARIA: (element: HTMLElement): boolean => {
     const role = element.getAttribute('role');
-    const hasLabel = element.hasAttribute('aria-label') || 
+    const hasLabel = element.hasAttribute('aria-label') ||
                     element.hasAttribute('aria-labelledby') ||
-                    element.textContent?.trim();
-    
+                    Boolean(element.textContent?.trim());
+
     // Basic checks for interactive elements
     if (['button', 'link', 'menuitem'].includes(role || '')) {
       return hasLabel;

@@ -7,7 +7,7 @@ import {
   preloadAllAdminComponents 
 } from './LazyAdminComponents';
 import { PerformanceMonitor } from './PerformanceMonitor';
-import { usePerformanceOptimization } from '../../hooks/usePerformanceOptimization';
+import { usePerformanceOptimization } from '../../lib/performance-utils';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
 import { ErrorBoundary } from '../ui/ErrorBoundary';
 

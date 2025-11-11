@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
-import { Moon, Sun, Code, BookOpen, FolderOpen, Globe } from 'lucide-react'
+import { Moon, Sun, BookOpen, FolderOpen, Globe } from 'lucide-react'
 import EndpointNavigator from '@/components/EndpointNavigator'
 import RequestBuilder from '@/components/RequestBuilder'
 import ResponseViewer from '@/components/ResponseViewer'
@@ -28,13 +28,15 @@ function App() {
   return (
     <div className="h-screen flex flex-col bg-background text-foreground">
       {/* Header */}
-      <header className="h-16 border-b border-border px-6 flex items-center justify-between">
+      <header className="h-16 border-b border-border px-6 flex items-center justify-between bg-background/80 backdrop-blur-md">
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Code className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <div>
+          <div className="flex items-center space-x-3">
+            <img
+              src="/truxe-shield.svg"
+              alt="Truxe"
+              className="w-10 h-10"
+            />
+            <div className="flex flex-col leading-tight">
               <h1 className="text-lg font-semibold">Truxe API Playground</h1>
               <p className="text-xs text-muted-foreground">Interactive API testing environment</p>
             </div>

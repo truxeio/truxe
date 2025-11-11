@@ -622,13 +622,13 @@ function StepExecutionCard({ display, index, onToggleExpansion }: StepExecutionC
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium truncate">{step.name}</h4>
-            <span className={`text-xs px-2 py-1 rounded ${
+            <span className={`text-xs px-2 py-1 rounded font-semibold ${
               {
-                GET: 'bg-green-100 text-green-700',
-                POST: 'bg-blue-100 text-blue-700',
-                PUT: 'bg-orange-100 text-orange-700',
-                DELETE: 'bg-red-100 text-red-700',
-                PATCH: 'bg-purple-100 text-purple-700'
+                GET: 'bg-green-50 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+                POST: 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+                PUT: 'bg-orange-50 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
+                DELETE: 'bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300',
+                PATCH: 'bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
               }[step.request.method] || 'bg-gray-100 text-gray-700'
             }`}>
               {step.request.method}

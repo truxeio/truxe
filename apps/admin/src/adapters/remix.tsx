@@ -1,8 +1,24 @@
 import React from 'react';
-import { useNavigate, useLocation } from '@remix-run/react';
 import { ProtectedRoute, type ProtectedRouteProps } from '../components/auth/ProtectedRoute';
 import { useAuth } from '../hooks/useAuth';
 import type { User, Membership } from '../types';
+
+// Conditional imports for Remix - only works when @remix-run/react is installed
+let useNavigate: any;
+let useLocation: any;
+try {
+  // @ts-ignore - Dynamic import for optional dependency
+  const remixReact = require('@remix-run/react');
+  useNavigate = remixReact.useNavigate;
+  useLocation = remixReact.useLocation;
+} catch (e) {
+  useNavigate = () => {
+    throw new Error('@remix-run/react is not installed. Install Remix to use Remix adapters.');
+  };
+  useLocation = () => {
+    throw new Error('@remix-run/react is not installed. Install Remix to use Remix adapters.');
+  };
+}
 
 /**
  * Remix specific protected route component

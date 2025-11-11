@@ -73,7 +73,7 @@ const FORMAT_INFO = {
     extensions: ['.json', '.yaml'],
     supportsVariables: false,
     supportsWorkflows: false,
-    icon: <File className="w-4 h-4 text-green-500" />
+    icon: <File className="w-4 h-4 text-primary" />
   },
   curl: {
     name: 'cURL Commands',
@@ -368,7 +368,7 @@ export default function ImportExport({
                   {FORMAT_INFO[importState.format].icon}
                   <span className="text-sm">{FORMAT_INFO[importState.format].name}</span>
                   {importState.autoDetected && (
-                    <span className="text-xs px-1.5 py-0.5 bg-green-100 text-green-700 rounded">
+                    <span className="text-xs px-1.5 py-0.5 bg-blue-100 text-primary rounded dark:bg-blue-900/30">
                       Auto-detected
                     </span>
                   )}

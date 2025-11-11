@@ -214,8 +214,8 @@ export default function AuthenticationTab() {
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Authentication Status:</span>
           <span className={`px-2 py-1 rounded text-xs font-medium ${
-            config.apiKey || config.jwtToken 
-              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+            config.apiKey || config.jwtToken
+              ? 'bg-blue-100 text-primary dark:bg-blue-900/30 dark:text-primary'
               : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
           }`}>
             {config.apiKey || config.jwtToken ? 'Configured' : 'Not configured'}

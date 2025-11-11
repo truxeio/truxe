@@ -6,6 +6,8 @@ export interface InitOptions {
   redis?: boolean;
   emailProvider?: 'smtp' | 'brevo' | 'sendgrid' | 'none';
   oauthProviders?: string[];
+  defaults?: boolean;
+  skipGit?: boolean;
 }
 
 export interface DevOptions {

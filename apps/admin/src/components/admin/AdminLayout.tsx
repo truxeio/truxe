@@ -18,6 +18,8 @@ import {
 
 export interface AdminLayoutProps {
   children: React.ReactNode;
+  currentRoute?: string;
+  onRouteChange?: (route: string) => void;
   user?: {
     id: string;
     name: string;
@@ -83,11 +85,13 @@ const navigationItems: NavigationItem[] = [
   }
 ];
 
-export function AdminLayout({ 
-  children, 
-  user, 
-  onLogout, 
-  className 
+export function AdminLayout({
+  children,
+  currentRoute,
+  onRouteChange,
+  user,
+  onLogout,
+  className
 }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);

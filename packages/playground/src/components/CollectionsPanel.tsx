@@ -198,7 +198,7 @@ export default function CollectionsPanel({
           <div className="mr-2 flex-shrink-0">
             {item.type === 'collection' && <FolderOpen className="w-4 h-4 text-blue-500" />}
             {item.type === 'folder' && <Folder className="w-4 h-4 text-yellow-500" />}
-            {item.type === 'request' && <File className="w-4 h-4 text-green-500" />}
+            {item.type === 'request' && <File className="w-4 h-4 text-primary" />}
           </div>
           
           {/* Name */}
@@ -227,11 +227,11 @@ export default function CollectionsPanel({
 
   const getMethodColor = (method: string) => {
     const colors = {
-      GET: 'bg-green-100 text-green-700',
-      POST: 'bg-blue-100 text-blue-700',
-      PUT: 'bg-yellow-100 text-yellow-700',
-      PATCH: 'bg-orange-100 text-orange-700',
-      DELETE: 'bg-red-100 text-red-700'
+      GET: 'bg-green-50 text-green-700 dark:bg-green-900/40 dark:text-green-300 font-semibold',
+      POST: 'bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-semibold',
+      PUT: 'bg-orange-50 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 font-semibold',
+      PATCH: 'bg-purple-50 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 font-semibold',
+      DELETE: 'bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300 font-semibold'
     }
     return colors[method as keyof typeof colors] || 'bg-gray-100 text-gray-700'
   }

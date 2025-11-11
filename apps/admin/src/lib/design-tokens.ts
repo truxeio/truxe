@@ -370,10 +370,10 @@ export const statusColors = {
 
 // Role Colors
 export const roleColors = {
-  owner: colors.purple?.[500] || colors.primary[500],
-  admin: colors.blue?.[500] || colors.primary[500],
-  member: colors.green?.[500] || colors.success[500],
-  viewer: colors.gray?.[500] || colors.neutral[500],
+  owner: colors.primary[500],  // Use primary (blue) for owner
+  admin: colors.info[500],     // Use info (cyan) for admin
+  member: colors.success[500], // Use success (green) for member
+  viewer: colors.neutral[500], // Use neutral (gray) for viewer
 } as const;
 
 // Export all tokens

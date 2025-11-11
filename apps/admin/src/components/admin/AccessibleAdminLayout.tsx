@@ -179,8 +179,8 @@ export const AccessibleAdminLayout: React.FC<AccessibleAdminLayoutProps> = ({
         >
           <Breadcrumb
             items={[
-              { label: 'Admin', href: '/admin' },
-              { label: currentPage.replace('/', '').replace('-', ' '), href: currentPage }
+              { label: 'Admin', path: '/admin', href: '/admin' },
+              { label: currentPage.replace('/', '').replace('-', ' '), path: currentPage, href: currentPage }
             ]}
           />
         </nav>
@@ -221,7 +221,7 @@ export const AccessibleAdminLayout: React.FC<AccessibleAdminLayoutProps> = ({
           aria-labelledby="accessibility-tester-title"
         >
           <div
-            ref={accessibilityTesterRef}
+            ref={accessibilityTesterRef as React.RefObject<HTMLDivElement>}
             className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto"
           >
             <div className="p-6">

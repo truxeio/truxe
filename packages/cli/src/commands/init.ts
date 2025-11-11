@@ -9,7 +9,7 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import chalk from 'chalk';
 import { logger } from '../utils/logger';
-import { ensureDir, copy, writeFile, exists } from '../utils/fs';
+import { ensureDir, writeFile } from '../utils/fs';
 import { exec, commandExists } from '../utils/exec';
 import { type InitOptions } from '../types';
 
@@ -33,7 +33,7 @@ function renderTemplate(template: string, variables: Record<string, any>): strin
   }
 
   // Handle conditional blocks {{#if CONDITION}}...{{/if}}
-  result = result.replace(/\{\{#if (\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (match, condition, content) => {
+  result = result.replace(/\{\{#if (\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_match, condition, content) => {
     return variables[condition] ? content : '';
   });
 
@@ -305,7 +305,7 @@ async function generateEnvFile(projectPath: string, config: Record<string, any>)
 /**
  * Copy docker-compose.yml
  */
-async function copyDockerCompose(projectPath: string, config: Record<string, any>): Promise<void> {
+async function copyDockerCompose(projectPath: string, _config: Record<string, any>): Promise<void> {
   logger.debug('Copying docker-compose.yml');
 
   // Handle both development and production paths

@@ -4,48 +4,50 @@
 
 @layer base {
   :root {
+    /* Truxe Brand Colors - Electric Blue & Graphite */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 215 100% 5%; /* Graphite 900: #0B0F14 */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 100% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --popover-foreground: 215 100% 5%;
+    --primary: 217 91% 60%; /* Electric Blue: #3B82F6 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 213 32% 18%; /* Graphite 800: #121820 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 214 32% 83%; /* Graphite 200: #E2E8F0 */
+    --muted-foreground: 215 16% 57%; /* Graphite 400: #94A3B8 */
+    --accent: 214 32% 83%;
+    --accent-foreground: 215 100% 5%;
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%; /* Electric Blue */
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    /* Truxe Dark Theme */
+    --background: 215 100% 5%; /* Graphite 900 */
+    --foreground: 0 0% 100%;
+    --card: 213 32% 18%; /* Graphite 800 */
+    --card-foreground: 0 0% 100%;
+    --popover: 213 32% 18%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 217 91% 60%; /* Electric Blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 28% 21%; /* Graphite 700: #1F2732 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 215 28% 21%;
+    --muted-foreground: 215 16% 57%; /* Graphite 400 */
+    --accent: 215 28% 21%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 28% 21%;
+    --input: 215 28% 21%;
+    --ring: 199 89% 48%; /* Sky Blue: #0EA5E9 */
   }
 }
 
@@ -54,7 +56,10 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    /* Truxe branded gradient background */
+    background-image: radial-gradient(800px at 20% 0%, rgba(59, 130, 246, 0.08), transparent),
+      radial-gradient(600px at 80% 0%, rgba(14, 165, 233, 0.06), transparent);
   }
 }
 

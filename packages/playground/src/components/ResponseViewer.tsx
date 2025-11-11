@@ -3,6 +3,7 @@ import { Copy, Check, Clock, Download, Eye, Code, Maximize2 } from 'lucide-react
 import { Button } from '@/components/ui/Button'
 import Editor from '@monaco-editor/react'
 import { ExecutionResponse } from '@/lib/request-executor'
+import { environmentManager } from '@/lib/environment-manager'
 
 interface ResponseViewerProps {
   response: ExecutionResponse | null
@@ -92,6 +93,11 @@ export default function ResponseViewer({ response, isLoading }: ResponseViewerPr
               <Clock className="w-4 h-4 mr-1" />
               {response.responseTime}ms
             </div>
+            {environmentManager.isDemoMode() && (
+              <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-primary dark:bg-blue-900/30 dark:text-primary">
+                Mock
+              </span>
+            )}
           </div>
           <div className="flex items-center space-x-2">
             <Button

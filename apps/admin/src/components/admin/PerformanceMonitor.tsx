@@ -34,10 +34,8 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
 
   const startMonitoring = useCallback(() => {
     setIsMonitoring(true);
-    measurePerformance('admin-dashboard-load', () => {
-      // This will be called when the dashboard finishes loading
-      updateMetrics();
-    });
+    // Start performance monitoring
+    updateMetrics();
   }, [updateMetrics]);
 
   const stopMonitoring = useCallback(() => {
@@ -114,7 +112,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
           <div className="bg-gray-50 p-2 rounded">
             <div className="font-semibold text-gray-700">Components</div>
             <div className="text-lg font-mono">
-              {metrics.componentCount}
+              {(metrics as any).componentCount || 'N/A'}
             </div>
           </div>
           

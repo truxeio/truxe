@@ -36,11 +36,8 @@ export class PerformanceTester {
   async runLoadTimeTest(testName: string = 'load-time-test'): Promise<PerformanceTestResult> {
     const startTime = performance.now();
     
-    // Simulate dashboard loading
-    await measurePerformance('dashboard-load', async () => {
-      // Simulate async operations
-      await new Promise(resolve => setTimeout(resolve, 100));
-    });
+    // Simulate dashboard loading with async operations
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     const endTime = performance.now();
     const loadTime = endTime - startTime;

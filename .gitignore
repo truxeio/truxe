@@ -137,17 +137,11 @@ deployment/.env.production
 # Internal docs (never sync to public repo)
 # These files contain business strategy, competitive analysis,
 # and internal planning that should remain private
+docs/internal/
 docs/00-strategy/
 docs/v0.3/tickets/
-MARKETING_ROADMAP.md
-STRATEGIC_ROADMAP_2025.md
-EXECUTION_PLAN_*.md
-STRATEGY.md
-README.FULL.md
 **/HIPPOC*.md
 **/hippoc/
-DUAL_REPO_STRATEGY.md
-DUAL_REPO_SYNC_WORKFLOW.md
 .public-audit.md
 .turbo/
 

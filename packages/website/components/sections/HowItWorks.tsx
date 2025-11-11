@@ -46,7 +46,7 @@ print(f"Authenticated: {user.email}")`,
 
   go: `package main
 
-import "github.com/wundam/truxe-go"
+import "github.com/truxeio/truxe-go"
 
 func main() {
     // 1. Connect your IdP or use Truxe as IdP

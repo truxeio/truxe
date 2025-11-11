@@ -1,0 +1,401 @@
+{
+  "id": "oauth-github-flow",
+  "name": "GitHub OAuth Integration",
+  "description": "Complete OAuth 2.0 flow with GitHub for user authentication",
+  "category": "oauth",
+  "version": "1.0.0",
+  "author": "Truxe Team",
+  "tags": ["oauth", "github", "authentication", "social-login"],
+  "isPrebuilt": true,
+  "createdAt": "2023-11-10T00:00:00Z",
+  "updatedAt": "2023-11-10T00:00:00Z",
+  "variables": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}",
+      "type": "environment",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Base API URL",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "clientId",
+      "value": "{{githubClientId}}",
+      "type": "environment",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "GitHub OAuth app client ID",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "clientSecret",
+      "value": "{{githubClientSecret}}",
+      "type": "environment",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "GitHub OAuth app client secret",
+      "isSecret": true,
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "redirectUri",
+      "value": "{{baseUrl}}/oauth/github/callback",
+      "type": "workflow",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "OAuth callback URL",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "scopes",
+      "value": "user:email read:user",
+      "type": "workflow",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "OAuth scopes to request",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    }
+  ],
+  "steps": [
+    {
+      "id": "initiate-oauth",
+      "name": "Initiate OAuth Flow",
+      "description": "Generate OAuth authorization URL and state parameter",
+      "order": 1,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/oauth/github/authorize",
+        "headers": {
+          "Accept": "application/json"
+        },
+        "params": {
+          "client_id": "{{clientId}}",
+          "redirect_uri": "{{redirectUri}}",
+          "scope": "{{scopes}}",
+          "response_type": "code"
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 302],
+        "extractFields": ["authUrl", "state"]
+      },
+      "extractVariables": {
+        "authorizationUrl": "$.authUrl",
+        "oauthState": "$.state",
+        "nonce": "$.nonce"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "OAuth authorization URL generated"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to initiate OAuth flow"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "simulate-user-consent",
+      "name": "Simulate User Authorization",
+      "description": "Simulate user granting consent and getting authorization code",
+      "order": 2,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/oauth/github/simulate-consent",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "state": "{{oauthState}}",
+          "clientId": "{{clientId}}",
+          "scopes": "{{scopes}}",
+          "approved": true
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 201],
+        "extractFields": ["code", "state"]
+      },
+      "extractVariables": {
+        "authorizationCode": "$.code",
+        "returnedState": "$.state"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Authorization code received"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to get authorization code"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "exchange-code-for-tokens",
+      "name": "Exchange Code for Tokens",
+      "description": "Exchange authorization code for access and refresh tokens",
+      "order": 3,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/oauth/github/token",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "client_id": "{{clientId}}",
+          "client_secret": "{{clientSecret}}",
+          "code": "{{authorizationCode}}",
+          "redirect_uri": "{{redirectUri}}",
+          "grant_type": "authorization_code"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["access_token", "refresh_token"]
+      },
+      "extractVariables": {
+        "accessToken": "$.access_token",
+        "refreshToken": "$.refresh_token",
+        "tokenType": "$.token_type",
+        "scope": "$.scope",
+        "expiresIn": "$.expires_in"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "OAuth tokens received successfully"
+          }
+        },
+        {
+          "type": "set-variable",
+          "params": {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to exchange authorization code for tokens"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "get-github-profile",
+      "name": "Get GitHub User Profile",
+      "description": "Fetch user profile information from GitHub API",
+      "order": 4,
+      "request": {
+        "method": "GET",
+        "url": "https://api.github.com/user",
+        "headers": {
+          "Accept": "application/vnd.github.v3+json",
+          "Authorization": "Bearer {{accessToken}}",
+          "User-Agent": "Truxe-API-Playground"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["id", "login", "email"]
+      },
+      "extractVariables": {
+        "githubUserId": "$.id",
+        "githubUsername": "$.login",
+        "githubEmail": "$.email",
+        "githubProfile": "$"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "GitHub profile retrieved successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to retrieve GitHub profile"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "create-local-user",
+      "name": "Create Local User Account",
+      "description": "Create or update local user account with GitHub profile data",
+      "order": 5,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/oauth/github/callback",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "githubUserId": "{{githubUserId}}",
+          "username": "{{githubUsername}}",
+          "email": "{{githubEmail}}",
+          "accessToken": "{{accessToken}}",
+          "refreshToken": "{{refreshToken}}",
+          "profile": "{{githubProfile}}"
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 201],
+        "extractFields": ["userId", "sessionToken"]
+      },
+      "extractVariables": {
+        "localUserId": "$.userId",
+        "sessionToken": "$.sessionToken",
+        "isNewUser": "$.isNewUser"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Local user account created/updated"
+          }
+        },
+        {
+          "type": "set-variable",
+          "params": {
+            "key": "Authorization",
+            "value": "Bearer {{sessionToken}}"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to create local user account"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "get-user-permissions",
+      "name": "Get User Permissions",
+      "description": "Retrieve user permissions and role information",
+      "order": 6,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/users/{{localUserId}}/permissions",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{sessionToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["permissions", "roles"]
+      },
+      "extractVariables": {
+        "userPermissions": "$.permissions",
+        "userRoles": "$.roles",
+        "canManageUsers": "$.permissions.users.manage"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "User permissions retrieved successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to retrieve user permissions"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "refresh-access-token",
+      "name": "Refresh Access Token",
+      "description": "Use refresh token to get a new access token",
+      "order": 7,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/oauth/github/refresh",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "refresh_token": "{{refreshToken}}",
+          "grant_type": "refresh_token"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["access_token"]
+      },
+      "extractVariables": {
+        "newAccessToken": "$.access_token",
+        "newRefreshToken": "$.refresh_token",
+        "newExpiresIn": "$.expires_in"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Access token refreshed successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to refresh access token"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    }
+  ]
+}

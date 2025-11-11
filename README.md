@@ -245,20 +245,20 @@ Need to offer Truxe as a hosted service? Contact us via [GitHub Issues](https://
 
 **In Progress:**
 - 🎮 Interactive API Playground
-  - ✅ **Phase 1 Complete** - [Issue #6](https://github.com/Wundam/truxe/issues/6) (Closed)
+  - ✅ **Phase 1 Complete** - [Issue #6](https://github.com/truxeio/truxe/issues/6) (Closed)
     - Three-panel responsive UI (Navigator | Builder | Viewer)
     - Monaco Editor integration with syntax highlighting
     - Request/Response management with full HTTP support
     - 3 environments (Local:3456, Docker:87001, Production:api.truxe.io)
     - OpenAPI 3.1.0 specification with all endpoints
     - [@truxe/playground@0.1.0](packages/playground) - Running on port 3457
-  - ✅ **Phase 2 Complete** - [Issue #7](https://github.com/Wundam/truxe/issues/7) (Closed)
+  - ✅ **Phase 2 Complete** - [Issue #7](https://github.com/truxeio/truxe/issues/7) (Closed)
     - Code generation in 8 languages (cURL, JS, TS, Python, Go, PHP, Rust, Java)
     - Copy to clipboard & download functionality
     - Real-time code generation
     - Monaco Editor integration with syntax highlighting
     - 30/30 tests passing, production-ready
-  - ⏳ **Phase 3 In Progress** - [Issue #8](https://github.com/Wundam/truxe/issues/8)
+  - ⏳ **Phase 3 In Progress** - [Issue #8](https://github.com/truxeio/truxe/issues/8)
     - Request collections with folders
     - Variables & environment management
     - Guided authentication workflows

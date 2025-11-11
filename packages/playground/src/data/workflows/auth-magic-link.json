@@ -1,0 +1,273 @@
+{
+  "id": "auth-magic-link-flow",
+  "name": "Passwordless Magic Link Authentication",
+  "description": "Authenticate users via magic link sent to email - no password required",
+  "category": "auth",
+  "version": "1.0.0",
+  "author": "Truxe Team",
+  "tags": ["authentication", "magic-link", "passwordless", "email"],
+  "isPrebuilt": true,
+  "createdAt": "2023-11-10T00:00:00Z",
+  "updatedAt": "2023-11-10T00:00:00Z",
+  "variables": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}",
+      "type": "environment",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Base API URL",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "email",
+      "value": "{{$randomEmail}}",
+      "type": "dynamic",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "User email address",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "redirectUrl",
+      "value": "{{baseUrl}}/auth/callback",
+      "type": "workflow",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Redirect URL after authentication",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    }
+  ],
+  "steps": [
+    {
+      "id": "request-magic-link",
+      "name": "Request Magic Link",
+      "description": "Request a magic link to be sent to the user's email",
+      "order": 1,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/magic-link/request",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "email": "{{email}}",
+          "redirectUrl": "{{redirectUrl}}"
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 202],
+        "extractFields": ["requestId", "expiresAt"]
+      },
+      "extractVariables": {
+        "magicLinkRequestId": "$.requestId",
+        "linkExpiresAt": "$.expiresAt",
+        "linkSent": "$.sent"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Magic link request sent successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to request magic link"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "check-link-status",
+      "name": "Check Magic Link Status",
+      "description": "Check if the magic link has been clicked",
+      "order": 2,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/auth/magic-link/status/{{magicLinkRequestId}}",
+        "headers": {
+          "Accept": "application/json"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["status"]
+      },
+      "extractVariables": {
+        "linkStatus": "$.status",
+        "clickedAt": "$.clickedAt",
+        "token": "$.token"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Magic link status checked"
+          }
+        },
+        {
+          "type": "delay",
+          "params": {
+            "ms": 2000
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to check magic link status"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 3
+    },
+    {
+      "id": "simulate-link-click",
+      "name": "Simulate Magic Link Click",
+      "description": "Simulate clicking the magic link (for testing purposes)",
+      "order": 3,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/auth/magic-link/verify",
+        "headers": {
+          "Accept": "application/json"
+        },
+        "params": {
+          "token": "test-magic-token-{{magicLinkRequestId}}",
+          "requestId": "{{magicLinkRequestId}}"
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 302],
+        "extractFields": ["accessToken"]
+      },
+      "extractVariables": {
+        "accessToken": "$.accessToken",
+        "refreshToken": "$.refreshToken",
+        "user": "$.user",
+        "sessionId": "$.sessionId"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Magic link verification successful"
+          }
+        },
+        {
+          "type": "set-variable",
+          "params": {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Magic link verification failed - you may need to use a real token"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "get-authenticated-user",
+      "name": "Get Authenticated User",
+      "description": "Retrieve authenticated user information",
+      "order": 4,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/auth/me",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{accessToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["id", "email"]
+      },
+      "extractVariables": {
+        "userId": "$.id",
+        "userEmail": "$.email",
+        "userProfile": "$"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "User profile retrieved successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to retrieve user profile"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "revoke-session",
+      "name": "Revoke Session",
+      "description": "End the authenticated session",
+      "order": 5,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/logout",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{accessToken}}"
+        },
+        "body": {
+          "sessionId": "{{sessionId}}"
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 204],
+        "extractFields": []
+      },
+      "extractVariables": {
+        "loggedOut": "$.success"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Session revoked successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to revoke session"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    }
+  ]
+}

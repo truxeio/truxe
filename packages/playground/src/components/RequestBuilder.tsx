@@ -1,20 +1,37 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/Button'
-import { Play, Settings, Code, Plus, Trash2, Eye, EyeOff } from 'lucide-react'
+import { Play, Settings, Code, Plus, Trash2, Eye, EyeOff, Save } from 'lucide-react'
 import Editor from '@monaco-editor/react'
 import { APIEndpoint, openAPIParser } from '@/lib/openapi-parser'
 import { RequestConfig } from '@/lib/request-executor'
+import { SavedRequest, Variable } from '@/types/collections'
 import AuthenticationTab from './AuthenticationTab'
 import CodeGenerator from './CodeGenerator'
 import { environmentManager } from '@/lib/environment-manager'
+import { variableResolver } from '@/lib/variable-resolver'
+import { playgroundStorage } from '@/lib/storage'
+import { collectionManager } from '@/lib/collection-manager'
+import { Modal, ModalHeader, ModalFooter } from '@/components/ui/Modal'
+import { Input } from '@/components/ui/Input'
+import { Textarea } from '@/components/ui/Textarea'
 
 interface RequestBuilderProps {
   endpoint: APIEndpoint | null
   onSendRequest: (request: RequestConfig) => Promise<void>
   isLoading: boolean
+  selectedRequest?: SavedRequest | null
+  selectedCollectionId?: string
+  onRequestSave?: (request: SavedRequest) => void
 }
 
-export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: RequestBuilderProps) {
+export default function RequestBuilder({ 
+  endpoint, 
+  onSendRequest, 
+  isLoading, 
+  selectedRequest,
+  selectedCollectionId,
+  onRequestSave
+}: RequestBuilderProps) {
   const [method, setMethod] = useState('GET')
   const [url, setUrl] = useState('')
   const [headers, setHeaders] = useState<Array<{key: string, value: string, enabled: boolean}>>([
@@ -22,12 +39,33 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
     { key: 'Authorization', value: '', enabled: false }
   ])
   const [body, setBody] = useState('{}')
-  const [activeTab, setActiveTab] = useState<'body' | 'headers' | 'params' | 'auth' | 'code'>('body')
+  const [activeTab, setActiveTab] = useState<'body' | 'headers' | 'params' | 'auth' | 'code' | 'variables'>('body')
   const [params, setParams] = useState<Array<{key: string, value: string, enabled: boolean}>>([])
   const [showAuthHelper, setShowAuthHelper] = useState(false)
+  
+  // Collections integration state
+  const [variables, setVariables] = useState<Variable[]>([])
+  const [showSaveModal, setShowSaveModal] = useState(false)
+  const [showVariablePreview, setShowVariablePreview] = useState(false)
+  const [resolvedRequest, setResolvedRequest] = useState<RequestConfig | null>(null)
+  const [saveRequestName, setSaveRequestName] = useState('')
+  const [saveRequestDescription, setSaveRequestDescription] = useState('')
 
+  // Load variables when collection changes
   useEffect(() => {
-    if (endpoint) {
+    loadVariables()
+  }, [selectedCollectionId])
+
+  // Load saved request when selected
+  useEffect(() => {
+    if (selectedRequest) {
+      loadSavedRequest(selectedRequest)
+    }
+  }, [selectedRequest])
+
+  // Update from endpoint
+  useEffect(() => {
+    if (endpoint && !selectedRequest) {
       setMethod(endpoint.method)
       setUrl(endpoint.path)
       
@@ -63,7 +101,169 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
         }
       }
     }
-  }, [endpoint])
+  }, [endpoint, selectedRequest])
+
+  // Update resolved request when variables or form data changes
+  useEffect(() => {
+    updateResolvedRequest()
+  }, [method, url, headers, body, params, variables])
+
+  /**
+   * Load variables for current context
+   */
+  const loadVariables = useCallback(async () => {
+    try {
+      const allVariables = await playgroundStorage.loadVariables()
+
+      // Filter variables by scope and context
+      const variablesArray = Array.isArray(allVariables) ? allVariables : Object.values(allVariables)
+      const relevantVariables = variablesArray.filter((variable: Variable) => {
+        switch (variable.scope) {
+          case 'global':
+            return true
+          case 'collection':
+            return variable.collectionId === selectedCollectionId
+          case 'request':
+            return variable.requestId === selectedRequest?.id
+          case 'workflow':
+            return false // Workflow variables not applicable in request builder
+          default:
+            return false
+        }
+      })
+      
+      setVariables(relevantVariables)
+    } catch (error) {
+      console.error('Failed to load variables:', error)
+    }
+  }, [selectedCollectionId, selectedRequest?.id])
+
+  /**
+   * Load saved request data
+   */
+  const loadSavedRequest = useCallback((request: SavedRequest) => {
+    setMethod(request.config.method)
+    setUrl(request.config.url)
+    
+    // Convert headers object to array
+    const headerArray = Object.entries(request.config.headers || {}).map(([key, value]) => ({
+      key,
+      value: String(value),
+      enabled: true
+    }))
+    setHeaders(headerArray)
+    
+    // Set body
+    if (request.config.body) {
+      const bodyStr = typeof request.config.body === 'string' 
+        ? request.config.body 
+        : JSON.stringify(request.config.body, null, 2)
+      setBody(bodyStr)
+    } else {
+      setBody('{}')
+    }
+    
+    // Convert params object to array
+    const paramArray = Object.entries(request.config.params || {}).map(([key, value]) => ({
+      key,
+      value: String(value),
+      enabled: true
+    }))
+    setParams(paramArray)
+  }, [])
+
+  /**
+   * Update resolved request with variable substitution
+   */
+  const updateResolvedRequest = useCallback(() => {
+    try {
+      const context = {
+        environment: selectedCollectionId || '',
+        collection: selectedCollectionId || '',
+        request: selectedRequest?.id || ''
+      }
+      
+      // Resolve URL
+      const resolvedUrl = variableResolver.resolve(url, context as any)
+
+      // Resolve headers
+      const resolvedHeaders: Record<string, string> = {}
+      headers.filter(h => h.enabled && h.key && h.value).forEach(header => {
+        resolvedHeaders[header.key] = variableResolver.resolve(header.value, context as any)
+      })
+
+      // Resolve params
+      const resolvedParams: Record<string, string> = {}
+      params.filter(p => p.enabled && p.key && p.value).forEach(param => {
+        resolvedParams[param.key] = variableResolver.resolve(param.value, context as any)
+      })
+
+      // Resolve body
+      let resolvedBody: any
+      try {
+        if (body && body.trim() !== '{}') {
+          const resolvedBodyStr = variableResolver.resolve(body, context as any)
+          resolvedBody = JSON.parse(resolvedBodyStr)
+        }
+      } catch {
+        resolvedBody = variableResolver.resolve(body, context as any)
+      }
+      
+      setResolvedRequest({
+        method,
+        url: resolvedUrl,
+        headers: resolvedHeaders,
+        body: resolvedBody,
+        params: resolvedParams
+      })
+      
+    } catch (error) {
+      console.error('Failed to resolve variables:', error)
+      setResolvedRequest(null)
+    }
+  }, [method, url, headers, body, params, variables, selectedCollectionId, selectedRequest?.id])
+
+  /**
+   * Handle saving current request as a collection item
+   */
+  const handleSaveRequest = useCallback(async () => {
+    if (!saveRequestName.trim()) {
+      return
+    }
+    
+    try {
+      const request: Omit<SavedRequest, 'id' | 'createdAt' | 'updatedAt'> = {
+        name: saveRequestName.trim(),
+        description: saveRequestDescription.trim() || undefined,
+        collectionId: selectedCollectionId || 'default',
+        config: {
+          method,
+          url,
+          headers: headers.filter(h => h.enabled && h.key && h.value)
+            .reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {}),
+          params: params.filter(p => p.enabled && p.key && p.value)
+            .reduce((acc, p) => ({ ...acc, [p.key]: p.value }), {}),
+          body: body && body.trim() !== '{}' ? body : undefined
+        },
+        tags: [],
+        executionCount: 0
+      }
+
+      await collectionManager.addRequest(selectedCollectionId || 'default', request as SavedRequest)
+      
+      // Call parent callback if provided
+      onRequestSave?.(request as SavedRequest)
+      
+      // Reset save modal
+      setShowSaveModal(false)
+      setSaveRequestName('')
+      setSaveRequestDescription('')
+      
+      console.log('Request saved successfully')
+    } catch (error) {
+      console.error('Failed to save request:', error)
+    }
+  }, [method, url, headers, params, body, saveRequestName, saveRequestDescription, selectedCollectionId, onRequestSave])
 
   const addHeader = () => {
     setHeaders([...headers, { key: '', value: '', enabled: true }])
@@ -94,30 +294,24 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
   }
 
   const handleSend = async () => {
-    const enabledHeaders = headers
-      .filter(h => h.enabled && h.key && h.value)
-      .reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {})
-
-    const enabledParams = params
-      .filter(p => p.enabled && p.key && p.value)
-      .reduce((acc, p) => ({ ...acc, [p.key]: p.value }), {})
-
-    let requestBody
-    try {
-      requestBody = body ? JSON.parse(body) : undefined
-    } catch (e) {
-      requestBody = body
-    }
-
-    const config: RequestConfig = {
+    // Use resolved request if available, otherwise build from form data
+    const requestConfig = resolvedRequest || {
       method,
       url,
-      headers: enabledHeaders,
-      body: requestBody,
-      params: enabledParams
+      headers: headers.filter(h => h.enabled && h.key && h.value)
+        .reduce((acc, h) => ({ ...acc, [h.key]: h.value }), {}),
+      params: params.filter(p => p.enabled && p.key && p.value)
+        .reduce((acc, p) => ({ ...acc, [p.key]: p.value }), {}),
+      body: body && body.trim() !== '{}' ? (() => {
+        try {
+          return JSON.parse(body)
+        } catch {
+          return body
+        }
+      })() : undefined
     }
 
-    await onSendRequest(config)
+    await onSendRequest(requestConfig)
   }
 
   const formatBody = () => {
@@ -208,6 +402,30 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
             {isLoading ? 'Sending...' : 'Send'}
           </Button>
 
+          {/* Save Request Button */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowSaveModal(true)}
+            className="text-xs"
+          >
+            <Save className="w-4 h-4 mr-1" />
+            Save
+          </Button>
+
+          {/* Variable Preview Toggle */}
+          {variables.length > 0 && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowVariablePreview(!showVariablePreview)}
+              className="text-xs"
+            >
+              <Eye className="w-4 h-4 mr-1" />
+              Variables
+            </Button>
+          )}
+
           <Button variant="outline" size="icon" onClick={() => setShowAuthHelper(!showAuthHelper)}>
             <Settings className="w-4 h-4" />
           </Button>
@@ -216,6 +434,34 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
         {endpoint && (
           <div className="mt-2 text-sm text-muted-foreground">
             <span className="font-medium">{endpoint.description}</span>
+          </div>
+        )}
+
+        {/* Variable Preview */}
+        {showVariablePreview && variables.length > 0 && (
+          <div className="mt-3 p-3 bg-muted/50 rounded-md border">
+            <h4 className="text-sm font-medium mb-2 flex items-center">
+              <Eye className="w-4 h-4 mr-1" />
+              Available Variables
+            </h4>
+            <div className="space-y-1">
+              {variables.map((variable, index) => (
+                <div key={index} className="text-xs font-mono bg-background px-2 py-1 rounded border">
+                  <span className="text-primary">{`{{${variable.key}}}`}</span>
+                  <span className="text-muted-foreground mx-2">→</span>
+                  <span className="text-foreground">{variable.value}</span>
+                  <span className="text-muted-foreground ml-2">({variable.scope})</span>
+                </div>
+              ))}
+            </div>
+            {resolvedRequest && (
+              <div className="mt-2 pt-2 border-t">
+                <h5 className="text-xs font-medium mb-1 text-muted-foreground">Resolved URL:</h5>
+                <code className="text-xs bg-background px-2 py-1 rounded border block">
+                  {resolvedRequest.url}
+                </code>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -378,6 +624,75 @@ export default function RequestBuilder({ endpoint, onSendRequest, isLoading }: R
           <CodeGenerator request={buildRequestConfig()} />
         )}
       </div>
+
+      {/* Save Request Modal */}
+      <Modal open={showSaveModal} onClose={() => setShowSaveModal(false)}>
+        <ModalHeader>
+          <h2 className="text-lg font-semibold">Save Request</h2>
+          <p className="text-sm text-muted-foreground">
+            Save this request to a collection for reuse
+          </p>
+        </ModalHeader>
+        
+        <div className="space-y-4 py-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Request Name *
+            </label>
+            <Input
+              value={saveRequestName}
+              onChange={(e) => setSaveRequestName(e.target.value)}
+              placeholder="e.g., Get User Profile"
+              className="w-full"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Description
+            </label>
+            <Textarea
+              value={saveRequestDescription}
+              onChange={(e) => setSaveRequestDescription(e.target.value)}
+              placeholder="Optional description for this request..."
+              rows={3}
+              className="w-full"
+            />
+          </div>
+          
+          <div className="p-3 bg-muted rounded-md">
+            <h4 className="text-sm font-medium mb-2">Request Preview</h4>
+            <div className="text-sm font-mono text-muted-foreground">
+              <div><span className="font-semibold text-primary">{method}</span> {url}</div>
+              {headers.filter(h => h.enabled && h.key).length > 0 && (
+                <div className="mt-1">Headers: {headers.filter(h => h.enabled && h.key).length}</div>
+              )}
+              {params.filter(p => p.enabled && p.key).length > 0 && (
+                <div>Params: {params.filter(p => p.enabled && p.key).length}</div>
+              )}
+              {body && body.trim() !== '{}' && (
+                <div>Body: Present</div>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        <ModalFooter>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowSaveModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSaveRequest}
+            disabled={!saveRequestName.trim()}
+          >
+            <Save className="w-4 h-4 mr-2" />
+            Save Request
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   )
 }

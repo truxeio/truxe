@@ -1,0 +1,423 @@
+{
+  "id": "mfa-setup-flow",
+  "name": "Multi-Factor Authentication Setup",
+  "description": "Complete MFA setup with TOTP authenticator app and backup codes",
+  "category": "mfa",
+  "version": "1.0.0",
+  "author": "Truxe Team",
+  "tags": ["mfa", "2fa", "totp", "security", "authentication"],
+  "isPrebuilt": true,
+  "createdAt": "2023-11-10T00:00:00Z",
+  "updatedAt": "2023-11-10T00:00:00Z",
+  "variables": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}",
+      "type": "environment",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Base API URL",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "email",
+      "value": "{{$randomEmail}}",
+      "type": "dynamic",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "User email address",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "password",
+      "value": "SecurePass123!",
+      "type": "workflow",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "User password",
+      "isSecret": true,
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    }
+  ],
+  "steps": [
+    {
+      "id": "initial-login",
+      "name": "Initial User Login",
+      "description": "Login user with email and password before MFA setup",
+      "order": 1,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/login",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "email": "{{email}}",
+          "password": "{{password}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["accessToken", "mfaRequired"]
+      },
+      "extractVariables": {
+        "accessToken": "$.accessToken",
+        "refreshToken": "$.refreshToken",
+        "mfaEnabled": "$.user.mfaEnabled",
+        "sessionToken": "$.sessionToken"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Initial login successful"
+          }
+        },
+        {
+          "type": "set-variable",
+          "params": {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Initial login failed"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "initiate-mfa-setup",
+      "name": "Initiate MFA Setup",
+      "description": "Start the MFA setup process and generate TOTP secret",
+      "order": 2,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/mfa/totp/setup",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{accessToken}}"
+        },
+        "body": {
+          "issuer": "Truxe API",
+          "accountName": "{{email}}"
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 201],
+        "extractFields": ["secret", "qrCodeUrl", "setupToken"]
+      },
+      "extractVariables": {
+        "totpSecret": "$.secret",
+        "qrCodeUrl": "$.qrCodeUrl",
+        "setupToken": "$.setupToken",
+        "backupUrl": "$.manualEntryUrl"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "MFA setup initiated - TOTP secret generated"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to initiate MFA setup"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "verify-totp-setup",
+      "name": "Verify TOTP Setup",
+      "description": "Verify TOTP code to complete MFA setup",
+      "order": 3,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/mfa/totp/verify-setup",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{accessToken}}"
+        },
+        "body": {
+          "setupToken": "{{setupToken}}",
+          "totpCode": "123456"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["verified", "backupCodes"]
+      },
+      "extractVariables": {
+        "mfaVerified": "$.verified",
+        "backupCodes": "$.backupCodes",
+        "mfaEnabled": "$.mfaEnabled"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "TOTP setup verified successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "TOTP verification failed - you may need to use a real TOTP code from authenticator app"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 0
+    },
+    {
+      "id": "generate-backup-codes",
+      "name": "Generate Backup Codes",
+      "description": "Generate backup codes for account recovery",
+      "order": 4,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/mfa/backup-codes/generate",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{accessToken}}"
+        },
+        "body": {
+          "count": 10
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 201],
+        "extractFields": ["codes"]
+      },
+      "extractVariables": {
+        "newBackupCodes": "$.codes",
+        "codesGenerated": "$.count",
+        "expiresAt": "$.expiresAt"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Backup codes generated successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to generate backup codes"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "test-mfa-login",
+      "name": "Test MFA Login",
+      "description": "Test login with MFA enabled",
+      "order": 5,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/login",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "email": "{{email}}",
+          "password": "{{password}}"
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 202],
+        "extractFields": ["mfaRequired", "challengeToken"]
+      },
+      "extractVariables": {
+        "mfaRequired": "$.mfaRequired",
+        "challengeToken": "$.challengeToken",
+        "availableMethods": "$.mfaMethods"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "MFA challenge initiated"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "MFA login test failed"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "complete-mfa-challenge",
+      "name": "Complete MFA Challenge",
+      "description": "Complete MFA challenge with TOTP code",
+      "order": 6,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/mfa/totp/verify",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "challengeToken": "{{challengeToken}}",
+          "totpCode": "123456"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["accessToken", "verified"]
+      },
+      "extractVariables": {
+        "finalAccessToken": "$.accessToken",
+        "mfaVerified": "$.verified",
+        "sessionId": "$.sessionId"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "MFA challenge completed successfully"
+          }
+        },
+        {
+          "type": "set-variable",
+          "params": {
+            "key": "Authorization",
+            "value": "Bearer {{finalAccessToken}}"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "MFA challenge failed - you may need to use a real TOTP code"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 0
+    },
+    {
+      "id": "test-backup-code",
+      "name": "Test Backup Code Login",
+      "description": "Test login using a backup code instead of TOTP",
+      "order": 7,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/mfa/backup-code/verify",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "challengeToken": "{{challengeToken}}",
+          "backupCode": "BACKUP-TEST-CODE-001"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["accessToken", "verified", "codeUsed"]
+      },
+      "extractVariables": {
+        "backupAccessToken": "$.accessToken",
+        "backupVerified": "$.verified",
+        "codeConsumed": "$.codeUsed",
+        "remainingCodes": "$.remainingCodes"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Backup code authentication successful"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Backup code authentication failed"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 0
+    },
+    {
+      "id": "get-mfa-status",
+      "name": "Get MFA Status",
+      "description": "Check current MFA configuration and status",
+      "order": 8,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/mfa/status",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{finalAccessToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["enabled", "methods"]
+      },
+      "extractVariables": {
+        "mfaStatus": "$.enabled",
+        "enabledMethods": "$.methods",
+        "backupCodesRemaining": "$.backupCodes.remaining",
+        "totpEnabled": "$.methods.totp.enabled"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "MFA status retrieved successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to retrieve MFA status"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    }
+  ]
+}

@@ -1,0 +1,502 @@
+{
+  "id": "session-management-flow",
+  "name": "Session Management & Refresh",
+  "description": "Complete session lifecycle: login, refresh tokens, session validation, and logout",
+  "category": "session",
+  "version": "1.0.0",
+  "author": "Truxe Team",
+  "tags": ["session", "authentication", "refresh-token", "logout"],
+  "isPrebuilt": true,
+  "createdAt": "2023-11-10T00:00:00Z",
+  "updatedAt": "2023-11-10T00:00:00Z",
+  "variables": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}",
+      "type": "environment",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Base API URL",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "email",
+      "value": "{{$randomEmail}}",
+      "type": "dynamic",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "User email address",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "password",
+      "value": "SessionTest123!",
+      "type": "workflow",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "User password",
+      "isSecret": true,
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    }
+  ],
+  "steps": [
+    {
+      "id": "user-login",
+      "name": "User Login",
+      "description": "Authenticate user and establish session",
+      "order": 1,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/login",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "email": "{{email}}",
+          "password": "{{password}}",
+          "rememberMe": true
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["accessToken", "refreshToken", "expiresIn"]
+      },
+      "extractVariables": {
+        "accessToken": "$.accessToken",
+        "refreshToken": "$.refreshToken",
+        "expiresIn": "$.expiresIn",
+        "sessionId": "$.sessionId",
+        "userId": "$.user.id"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "User login successful - session established"
+          }
+        },
+        {
+          "type": "set-variable",
+          "params": {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "User login failed"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "validate-session",
+      "name": "Validate Active Session",
+      "description": "Check if current session is valid and active",
+      "order": 2,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/auth/session/validate",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{accessToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["valid", "expiresAt"]
+      },
+      "extractVariables": {
+        "sessionValid": "$.valid",
+        "sessionExpiresAt": "$.expiresAt",
+        "timeRemaining": "$.timeRemaining",
+        "renewalThreshold": "$.renewalThreshold"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Session validation successful"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Session validation failed"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "get-user-sessions",
+      "name": "Get All User Sessions",
+      "description": "Retrieve all active sessions for the current user",
+      "order": 3,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/auth/sessions",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{accessToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["sessions"]
+      },
+      "extractVariables": {
+        "allSessions": "$.sessions",
+        "activeSessionCount": "$.count",
+        "currentSessionInfo": "$.current"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "User sessions retrieved successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to retrieve user sessions"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "simulate-token-expiry",
+      "name": "Simulate Token Near Expiry",
+      "description": "Wait or simulate approaching token expiration",
+      "order": 4,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/session/simulate-expiry",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{accessToken}}"
+        },
+        "body": {
+          "secondsUntilExpiry": 60
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 202],
+        "extractFields": ["simulated", "newExpiresAt"]
+      },
+      "extractVariables": {
+        "expirySimulated": "$.simulated",
+        "newExpiresAt": "$.newExpiresAt",
+        "shouldRefresh": "$.shouldRefresh"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Token expiry simulated"
+          }
+        },
+        {
+          "type": "delay",
+          "params": {
+            "ms": 2000
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to simulate token expiry"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "refresh-access-token",
+      "name": "Refresh Access Token",
+      "description": "Use refresh token to get new access token",
+      "order": 5,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/refresh",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "refreshToken": "{{refreshToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["accessToken", "expiresIn"]
+      },
+      "extractVariables": {
+        "newAccessToken": "$.accessToken",
+        "newRefreshToken": "$.refreshToken",
+        "newExpiresIn": "$.expiresIn",
+        "refreshedAt": "$.refreshedAt"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Access token refreshed successfully"
+          }
+        },
+        {
+          "type": "set-variable",
+          "params": {
+            "key": "Authorization",
+            "value": "Bearer {{newAccessToken}}"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Token refresh failed"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 2
+    },
+    {
+      "id": "test-refreshed-token",
+      "name": "Test Refreshed Token",
+      "description": "Verify the new access token works correctly",
+      "order": 6,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/auth/me",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{newAccessToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["id", "email"]
+      },
+      "extractVariables": {
+        "userProfile": "$",
+        "tokenWorking": "$.id"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Refreshed token is working correctly"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Refreshed token validation failed"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "extend-session",
+      "name": "Extend Session Duration",
+      "description": "Extend the current session lifetime",
+      "order": 7,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/session/extend",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{newAccessToken}}"
+        },
+        "body": {
+          "sessionId": "{{sessionId}}",
+          "extendBy": 3600
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 204],
+        "extractFields": ["newExpiresAt"]
+      },
+      "extractVariables": {
+        "extendedExpiresAt": "$.newExpiresAt",
+        "sessionExtended": "$.extended"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Session extended successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to extend session"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "revoke-other-sessions",
+      "name": "Revoke Other Sessions",
+      "description": "Revoke all other user sessions except current one",
+      "order": 8,
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/auth/sessions/others",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{newAccessToken}}"
+        },
+        "body": {
+          "keepCurrentSession": true
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 204],
+        "extractFields": ["revokedCount"]
+      },
+      "extractVariables": {
+        "sessionsRevoked": "$.revokedCount",
+        "remainingSessions": "$.remaining"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Other sessions revoked successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to revoke other sessions"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "logout-user",
+      "name": "Logout User",
+      "description": "End the current session and logout user",
+      "order": 9,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/auth/logout",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{newAccessToken}}"
+        },
+        "body": {
+          "sessionId": "{{sessionId}}",
+          "revokeRefreshToken": true
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 204],
+        "extractFields": []
+      },
+      "extractVariables": {
+        "loggedOut": "$.success",
+        "sessionEnded": "$.sessionEnded",
+        "refreshTokenRevoked": "$.refreshTokenRevoked"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "User logout successful"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Logout failed"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "verify-logout",
+      "name": "Verify Logout Success",
+      "description": "Verify that the session is no longer valid",
+      "order": 10,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/auth/me",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{newAccessToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 401,
+        "extractFields": []
+      },
+      "extractVariables": {
+        "unauthorizedConfirmed": "$.error"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Logout verified - token is no longer valid"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Logout verification failed - token may still be valid"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 0
+    }
+  ]
+}

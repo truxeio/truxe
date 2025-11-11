@@ -949,7 +949,7 @@ export const SITE_CONFIG = {
   links: {
     wundam: 'https://wundam.com',
     hippoc: 'https://hippoc.io',
-    github: 'https://github.com/wundam/truxe', // future
+    github: 'https://github.com/truxeio/truxe', // future
   },
   contact: {
     email: 'support@gettruxe.dev',

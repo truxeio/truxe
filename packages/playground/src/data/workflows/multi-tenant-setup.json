@@ -1,0 +1,674 @@
+{
+  "id": "multi-tenant-setup-flow",
+  "name": "Multi-Tenant Organization Setup",
+  "description": "Complete multi-tenant setup: create organization, add users, assign roles, and configure permissions",
+  "category": "user-management",
+  "version": "1.0.0",
+  "author": "Truxe Team",
+  "tags": ["multi-tenant", "organization", "roles", "permissions", "user-management"],
+  "isPrebuilt": true,
+  "createdAt": "2023-11-10T00:00:00Z",
+  "updatedAt": "2023-11-10T00:00:00Z",
+  "variables": [
+    {
+      "key": "baseUrl",
+      "value": "{{baseUrl}}",
+      "type": "environment",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Base API URL",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "adminEmail",
+      "value": "{{$randomEmail}}",
+      "type": "dynamic",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Organization admin email",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "adminPassword",
+      "value": "AdminPass123!",
+      "type": "workflow",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Admin password",
+      "isSecret": true,
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "orgName",
+      "value": "{{$randomString}} Corp",
+      "type": "dynamic",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Organization name",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    },
+    {
+      "key": "orgDomain",
+      "value": "{{$randomString}}.example.com",
+      "type": "dynamic",
+      "scope": "workflow",
+      "enabled": true,
+      "description": "Organization domain",
+      "createdAt": "2023-11-10T00:00:00Z",
+      "updatedAt": "2023-11-10T00:00:00Z"
+    }
+  ],
+  "steps": [
+    {
+      "id": "create-organization",
+      "name": "Create Organization",
+      "description": "Create a new organization/tenant",
+      "order": 1,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/organizations",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        "body": {
+          "name": "{{orgName}}",
+          "domain": "{{orgDomain}}",
+          "plan": "enterprise",
+          "adminEmail": "{{adminEmail}}",
+          "adminPassword": "{{adminPassword}}"
+        }
+      },
+      "expectedResponse": {
+        "status": [201, 200],
+        "extractFields": ["organizationId", "adminUserId"]
+      },
+      "extractVariables": {
+        "organizationId": "$.organizationId",
+        "adminUserId": "$.adminUserId",
+        "orgSlug": "$.slug",
+        "adminToken": "$.adminToken"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Organization created successfully"
+          }
+        },
+        {
+          "type": "set-variable",
+          "params": {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to create organization"
+          }
+        }
+      ],
+      "timeout": 15000,
+      "retries": 1
+    },
+    {
+      "id": "configure-organization-settings",
+      "name": "Configure Organization Settings",
+      "description": "Set up organization-level configurations and policies",
+      "order": 2,
+      "request": {
+        "method": "PUT",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/settings",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        },
+        "body": {
+          "settings": {
+            "allowUserRegistration": true,
+            "requireEmailVerification": true,
+            "passwordPolicy": {
+              "minLength": 8,
+              "requireUppercase": true,
+              "requireNumbers": true,
+              "requireSymbols": true
+            },
+            "sessionTimeout": 3600,
+            "mfaRequired": false,
+            "auditLogging": true
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 204],
+        "extractFields": ["settings"]
+      },
+      "extractVariables": {
+        "orgSettings": "$.settings",
+        "settingsApplied": "$.applied"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Organization settings configured"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to configure organization settings"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "create-roles",
+      "name": "Create Organization Roles",
+      "description": "Set up different roles within the organization",
+      "order": 3,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/roles/batch",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        },
+        "body": {
+          "roles": [
+            {
+              "name": "Manager",
+              "description": "Team manager with user management permissions",
+              "permissions": ["users.read", "users.create", "users.update", "teams.manage"]
+            },
+            {
+              "name": "Developer",
+              "description": "Developer with API access",
+              "permissions": ["api.read", "api.write", "projects.access"]
+            },
+            {
+              "name": "Viewer",
+              "description": "Read-only access to resources",
+              "permissions": ["*.read"]
+            }
+          ]
+        }
+      },
+      "expectedResponse": {
+        "status": [201, 200],
+        "extractFields": ["roles"]
+      },
+      "extractVariables": {
+        "createdRoles": "$.roles",
+        "managerRoleId": "$.roles[0].id",
+        "developerRoleId": "$.roles[1].id",
+        "viewerRoleId": "$.roles[2].id"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Organization roles created successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to create organization roles"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "create-teams",
+      "name": "Create Teams",
+      "description": "Create teams within the organization",
+      "order": 4,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/teams/batch",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        },
+        "body": {
+          "teams": [
+            {
+              "name": "Engineering",
+              "description": "Software development team",
+              "defaultRole": "{{developerRoleId}}"
+            },
+            {
+              "name": "Product",
+              "description": "Product management team",
+              "defaultRole": "{{managerRoleId}}"
+            },
+            {
+              "name": "Support",
+              "description": "Customer support team",
+              "defaultRole": "{{viewerRoleId}}"
+            }
+          ]
+        }
+      },
+      "expectedResponse": {
+        "status": [201, 200],
+        "extractFields": ["teams"]
+      },
+      "extractVariables": {
+        "createdTeams": "$.teams",
+        "engineeringTeamId": "$.teams[0].id",
+        "productTeamId": "$.teams[1].id",
+        "supportTeamId": "$.teams[2].id"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Teams created successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to create teams"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "invite-users",
+      "name": "Invite Users to Organization",
+      "description": "Send invitations to users to join the organization",
+      "order": 5,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/invitations/batch",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        },
+        "body": {
+          "invitations": [
+            {
+              "email": "manager1@example.com",
+              "roleId": "{{managerRoleId}}",
+              "teamId": "{{productTeamId}}",
+              "message": "Welcome to our organization!"
+            },
+            {
+              "email": "developer1@example.com",
+              "roleId": "{{developerRoleId}}",
+              "teamId": "{{engineeringTeamId}}",
+              "message": "Join our engineering team!"
+            },
+            {
+              "email": "support1@example.com",
+              "roleId": "{{viewerRoleId}}",
+              "teamId": "{{supportTeamId}}",
+              "message": "Join our support team!"
+            }
+          ]
+        }
+      },
+      "expectedResponse": {
+        "status": [201, 200],
+        "extractFields": ["invitations"]
+      },
+      "extractVariables": {
+        "sentInvitations": "$.invitations",
+        "invitationIds": "$.invitations[*].id",
+        "invitationTokens": "$.invitations[*].token"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "User invitations sent successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to send user invitations"
+          }
+        }
+      ],
+      "timeout": 15000,
+      "retries": 1
+    },
+    {
+      "id": "simulate-user-acceptance",
+      "name": "Simulate User Invitation Acceptance",
+      "description": "Simulate users accepting invitations and joining the organization",
+      "order": 6,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/invitations/accept-simulation",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        },
+        "body": {
+          "simulations": [
+            {
+              "email": "manager1@example.com",
+              "password": "Manager123!",
+              "firstName": "Sarah",
+              "lastName": "Manager"
+            },
+            {
+              "email": "developer1@example.com",
+              "password": "Dev123!",
+              "firstName": "John",
+              "lastName": "Developer"
+            },
+            {
+              "email": "support1@example.com",
+              "password": "Support123!",
+              "firstName": "Alice",
+              "lastName": "Support"
+            }
+          ]
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 201],
+        "extractFields": ["acceptedUsers"]
+      },
+      "extractVariables": {
+        "acceptedUsers": "$.acceptedUsers",
+        "managerUserId": "$.acceptedUsers[0].userId",
+        "developerUserId": "$.acceptedUsers[1].userId",
+        "supportUserId": "$.acceptedUsers[2].userId"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "User invitations accepted (simulated)"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to simulate user acceptances"
+          }
+        }
+      ],
+      "timeout": 15000,
+      "retries": 1
+    },
+    {
+      "id": "verify-team-memberships",
+      "name": "Verify Team Memberships",
+      "description": "Verify that users are properly assigned to their teams",
+      "order": 7,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/teams/{{engineeringTeamId}}/members",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["members"]
+      },
+      "extractVariables": {
+        "engineeringMembers": "$.members",
+        "memberCount": "$.count"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Team memberships verified"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to verify team memberships"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "test-role-permissions",
+      "name": "Test Role Permissions",
+      "description": "Test that role-based permissions are working correctly",
+      "order": 8,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/users/{{developerUserId}}/permissions",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["permissions", "roles"]
+      },
+      "extractVariables": {
+        "userPermissions": "$.permissions",
+        "userRoles": "$.roles",
+        "canManageUsers": "$.permissions.users.manage"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Role permissions verified"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to verify role permissions"
+          }
+        }
+      ],
+      "timeout": 5000,
+      "retries": 1
+    },
+    {
+      "id": "create-projects",
+      "name": "Create Organization Projects",
+      "description": "Create projects within the organization",
+      "order": 9,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/projects/batch",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        },
+        "body": {
+          "projects": [
+            {
+              "name": "Web Application",
+              "description": "Main web application project",
+              "teamId": "{{engineeringTeamId}}",
+              "visibility": "private"
+            },
+            {
+              "name": "Mobile App",
+              "description": "Mobile application project",
+              "teamId": "{{engineeringTeamId}}",
+              "visibility": "private"
+            },
+            {
+              "name": "Documentation",
+              "description": "Product documentation project",
+              "teamId": "{{productTeamId}}",
+              "visibility": "internal"
+            }
+          ]
+        }
+      },
+      "expectedResponse": {
+        "status": [201, 200],
+        "extractFields": ["projects"]
+      },
+      "extractVariables": {
+        "createdProjects": "$.projects",
+        "webAppProjectId": "$.projects[0].id",
+        "mobileAppProjectId": "$.projects[1].id",
+        "docsProjectId": "$.projects[2].id"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Organization projects created successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to create organization projects"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    },
+    {
+      "id": "setup-billing",
+      "name": "Setup Organization Billing",
+      "description": "Configure billing and subscription for the organization",
+      "order": 10,
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/billing/setup",
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        },
+        "body": {
+          "plan": "enterprise",
+          "billingCycle": "monthly",
+          "paymentMethod": {
+            "type": "test",
+            "cardNumber": "4242424242424242",
+            "expiryMonth": 12,
+            "expiryYear": 2025,
+            "cvc": "123"
+          }
+        }
+      },
+      "expectedResponse": {
+        "status": [200, 201],
+        "extractFields": ["subscriptionId", "billingStatus"]
+      },
+      "extractVariables": {
+        "subscriptionId": "$.subscriptionId",
+        "billingStatus": "$.billingStatus",
+        "nextBillingDate": "$.nextBillingDate"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Organization billing setup completed"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to setup organization billing"
+          }
+        }
+      ],
+      "timeout": 15000,
+      "retries": 1
+    },
+    {
+      "id": "generate-organization-report",
+      "name": "Generate Organization Setup Report",
+      "description": "Generate a comprehensive report of the organization setup",
+      "order": 11,
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/organizations/{{organizationId}}/setup-report",
+        "headers": {
+          "Accept": "application/json",
+          "Authorization": "Bearer {{adminToken}}"
+        }
+      },
+      "expectedResponse": {
+        "status": 200,
+        "extractFields": ["report"]
+      },
+      "extractVariables": {
+        "setupReport": "$.report",
+        "totalUsers": "$.report.users.total",
+        "totalTeams": "$.report.teams.total",
+        "totalProjects": "$.report.projects.total",
+        "setupComplete": "$.report.setupComplete"
+      },
+      "onSuccess": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Organization setup report generated successfully"
+          }
+        }
+      ],
+      "onFailure": [
+        {
+          "type": "log",
+          "params": {
+            "message": "Failed to generate setup report"
+          }
+        }
+      ],
+      "timeout": 10000,
+      "retries": 1
+    }
+  ]
+}

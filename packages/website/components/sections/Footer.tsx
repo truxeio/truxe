@@ -130,7 +130,7 @@ export function Footer() {
             <div className="flex flex-wrap items-center justify-center gap-3 text-xs">
               <span className="text-muted">Open Core Licensing:</span>
               <a
-                href="https://github.com/Wundam/Truxe/blob/main/LICENSE"
+                href="https://github.com/truxeio/truxe/blob/main/LICENSE"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
@@ -139,7 +139,7 @@ export function Footer() {
               </a>
               <span className="text-muted">·</span>
               <a
-                href="https://github.com/Wundam/Truxe/blob/main/LICENSE-BSL"
+                href="https://github.com/truxeio/truxe/blob/main/LICENSE-BSL"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"

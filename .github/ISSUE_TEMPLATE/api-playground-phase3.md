@@ -13,8 +13,8 @@ assignees: ''
 Implement advanced productivity features including request collections, saved requests, and guided authentication workflows to help developers efficiently test and integrate with Truxe APIs.
 
 **Related Issues:**
-- ✅ Phase 1 Complete: [#6](https://github.com/Wundam/truxe/issues/6) - Core UI & Request/Response
-- ✅ Phase 2 Complete: [#7](https://github.com/Wundam/truxe/issues/7) - Code Generation
+- ✅ Phase 1 Complete: [#6](https://github.com/truxeio/truxe/issues/6) - Core UI & Request/Response
+- ✅ Phase 2 Complete: [#7](https://github.com/truxeio/truxe/issues/7) - Code Generation
 
 **Target:** v0.5.0 Release
 **Estimated Time:** 4-5 days

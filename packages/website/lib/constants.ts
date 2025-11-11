@@ -12,7 +12,7 @@ export const SITE_CONFIG = {
   links: {
     wundam: "https://wundam.com",
     hippoc: "https://hippoc.io",
-    github: "https://github.com/wundam/truxe",
+    github: "https://github.com/truxeio/truxe",
     email: "support@truxe.io",
     privacy: "/privacy",
     terms: "/terms",
@@ -205,7 +205,7 @@ export const WAITLIST_USE_CASES = [
 ] as const;
 
 export const SOCIAL_LINKS = [
-  { label: "GitHub", href: "https://github.com/wundam/truxe", icon: "github" },
+  { label: "GitHub", href: "https://github.com/truxeio/truxe", icon: "github" },
   { label: "Discord", href: "https://discord.gg/truxe", icon: "discord" },
   { label: "Twitter/X", href: "https://x.com/truxeauth", icon: "twitter" },
   { label: "LinkedIn", href: "https://linkedin.com/company/truxe", icon: "linkedin" },

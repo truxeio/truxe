@@ -77,7 +77,7 @@ export default function APIPage() {
             </Link>
 
             <a
-              href="https://github.com/wundam/truxe"
+              href="https://github.com/truxeio/truxe"
               target="_blank"
               rel="noopener noreferrer"
               className="card bg-white p-6 shadow-soft hover:shadow-lg transition-all group"

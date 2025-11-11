@@ -167,7 +167,7 @@ export default function DocsPage() {
                 Sample projects and integration examples
               </p>
               <a
-                href="https://github.com/wundam/truxe-examples"
+                href="https://github.com/truxeio/truxe-examples"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-medium text-primary hover:underline"

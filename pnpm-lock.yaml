@@ -265,8 +265,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1(ajv@8.17.1)
       argon2:
-        specifier: ^0.31.2
-        version: 0.31.2
+        specifier: ^0.44.0
+        version: 0.44.0
       aws-sdk:
         specifier: ^2.1691.0
         version: 2.1692.0
@@ -1560,6 +1560,9 @@ packages:
     peerDependencies:
       react: '>=16.8.0'
 
+  '@epic-web/invariant@1.0.0':
+    resolution: {integrity: sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA==}
+
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
     engines: {node: '>=12'}
@@ -2267,10 +2270,6 @@ packages:
   '@lukeed/ms@2.0.2':
     resolution: {integrity: sha512-9I2Zn6+NJLfaGoz9jN3lpwDgAYvfGeNYdbAIjJOqzs4Tpc+VU3Jqq4IofSUBKajiDS8k9fZIg18/z13mpk1bsA==}
     engines: {node: '>=8'}
-
-  '@mapbox/node-pre-gyp@1.0.11':
-    resolution: {integrity: sha512-Yhlar6v9WQgUp/He7BdgzOz8lqMQ8sU+jkCq7Wx8Myc5YFJLbEe7lgui/V7G1qB1DJykHSGwreceSaD60Y0PUQ==}
-    hasBin: true
 
   '@mdx-js/react@2.3.0':
     resolution: {integrity: sha512-zQH//gdOmuu7nt2oJR29vFhDv88oGPmVw6BggmrHeMI+xgEkp1B2dX9/bMBSYtK0dyLX/aOmesKS09g222K1/g==}
@@ -4616,9 +4615,6 @@ packages:
     resolution: {integrity: sha512-j2afSsaIENvHZN2B8GOpF566vZ5WVk5opAiMTvWgaQT8DkbOqsTfvNAvHoRGU2zzP8cPoqys+xHTRDWW8L+/BA==}
     deprecated: Use your platform's native atob() and btoa() methods instead
 
-  abbrev@1.1.1:
-    resolution: {integrity: sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==}
-
   abbrev@2.0.0:
     resolution: {integrity: sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
@@ -4756,9 +4752,6 @@ packages:
   app-root-dir@1.0.2:
     resolution: {integrity: sha512-jlpIfsOoNoafl92Sz//64uQHGSyMrD2vYG5d8o2a4qGvyNCvXur7bzIsWtAC/6flI2RYAp3kv8rsfBtaLm7w0g==}
 
-  aproba@2.1.0:
-    resolution: {integrity: sha512-tLIEcj5GuR2RSTnxNKdkK0dJ/GrC7P38sUkiDmDuHfsHmbagTFAxDVIBltoklXEVIQ/f14IL8IMJ5pn9Hez1Ew==}
-
   archiver-utils@5.0.2:
     resolution: {integrity: sha512-wuLJMmIBQYCsGZgYLTy5FIB2pF6Lfb6cXMSF8Qywwk3t20zWnAi7zLcQFdKQmIB8wyZpY5ER38x08GbwtR2cLA==}
     engines: {node: '>= 14'}
@@ -4767,17 +4760,12 @@ packages:
     resolution: {integrity: sha512-ZcbTaIqJOfCc03QwD468Unz/5Ir8ATtvAHsK+FdXbDIbGfihqh9mrvdcYunQzqn4HrvWWaFyaxJhGZagaJJpPQ==}
     engines: {node: '>= 14'}
 
-  are-we-there-yet@2.0.0:
-    resolution: {integrity: sha512-Ci/qENmwHnsYo9xKIcUJN5LeDKdJ6R1Z1j9V/J5wyq8nh/mYPEpIKJbBZXtZjG04HiK7zV/p6Vs9952MrMeUIw==}
-    engines: {node: '>=10'}
-    deprecated: This package is no longer supported.
-
   arg@5.0.2:
     resolution: {integrity: sha512-PYjyFOLKQ9y57JvQ6QLo8dAgNqswh8M1RMJYdQduT6xbWSgK36P/Z/v+p888pM69jMMfS8Xd8F6I1kQ/I9HUGg==}
 
-  argon2@0.31.2:
-    resolution: {integrity: sha512-QSnJ8By5Mth60IEte45w9Y7v6bWcQw3YhRtJKKN8oNCxnTLDiv/AXXkDPf2srTMfxFVn3QJdVv2nhXESsUa+Yg==}
-    engines: {node: '>=14.0.0'}
+  argon2@0.44.0:
+    resolution: {integrity: sha512-zHPGN3S55sihSQo0dBbK0A5qpi2R31z7HZDZnry3ifOyj8bZZnpZND2gpmhnRGO1V/d555RwBqIK5W4Mrmv3ig==}
+    engines: {node: '>=16.17.0'}
 
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
@@ -5423,10 +5411,6 @@ packages:
     resolution: {integrity: sha512-RxmjYxbWemV9gKu4zPgiZagUxbH3RQpEIO77XoSSX0ivgABDZ+h8Zuash/EMFLTI4N9QgFPOJ6JQpPZKFxa+dA==}
     engines: {node: '>=18'}
 
-  color-support@1.1.3:
-    resolution: {integrity: sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==}
-    hasBin: true
-
   color@5.0.2:
     resolution: {integrity: sha512-e2hz5BzbUPcYlIRHo8ieAhYgoajrJr+hWoceg6E345TPsATMUKqDgzt8fSXZJJbxfpiPzkWyphz8yn8At7q3fA==}
     engines: {node: '>=18'}
@@ -5524,9 +5508,6 @@ packages:
     resolution: {integrity: sha512-5IKcdX0nnYavi6G7TtOhwkYzyjfJlatbjMjuLSfE2kYT5pMDOilZ4OvMhi637CcDICTmz3wARPoyhqyX1Y+XvA==}
     engines: {node: ^14.18.0 || >=16.10.0}
 
-  console-control-strings@1.1.0:
-    resolution: {integrity: sha512-ty/fTekppD2fIwRvnZAVdeOiGd1c7YXEixbgJTNzqcxJWKQnjJ/V1bNEEE6hygpM3WjwHFUVK6HTjWSzV4a8sQ==}
-
   console-log-level@1.4.1:
     resolution: {integrity: sha512-VZzbIORbP+PPcN/gg3DXClTLPLg5Slwd5fL2MIc+o1qZ4BXBvWyc6QxPk6T/Mkr6IVjRpoAGf32XxP3ZWMVRcQ==}
 
@@ -5586,6 +5567,11 @@ packages:
   cron-parser@4.9.0:
     resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
     engines: {node: '>=12.0.0'}
+
+  cross-env@10.1.0:
+    resolution: {integrity: sha512-GsYosgnACZTADcmEyJctkJIoqAhHjttw7RsFrVoJNXbsWWqaq6Ym+7kZjq6mS45O0jij6vtiReppKQEtqWy6Dw==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -5787,9 +5773,6 @@ packages:
   delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
-
-  delegates@1.0.0:
-    resolution: {integrity: sha512-bd2L678uiWATM6m5Z1VzNCErI3jiGzt6HGY8OVICs40JQq/HALfbyNJmp0UDakEY4pMMaN0Ly5om/B1VI/+xfQ==}
 
   denque@2.1.0:
     resolution: {integrity: sha512-HVQE3AAb/pxF8fQAoiqpvg9i3evqug3hoiwakOyZAwJm+6vZehbkYXZ0l4JxS+I3QxM97v5aaRNhj8v5oBhekw==}
@@ -6615,11 +6598,6 @@ packages:
   functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
 
-  gauge@3.0.2:
-    resolution: {integrity: sha512-+5J6MS/5XksCuXq++uFRsnUd7Ovu1XenbeuIuNRJxYWjgQbPuFhT14lAvsWfqfAmnwluf1OwMjz39HjfLPci0Q==}
-    engines: {node: '>=10'}
-    deprecated: This package is no longer supported.
-
   geist@1.5.1:
     resolution: {integrity: sha512-mAHZxIsL2o3ZITFaBVFBnwyDOw+zNLYum6A6nIjpzCGIO8QtC3V76XF2RnZTyLx1wlDTmMDy8jg3Ib52MIjGvQ==}
     peerDependencies:
@@ -6804,9 +6782,6 @@ packages:
   has-tostringtag@1.0.2:
     resolution: {integrity: sha512-NqADB8VjPFLM2V0VvHUewwwsw0ZWBaIdgo+ieHtK3hasLz4qeCRjYcqfB6AQrBggRKppKF8L52/VqdVsO47Dlw==}
     engines: {node: '>= 0.4'}
-
-  has-unicode@2.0.1:
-    resolution: {integrity: sha512-8Rf9Y83NBReMnx0gFzA8JImQACstCYWUplepDa9xprwwtmgEZUF0h/i5xSA625zB/I37EtrswSST6OXxwaaIJQ==}
 
   hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
@@ -8041,9 +8016,6 @@ packages:
   node-abort-controller@3.1.1:
     resolution: {integrity: sha512-AGK2yQKIjRuqnc6VkX2Xj5d+QW8xZ87pa1UK6yA6ouUyuxfHuMP6umE5QK7UmTeOAymo+Zx1Fxiuw9rVx8taHQ==}
 
-  node-addon-api@7.1.1:
-    resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
-
   node-addon-api@8.5.0:
     resolution: {integrity: sha512-/bRZty2mXUIFY/xU5HLvveNHlswNJej+RnxBjOMkidWfwZzgTbPG1E3K5TOxRLOR+5hX7bSofy8yf1hZevMS8A==}
     engines: {node: ^18 || ^20 || >= 21}
@@ -8095,11 +8067,6 @@ packages:
     resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
     engines: {node: '>=6.0.0'}
 
-  nopt@5.0.0:
-    resolution: {integrity: sha512-Tbj67rffqceeLpcRXrT7vKAN8CwfPeIBgM7E6iBkmKLV7bEMwpGgYLGv0jACUsECaa/vuxP0IjEont6umdMgtQ==}
-    engines: {node: '>=6'}
-    hasBin: true
-
   nopt@7.2.1:
     resolution: {integrity: sha512-taM24ViiimT/XntxbPyJQzCG+p4EKOpgD3mxFwW38mGjVUrfERQOeY4EDHjdnptttfHuHQXFx+lTP08Q+mLa/w==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
@@ -8127,10 +8094,6 @@ packages:
   npm-run-path@5.3.0:
     resolution: {integrity: sha512-ppwTtiJZq0O/ai0z7yfudtBpWIoxM8yE6nHi1X47eFR2EWORqfbu6CnPlNsjeN683eT0qG6H/Pyf9fCcvjnnnQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-
-  npmlog@5.0.1:
-    resolution: {integrity: sha512-AqZtDUWOMKs1G/8lwylVjrdYgqA4d9nu8hc+0gzRxlDb1I10+FHBGMXs6aiQHFdCUUlqH99MUMuLfzWDNDtfxw==}
-    deprecated: This package is no longer supported.
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
@@ -10456,9 +10419,6 @@ packages:
     engines: {node: '>=8'}
     hasBin: true
 
-  wide-align@1.1.5:
-    resolution: {integrity: sha512-eDMORYaPNZ4sQIuuYPDHdQvf4gyCF9rEEV/yPxGfwPkRodwEgiMUUXTx/dex+Me0wxx53S+NgUHaP7y3MGlDmg==}
-
   widest-line@4.0.1:
     resolution: {integrity: sha512-o0cyEG0e8GPzT4iGHphIOh0cJOV8fivsXxddQasHPHfoZf1ZexrfeA21w2NaEN1RHE+fXlfISmOE8R9N3u3Qig==}
     engines: {node: '>=12'}
@@ -11895,6 +11855,8 @@ snapshots:
     dependencies:
       react: 18.3.1
 
+  '@epic-web/invariant@1.0.0': {}
+
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
 
@@ -12569,21 +12531,6 @@ snapshots:
   '@juggle/resize-observer@3.4.0': {}
 
   '@lukeed/ms@2.0.2': {}
-
-  '@mapbox/node-pre-gyp@1.0.11':
-    dependencies:
-      detect-libc: 2.1.2
-      https-proxy-agent: 5.0.1
-      make-dir: 3.1.0
-      node-fetch: 2.7.0
-      nopt: 5.0.0
-      npmlog: 5.0.1
-      rimraf: 3.0.2
-      semver: 7.7.3
-      tar: 6.2.1
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
 
   '@mdx-js/react@2.3.0(react@18.3.1)':
     dependencies:
@@ -15505,8 +15452,6 @@ snapshots:
 
   abab@2.0.6: {}
 
-  abbrev@1.1.1: {}
-
   abbrev@2.0.0: {}
 
   abort-controller@3.0.0:
@@ -15638,8 +15583,6 @@ snapshots:
 
   app-root-dir@1.0.2: {}
 
-  aproba@2.1.0: {}
-
   archiver-utils@5.0.2:
     dependencies:
       glob: 10.4.5
@@ -15663,21 +15606,14 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  are-we-there-yet@2.0.0:
-    dependencies:
-      delegates: 1.0.0
-      readable-stream: 3.6.2
-
   arg@5.0.2: {}
 
-  argon2@0.31.2:
+  argon2@0.44.0:
     dependencies:
-      '@mapbox/node-pre-gyp': 1.0.11
       '@phc/format': 1.0.0
-      node-addon-api: 7.1.1
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
+      cross-env: 10.1.0
+      node-addon-api: 8.5.0
+      node-gyp-build: 4.8.4
 
   argparse@1.0.10:
     dependencies:
@@ -16454,8 +16390,6 @@ snapshots:
     dependencies:
       color-name: 2.0.2
 
-  color-support@1.1.3: {}
-
   color@5.0.2:
     dependencies:
       color-convert: 3.1.2
@@ -16558,8 +16492,6 @@ snapshots:
 
   consola@3.4.2: {}
 
-  console-control-strings@1.1.0: {}
-
   console-log-level@1.4.1:
     optional: true
 
@@ -16618,6 +16550,11 @@ snapshots:
   cron-parser@4.9.0:
     dependencies:
       luxon: 3.7.2
+
+  cross-env@10.1.0:
+    dependencies:
+      '@epic-web/invariant': 1.0.0
+      cross-spawn: 7.0.6
 
   cross-spawn@7.0.6:
     dependencies:
@@ -16847,8 +16784,6 @@ snapshots:
 
   delayed-stream@1.0.0: {}
 
-  delegates@1.0.0: {}
-
   denque@2.1.0: {}
 
   depd@2.0.0: {}
@@ -16859,7 +16794,8 @@ snapshots:
 
   detect-indent@6.1.0: {}
 
-  detect-libc@2.1.2: {}
+  detect-libc@2.1.2:
+    optional: true
 
   detect-newline@3.1.0: {}
 
@@ -18044,18 +17980,6 @@ snapshots:
 
   functions-have-names@1.2.3: {}
 
-  gauge@3.0.2:
-    dependencies:
-      aproba: 2.1.0
-      color-support: 1.1.3
-      console-control-strings: 1.1.0
-      has-unicode: 2.0.1
-      object-assign: 4.1.1
-      signal-exit: 3.0.7
-      string-width: 4.2.3
-      strip-ansi: 6.0.1
-      wide-align: 1.1.5
-
   geist@1.5.1(next@14.2.33(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
       next: 14.2.33(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -18256,8 +18180,6 @@ snapshots:
   has-tostringtag@1.0.2:
     dependencies:
       has-symbols: 1.1.0
-
-  has-unicode@2.0.1: {}
 
   hasown@2.0.2:
     dependencies:
@@ -19735,8 +19657,6 @@ snapshots:
 
   node-abort-controller@3.1.1: {}
 
-  node-addon-api@7.1.1: {}
-
   node-addon-api@8.5.0: {}
 
   node-dir@0.1.17:
@@ -19771,10 +19691,6 @@ snapshots:
 
   nodemailer@6.10.1: {}
 
-  nopt@5.0.0:
-    dependencies:
-      abbrev: 1.1.1
-
   nopt@7.2.1:
     dependencies:
       abbrev: 2.0.0
@@ -19799,13 +19715,6 @@ snapshots:
   npm-run-path@5.3.0:
     dependencies:
       path-key: 4.0.0
-
-  npmlog@5.0.1:
-    dependencies:
-      are-we-there-yet: 2.0.0
-      console-control-strings: 1.1.0
-      gauge: 3.0.2
-      set-blocking: 2.0.0
 
   nth-check@2.1.1:
     dependencies:
@@ -22515,10 +22424,6 @@ snapshots:
     dependencies:
       siginfo: 2.0.0
       stackback: 0.0.2
-
-  wide-align@1.1.5:
-    dependencies:
-      string-width: 4.2.3
 
   widest-line@4.0.1:
     dependencies:

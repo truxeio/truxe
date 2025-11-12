@@ -59,7 +59,7 @@ describe('GitHubWebhookCleanupService', () => {
         expect.stringContaining('SELECT cleanup_old_github_webhook_events()')
       );
       expect(result.deletedCount).toBe(42);
-      expect(result.duration).toBeGreaterThan(0);
+      expect(result.duration).toBeGreaterThanOrEqual(0); // May be 0 with fake timers
       expect(mockLogger.info).toHaveBeenCalledWith(
         expect.stringContaining('GitHub webhook cleanup completed'),
         expect.any(Object)
@@ -79,8 +79,10 @@ describe('GitHubWebhookCleanupService', () => {
     });
 
     it('should prevent concurrent cleanup runs', async () => {
-      mockPool.query.mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({ rows: [{ deleted_count: '10' }] }), 100))
+      jest.useRealTimers(); // Use real timers for async behavior
+
+      mockPool.query.mockImplementation(() =>
+        new Promise(resolve => setTimeout(() => resolve({ rows: [{ deleted_count: '10' }] }), 10))
       );
 
       service = new GitHubWebhookCleanupService({
@@ -93,8 +95,10 @@ describe('GitHubWebhookCleanupService', () => {
 
       // First should execute, second should be skipped
       await promise1;
-      
+
       expect(service.isRunning).toBe(false);
+
+      jest.useFakeTimers(); // Restore fake timers for other tests
     });
   });
 
@@ -151,17 +155,6 @@ describe('GitHubWebhookCleanupService', () => {
 
   describe('Cleanup Statistics', () => {
     it('should get cleanup statistics', async () => {
-      mockPool.query
-        .mockResolvedValueOnce({
-          rows: [{ count: '150' }],
-        })
-        .mockResolvedValueOnce({
-          rows: [{ count: '1000' }],
-        })
-        .mockResolvedValueOnce({
-          rows: [{ oldest: new Date('2024-01-01') }],
-        });
-
       service = new GitHubWebhookCleanupService({
         pool: mockPool,
         logger: mockLogger,
@@ -169,7 +162,20 @@ describe('GitHubWebhookCleanupService', () => {
         cleanupInterval: 86400000,
       });
 
+      // Start service to set up timer (won't trigger cleanup immediately with fake timers)
       service.start();
+
+      // Mock for getCleanupStats() - 3 queries
+      mockPool.query
+        .mockResolvedValueOnce({
+          rows: [{ count: '150' }], // Eligible count
+        })
+        .mockResolvedValueOnce({
+          rows: [{ count: '1000' }], // Total count
+        })
+        .mockResolvedValueOnce({
+          rows: [{ oldest: new Date('2024-01-01') }], // Oldest processed
+        });
 
       const stats = await service.getCleanupStats();
 

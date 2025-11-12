@@ -19,11 +19,15 @@ jest.mock('../src/database/connection.js', () => ({
   getPool: jest.fn(() => mockPool),
 }));
 
-jest.mock('../src/services/audit-logger.js', () => ({
-  default: {
-    log: jest.fn().mockResolvedValue(undefined),
-  },
-}));
+jest.mock('../src/services/audit-logger.js', () => {
+  const mockLog = jest.fn().mockResolvedValue(undefined);
+  return {
+    __esModule: true,
+    default: {
+      log: mockLog,
+    },
+  };
+});
 
 // Mock database pool
 const mockPool = {

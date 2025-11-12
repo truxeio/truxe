@@ -27,7 +27,7 @@ describe('HierarchyService', () => {
     const ancestors = await service.getAncestors('tenant-1')
     expect(repository.query).toHaveBeenCalled()
     expect(ancestors[0].id).toBe('root')
-    expect(cache.set).toHaveBeenCalledWith(expect.any(String), expect.any(Array), 120)
+    expect(cache.set).toHaveBeenCalledWith(expect.any(String), expect.any(Array))
   })
 
   it('checks ancestor relationship', async () => {

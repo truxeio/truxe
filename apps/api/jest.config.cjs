@@ -16,9 +16,9 @@ module.exports = {
   // Module file extensions
   moduleFileExtensions: ['js', 'json'],
 
-  // Test match patterns
+  // Test match patterns - exclude node:test files (*.node.test.js)
   testMatch: [
-    '**/tests/**/*.test.js',
+    '**/tests/**/!(*.node).test.js',
   ],
 
   // Coverage configuration
@@ -50,16 +50,16 @@ module.exports = {
     '/node_modules/',
     '/coverage/',
     // Exclude Node.js built-in test runner tests (use separate npm script)
-    '/tests/github-actions\\.test\\.js$',
-    '/tests/github-app\\.test\\.js$',
-    '/tests/github-client\\.test\\.js$',
-    '/tests/github-repository-sync\\.test\\.js$',
-    '/tests/github-search\\.test\\.js$',
-    '/tests/github-templates\\.test\\.js$',
-    '/tests/oauth-apple-provider\\.test\\.js$',
-    '/tests/oauth-google-provider\\.test\\.js$',
-    '/tests/oauth-infrastructure\\.test\\.js$',
-    '/tests/oauth-microsoft-provider\\.test\\.js$',
+    'github-actions\\.test\\.js',
+    'github-app\\.test\\.js',
+    'github-client\\.test\\.js',
+    'github-repository-sync\\.test\\.js',
+    'github-search\\.test\\.js',
+    'github-templates\\.test\\.js',
+    'oauth-apple-provider\\.test\\.js',
+    'oauth-google-provider\\.test\\.js',
+    'oauth-infrastructure\\.test\\.js',
+    'oauth-microsoft-provider\\.test\\.js',
   ],
 
   // Verbose output

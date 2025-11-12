@@ -1,55 +1,119 @@
 # Docker Registry Strategy
 
+**Version**: 2.0.0
+**Last Updated**: 2025-11-12
+**Related**: [Repository Governance](../internal/REPOSITORY_GOVERNANCE.md)
+
 ## Overview
 
-Truxe uses a dual-registry strategy for Docker images to optimize for both production deployment and community adoption.
+Truxe uses a dual-registry strategy aligned with our dual-license model (MIT + BSL). This approach optimizes for:
+- Private full-featured (BSL) deployments via GHCR
+- Public community (MIT) distribution via Docker Hub
+- Zero infrastructure costs ($0/month)
+
+## Critical Licensing Context
+
+**Truxe uses a dual-license model:**
+- **Community Edition (MIT)**: 40% of features, open source, free forever
+- **Professional/Enterprise (BSL)**: 60% of features, requires license ($79-$499/month)
+
+**Docker images MUST respect this licensing boundary:**
+- GHCR → Full features (MIT + BSL), private during development
+- Docker Hub → Community features only (MIT), public distribution
 
 ## Registry Architecture
 
-### 1. GitHub Container Registry (GHCR) - Primary
-**Purpose**: Production deployment, internal use, CI/CD
+### 1. GitHub Container Registry (GHCR) - Private Full-Featured Images
+
+**Purpose**: Production deployment, full features (MIT + BSL), private development
 
 **Images**:
-- `ghcr.io/wundam/truxe-api:latest`
-- `ghcr.io/wundam/truxe-website:latest`
+```bash
+# API (Full features: MIT + BSL)
+ghcr.io/wundam/truxe-api:latest
+ghcr.io/wundam/truxe-api:v0.5.6
+ghcr.io/wundam/truxe-api:main-abc1234
+
+# Website (Full features: MIT + BSL)
+ghcr.io/wundam/truxe-website:latest
+ghcr.io/wundam/truxe-website:v0.5.6
+
+# Admin Dashboard (Enterprise only: BSL)
+ghcr.io/wundam/truxe-admin:latest
+ghcr.io/wundam/truxe-admin:v0.5.6
+```
+
+**Features Included**:
+- ✅ Community features (MIT): Magic link, password auth, basic OAuth
+- ✅ Professional features (BSL): OAuth provider, advanced RBAC
+- ✅ Enterprise features (BSL): Passkeys, SAML, SCIM, threat detection
 
 **Advantages**:
-- ✅ Free for private repositories
-- ✅ Integrated with GitHub Actions (same network)
-- ✅ Automatic authentication with `GITHUB_TOKEN`
-- ✅ Fast deployment pipeline
+- ✅ Free for private repositories ($0/month)
+- ✅ Integrated with GitHub Actions (automatic `GITHUB_TOKEN` auth)
+- ✅ Fast deployment pipeline (same network as GitHub)
 - ✅ No rate limits for authenticated users
 - ✅ Version control integration
+- ✅ Perfect for private beta and production
 
 **Use Cases**:
-- Production deployments
+- Production deployments (truxe.io)
 - Staging environments
 - Internal testing
 - CI/CD pipelines
 - Private beta testing
+- Development environments
 
-### 2. Docker Hub - Secondary (Future, v1.0+)
-**Purpose**: Community distribution, public access, marketing
+**Access**: Requires GitHub Personal Access Token (PAT) with `read:packages` scope
+
+---
+
+### 2. Docker Hub - Public Community Edition Images (Future, Q1 2026)
+
+**Purpose**: Community distribution, open source (MIT only), public access
 
 **Images** (when public):
-- `wundam/truxe:latest`
-- `docker.io/wundam/truxe:latest`
+```bash
+# Community Edition (MIT license only)
+wundam/truxe-community:latest           # Community Edition
+wundam/truxe-community:v1.0.0
+docker.io/wundam/truxe-community:v1.0.0
+
+# Alias for simplicity
+wundam/truxe:latest                     # Points to community edition
+wundam/truxe:v1.0.0
+```
+
+**Features Included**:
+- ✅ Magic Link Authentication
+- ✅ Password Authentication
+- ✅ Basic OAuth Consumer (GitHub, Google)
+- ✅ Basic Sessions (JWT)
+- ✅ Basic Organizations
+- ✅ Basic RBAC
+- ❌ NO OAuth Provider (BSL feature)
+- ❌ NO Passkeys/WebAuthn (BSL feature)
+- ❌ NO SAML/SCIM (BSL feature)
+- ❌ NO Advanced features (BSL)
 
 **Advantages**:
 - ✅ Most popular registry (industry standard)
-- ✅ Better community visibility
+- ✅ Better community visibility and adoption
 - ✅ Docker Desktop integration
 - ✅ Easy discovery (`docker pull wundam/truxe`)
-- ✅ **FREE for public repositories** - $0/month
+- ✅ **FREE for public repositories** - $0/month (personal account)
+- ✅ No authentication needed for pulls
 
 **Use Cases**:
-- Open source releases (public repos only)
-- Community adoption
+- Open source community adoption
 - Public documentation examples
 - Marketing and visibility
-- Enterprise evaluation
+- Developer evaluation
+- Hobbyist/student projects
 
-**Note**: Using personal Docker Hub account (wundam) instead of paid organization to keep costs at $0/month while maintaining professional image distribution.
+**Access**: Public, no authentication needed
+
+**Note**: Using personal Docker Hub account (`wundam`) instead of paid organization to keep costs at $0/month while maintaining professional image distribution.
 
 ## Current Status
 
@@ -309,11 +373,18 @@ gh api /user/packages/container/truxe-api
 
 ## Summary
 
-**Current Strategy**: GHCR-only for optimal integration and zero cost during private beta.
+**Current Strategy (Q4 2025)**: GHCR-only for optimal integration and zero cost during private beta. Full features (MIT + BSL).
 
-**Future Strategy**: GHCR + Docker Hub dual-registry for maximum reach and flexibility.
+**Future Strategy (Q1 2026+)**: Dual-registry with licensing boundary:
+- GHCR → Private, full-featured (MIT + BSL), production
+- Docker Hub → Public, community edition (MIT only), open source
 
 **Timeline**:
-- ✅ Phase 1 (Private Beta): GHCR only - Complete
-- 📅 Phase 2 (Public Release): Add Docker Hub - v1.0
-- 📅 Phase 3 (Enterprise): Optimize both - v1.5+
+- ✅ Phase 1 (Private Beta): GHCR only, full features - Complete
+- 📅 Phase 2 (Community Split): Extract MIT features to separate build - Q1 2026
+- 📅 Phase 3 (Public Release): Add Docker Hub for community edition - Q1 2026
+- 📅 Phase 4 (License Enforcement): Add license key validation - Q2 2026
+
+**Cost Impact**: $0/month (avoided $16/month Docker Hub org cost by using personal account)
+
+**Critical Reminder**: Always respect the licensing boundary. Docker Hub images MUST contain ONLY MIT licensed features. BSL features stay private on GHCR.

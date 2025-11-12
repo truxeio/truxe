@@ -12,7 +12,6 @@ import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals
 import OrganizationSyncService from '../src/services/github/organization-sync.js';
 import TeamRoleMappingService from '../src/services/github/team-role-mapping.js';
 import OrganizationSettingsService from '../src/services/github/organization-settings.js';
-import GitHubClient from '../src/services/github/github-client.js';
 
 // Mock dependencies
 jest.mock('../src/database/connection.js', () => ({
@@ -21,11 +20,29 @@ jest.mock('../src/database/connection.js', () => ({
     query: jest.fn(),
   })),
 }));
+
 jest.mock('../src/services/organization.js', () => ({
   createOrganization: jest.fn(),
   getOrganizationById: jest.fn(),
   updateOrganization: jest.fn(),
 }));
+
+// Mock GitHubClient as a constructor
+const mockGitHubClientInstance = {
+  getOrganization: jest.fn(),
+  getTeams: jest.fn(),
+  getOrganizationMembers: jest.fn(),
+  request: jest.fn(),
+};
+
+jest.mock('../src/services/github/github-client.js', () => {
+  return {
+    __esModule: true,
+    default: jest.fn(() => mockGitHubClientInstance),
+  };
+});
+
+import GitHubClient from '../src/services/github/github-client.js';
 
 describe('GitHub Organization Sync Integration', () => {
   let syncService;
@@ -34,6 +51,9 @@ describe('GitHub Organization Sync Integration', () => {
   let mockGitHubClient;
 
   beforeEach(() => {
+    // Clear all mocks before each test
+    jest.clearAllMocks();
+
     mockPool = {
       connect: jest.fn(() => Promise.resolve({
         query: jest.fn(() => Promise.resolve({ rows: [] })),
@@ -47,15 +67,11 @@ describe('GitHub Organization Sync Integration', () => {
       release: jest.fn(),
     };
 
-    mockGitHubClient = {
-      getOrganization: jest.fn(),
-      getTeams: jest.fn(),
-      getOrganizationMembers: jest.fn(),
-      request: jest.fn(),
-    };
-
-    // Mock GitHubClient constructor
-    GitHubClient.mockImplementation(() => mockGitHubClient);
+    // Reset the mock GitHub client instance methods
+    mockGitHubClientInstance.getOrganization.mockResolvedValue({});
+    mockGitHubClientInstance.getTeams.mockResolvedValue([]);
+    mockGitHubClientInstance.getOrganizationMembers.mockResolvedValue([]);
+    mockGitHubClientInstance.request.mockResolvedValue({});
 
     syncService = new OrganizationSyncService({
       pool: mockPool,

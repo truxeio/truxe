@@ -50,7 +50,7 @@ export async function sessionCleanupProcessor(job) {
     `)
 
     let cleanedActivityCount = 0
-    if (tableCheck.rows[0].exists) {
+    if (tableCheck?.rows?.[0]?.exists) {
       const activityResult = await db.query(`
         DELETE FROM session_activity
         WHERE created_at < NOW() - INTERVAL '30 days'

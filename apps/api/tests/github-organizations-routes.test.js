@@ -8,18 +8,21 @@ import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals
 import Fastify from 'fastify';
 import githubOrganizationRoutes from '../src/routes/github-organizations.js';
 
+// Mock database pool
+const mockPool = {
+  query: jest.fn(() => Promise.resolve({ rows: [] })),
+  connect: jest.fn(() => Promise.resolve({
+    query: jest.fn(() => Promise.resolve({ rows: [] })),
+    release: jest.fn(),
+  })),
+};
+
 // Mock dependencies
 jest.mock('../src/services/github/organization-sync.js');
 jest.mock('../src/services/github/organization-settings.js');
 jest.mock('../src/services/github/github-client.js');
 jest.mock('../src/database/connection.js', () => ({
-  getPool: jest.fn(() => ({
-    query: jest.fn(() => Promise.resolve({ rows: [] })),
-    connect: jest.fn(() => Promise.resolve({
-      query: jest.fn(() => Promise.resolve({ rows: [] })),
-      release: jest.fn(),
-    })),
-  })),
+  getPool: jest.fn(() => mockPool),
 }));
 jest.mock('../src/services/organization.js', () => ({
   createOrganization: jest.fn(),
@@ -31,6 +34,9 @@ jest.mock('../src/services/oauth/token-encryptor.js', () => ({
     decrypt: jest.fn((token) => `decrypted-${token}`),
   })),
 }));
+
+// Import mocked getPool
+import { getPool } from '../src/database/connection.js';
 
 describe('GitHub Organizations API Routes', () => {
   let app;
@@ -56,8 +62,7 @@ describe('GitHub Organizations API Routes', () => {
     authToken = 'Bearer test-token';
 
     // Setup default mocks
-    const { getPool } = await import('../src/database/connection.js');
-    getPool().query.mockResolvedValue({
+    mockPool.query.mockResolvedValue({
       rows: [{
         access_token: 'encrypted-token',
         refresh_token: null,
@@ -116,8 +121,7 @@ describe('GitHub Organizations API Routes', () => {
     });
 
     it('should return 401 if GitHub account not linked', async () => {
-      const { getPool } = await import('../src/database/connection.js');
-      getPool().query.mockResolvedValueOnce({
+      mockPool.query.mockResolvedValueOnce({
         rows: [], // No OAuth account
       });
 
@@ -251,8 +255,7 @@ describe('GitHub Organizations API Routes', () => {
         getOrganization: jest.fn().mockResolvedValue(mockOrg),
       }));
 
-      const { getPool } = await import('../src/database/connection.js');
-      getPool().query
+      mockPool.query
         .mockResolvedValueOnce({
           rows: [{
             access_token: 'encrypted-token',
@@ -287,8 +290,7 @@ describe('GitHub Organizations API Routes', () => {
         }),
       }));
 
-      const { getPool } = await import('../src/database/connection.js');
-      getPool().query
+      mockPool.query
         .mockResolvedValueOnce({
           rows: [{ access_token: 'encrypted-token' }],
         })
@@ -328,8 +330,7 @@ describe('GitHub Organizations API Routes', () => {
         extractGitHubSettings: mockExtractSettings,
       }));
 
-      const { getPool } = await import('../src/database/connection.js');
-      getPool().query.mockResolvedValue({
+      mockPool.query.mockResolvedValue({
         rows: [{
           id: 'org-id',
           name: 'Test Org',
@@ -357,8 +358,7 @@ describe('GitHub Organizations API Routes', () => {
     });
 
     it('should return 404 if organization not found', async () => {
-      const { getPool } = await import('../src/database/connection.js');
-      getPool().query.mockResolvedValue({
+      mockPool.query.mockResolvedValue({
         rows: [],
       });
 
@@ -394,8 +394,7 @@ describe('GitHub Organizations API Routes', () => {
         extractGitHubSettings: mockExtractSettings,
       }));
 
-      const { getPool } = await import('../src/database/connection.js');
-      getPool().query.mockResolvedValue({
+      mockPool.query.mockResolvedValue({
         rows: [{
           id: 'org-id',
           name: 'Test Org',
@@ -443,8 +442,7 @@ describe('GitHub Organizations API Routes', () => {
         extractGitHubSettings: jest.fn(),
       }));
 
-      const { getPool } = await import('../src/database/connection.js');
-      getPool().query.mockResolvedValue({
+      mockPool.query.mockResolvedValue({
         rows: [{
           id: 'org-id',
           name: 'Test Org',

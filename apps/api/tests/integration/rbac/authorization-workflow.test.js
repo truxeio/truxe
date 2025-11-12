@@ -5,10 +5,10 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals'
-import AuthorizationService from '../../src/services/rbac/authorization-service.js'
-import PermissionService from '../../src/services/rbac/permission-service.js'
-import PolicyEngine from '../../src/services/rbac/policy-engine.js'
-import { testDatabase, setupTestData, cleanupTestData } from '../helpers/test-database.js'
+import AuthorizationService from '../../../src/services/rbac/authorization-service.js'
+import PermissionService from '../../../src/services/rbac/permission-service.js'
+import PolicyEngine from '../../../src/services/rbac/policy-engine.js'
+import { testDatabase, setupTestData, cleanupTestData } from '../../helpers/test-database.js'
 
 describe('Authorization Service Integration Tests', () => {
   let authService

@@ -6,7 +6,7 @@
  */
 
 import { test, describe, beforeEach, afterEach, expect } from '@jest/globals'
-import { build } from '../src/app.js'
+import { createServer } from '../src/server.js'
 import { Pool } from 'pg'
 import config from '../src/config/index.js'
 
@@ -23,7 +23,7 @@ describe('Organization Management', () => {
 
   beforeEach(async () => {
     // Build Fastify app
-    app = await build({ logger: false })
+    app = await createServer({ logger: false })
     await app.ready()
 
     // Clean up test data

@@ -30,8 +30,14 @@ export class TenantValidationError extends Error {
   }
 }
 
-const settingsSchema = z.record(z.any()).max(1000, { message: 'Settings payload too large' })
-const metadataSchema = z.record(z.any()).max(1000, { message: 'Metadata payload too large' })
+const settingsSchema = z.record(z.any()).refine(
+  (obj) => Object.keys(obj).length <= 1000,
+  { message: 'Settings payload too large (max 1000 keys)' }
+)
+const metadataSchema = z.record(z.any()).refine(
+  (obj) => Object.keys(obj).length <= 1000,
+  { message: 'Metadata payload too large (max 1000 keys)' }
+)
 
 const slugSchema = z
   .string()

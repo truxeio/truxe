@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  truxe-test-db:
+    image: postgres:15-alpine
+    container_name: truxe-test-db
+    environment:
+      POSTGRES_PASSWORD: truxe.io_password_change_me
+      POSTGRES_DB: truxe_test
+    ports:
+      - "5432:5432"
+    networks:
+      - truxe-test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  truxe-test-redis:
+    image: redis:7-alpine
+    container_name: truxe-test-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - truxe-test
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  truxe-test:
+    name: truxe-test
+    driver: bridge

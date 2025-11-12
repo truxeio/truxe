@@ -287,7 +287,15 @@ export async function cleanupTestData(testId = null) {
     if (testId) {
       // Clean up specific test data by metadata
       // Order matters: delete from child tables first, then parent tables
-      
+
+      // 0. Delete audit_logs first (has FK to users)
+      await client.query(
+        `DELETE FROM audit_logs WHERE actor_user_id IN (
+          SELECT id FROM users WHERE metadata->>'testId' = $1
+        )`,
+        [testId]
+      )
+
       // 1. Delete permissions (references users and tenants)
       await client.query(
         `DELETE FROM permissions WHERE user_id IN (
@@ -334,7 +342,14 @@ export async function cleanupTestData(testId = null) {
         [testId]
       )
     } else {
-      // Clean up all test data - same ordering
+      // Clean up all test data - correct ordering to avoid foreign key violations
+      // 1. Delete audit_logs first (has FK to users)
+      await client.query(`
+        DELETE FROM audit_logs WHERE actor_user_id IN (
+          SELECT id FROM users WHERE metadata->>'isTestUser' = 'true'
+        )
+      `)
+      // 2. Delete child records
       await client.query(`
         DELETE FROM permissions WHERE user_id IN (
           SELECT id FROM users WHERE metadata->>'isTestUser' = 'true'
@@ -357,6 +372,7 @@ export async function cleanupTestData(testId = null) {
           SELECT id FROM tenants WHERE metadata->>'isTestTenant' = 'true'
         )
       `)
+      // 3. Delete parent records last
       await client.query(`
         DELETE FROM tenants WHERE metadata->>'isTestTenant' = 'true'
       `)

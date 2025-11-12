@@ -42,7 +42,7 @@ services:
 
   # Truxe API
   api:
-    image: ghcr.io/wundam/truxe:latest
+    image: ghcr.io/wundam/truxe-api:latest
     container_name: truxe-api
     restart: unless-stopped
     pull_policy: always
@@ -93,11 +93,10 @@ services:
 
   # Truxe Website
   website:
-    build:
-      context: ../
-      dockerfile: packages/website/Dockerfile
+    image: ghcr.io/wundam/truxe-website:latest
     container_name: truxe-website
     restart: unless-stopped
+    pull_policy: always
     environment:
       NODE_ENV: production
       PORT: 3000

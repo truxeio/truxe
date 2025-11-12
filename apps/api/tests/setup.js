@@ -11,9 +11,9 @@ import { testDatabase, cleanupTestData } from './helpers/test-database.js'
 process.env.NODE_ENV = 'test'
 process.env.LOG_LEVEL = 'silent'
 
-// Mock configuration for testing - using new 87XXX port range
-process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://truxe.io_password_change_me@localhost:87032/truxe.io'
-process.env.REDIS_URL = process.env.REDIS_URL || 'redis://localhost:87079/1'
+// Mock configuration for testing - using default ports
+process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:truxe.io_password_change_me@localhost:5432/truxe.io'
+process.env.REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379/1'
 process.env.JWT_ISSUER = 'https://test.truxe.io'
 process.env.JWT_ALGORITHM = 'RS256'
 process.env.EMAIL_PROVIDER = 'smtp'

@@ -16,13 +16,13 @@ import { randomBytes, randomUUID } from 'crypto'
 
 const { Pool } = pg
 
-// Test database configuration with optimized settings - using new 87XXX port range
+// Test database configuration with optimized settings - using default PostgreSQL port
 export const testDatabase = new Pool({
   host: process.env.TEST_DB_HOST || 'localhost',
-  port: process.env.TEST_DB_PORT || parseInt(process.env.TRUXE_DB_PORT) || 87032,
+  port: process.env.TEST_DB_PORT || parseInt(process.env.TRUXE_DB_PORT) || 5432,
   database: process.env.TEST_DB_NAME || 'truxe.io',
-  user: process.env.TEST_DB_USER || 'truxe',
-  password: process.env.TEST_DB_PASSWORD || 'dev_password_change_me',
+  user: process.env.TEST_DB_USER || 'postgres',
+  password: process.env.TEST_DB_PASSWORD || 'truxe.io_password_change_me',
   max: 20,  // Max connections
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,

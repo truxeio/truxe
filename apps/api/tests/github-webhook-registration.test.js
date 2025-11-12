@@ -10,24 +10,13 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { GitHubWebhookRegistrationService } from '../src/services/github/webhook-registration.js';
-import GitHubClient from '../src/services/github/github-client.js';
 
-// Mock dependencies
-jest.mock('../src/database/connection.js', () => ({
-  getPool: jest.fn(() => mockPool),
-}));
-
-jest.mock('../src/services/github/github-client.js', () => {
-  return jest.fn().mockImplementation(() => mockGitHubClient);
-});
-
-// Mock database pool
+// Mock dependencies - inline mock creation to avoid hoisting issues
 const mockPool = {
   query: jest.fn(),
   connect: jest.fn(),
 };
 
-// Mock GitHub client
 const mockGitHubClient = {
   createRepositoryWebhook: jest.fn(),
   getRepositoryWebhooks: jest.fn(),
@@ -36,8 +25,16 @@ const mockGitHubClient = {
   testRepositoryWebhook: jest.fn(),
 };
 
+jest.mock('../src/database/connection.js');
+jest.mock('../src/services/github/github-client.js');
+
+// Import after mocks
+import { getPool } from '../src/database/connection.js';
+import GitHubClient from '../src/services/github/github-client.js';
+
 describe('GitHubWebhookRegistrationService', () => {
   let service;
+
   const mockLogger = {
     info: jest.fn(),
     warn: jest.fn(),
@@ -47,6 +44,11 @@ describe('GitHubWebhookRegistrationService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Setup mocks
+    getPool.mockReturnValue(mockPool);
+    GitHubClient.mockImplementation(() => mockGitHubClient);
+
     service = new GitHubWebhookRegistrationService({
       pool: mockPool,
       logger: mockLogger,

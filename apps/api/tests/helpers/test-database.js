@@ -343,11 +343,10 @@ export async function cleanupTestData(testId = null) {
       )
     } else {
       // Clean up all test data - correct ordering to avoid foreign key violations
-      // 1. Delete audit_logs first (has FK to users)
+      // 1. Delete ALL audit_logs for test isolation (best practice for tests)
+      // This prevents FK violations when deleting users
       await client.query(`
-        DELETE FROM audit_logs WHERE actor_user_id IN (
-          SELECT id FROM users WHERE metadata->>'isTestUser' = 'true'
-        )
+        TRUNCATE TABLE audit_logs RESTART IDENTITY CASCADE
       `)
       // 2. Delete child records
       await client.query(`

@@ -87,9 +87,10 @@ beforeAll(async () => {
 // Cleanup after all tests
 afterAll(async () => {
   try {
-    await cleanupTestData()
+    // Skip cleanup - each test suite handles its own cleanup
+    // Just close the database connection
     await testDatabase.end()
-    console.log('✅ Test database cleanup completed')
+    console.log('✅ Test database connection closed')
   } catch (error) {
     console.error('❌ Test cleanup failed:', error.message)
   }

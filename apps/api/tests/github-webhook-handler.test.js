@@ -278,14 +278,18 @@ describe('GitHubWebhookHandler', () => {
 
   describe('Ping Event', () => {
     it('should handle ping events', async () => {
+      const payload = { hook_id: 123 };
+      const signature = createSignature(payload, webhookSecret);
+
       const req = {
         headers: {
           'x-github-event': 'ping',
           'x-github-delivery': 'ping-delivery-123',
+          'x-hub-signature-256': signature,
         },
-        body: { hook_id: 123 },
+        body: payload,
         ip: '192.168.1.1',
-        rawBody: JSON.stringify({ hook_id: 123 }),
+        rawBody: JSON.stringify(payload),
       };
 
       const res = {

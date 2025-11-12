@@ -150,3 +150,6 @@ SECURITY-AUDIT-REPORT.md
 SECRET-ROTATION-CHECKLIST.md
 *-AUDIT-*.md
 *-ROTATION-*.md
+# Production environment files - never commit these!
+deployment/.env.production
+.env.production

@@ -49,6 +49,17 @@ module.exports = {
   testPathIgnorePatterns: [
     '/node_modules/',
     '/coverage/',
+    // Exclude Node.js built-in test runner tests (use separate npm script)
+    'github-actions.test.js',
+    'github-app.test.js',
+    'github-client.test.js',
+    'github-repository-sync.test.js',
+    'github-search.test.js',
+    'github-templates.test.js',
+    'oauth-apple-provider.test.js',
+    'oauth-google-provider.test.js',
+    'oauth-infrastructure.test.js',
+    'oauth-microsoft-provider.test.js',
   ],
 
   // Verbose output

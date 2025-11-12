@@ -40,6 +40,13 @@ module.exports = {
   // Setup files
   setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
 
+  // Globals to inject into test environment
+  globals: {
+    'import.meta': {
+      url: 'file:///mock/path/server.js',
+    },
+  },
+
   // Module name mapper for absolute imports
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',

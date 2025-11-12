@@ -37,9 +37,9 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur-md">
-      <div className="container-custom flex items-center justify-between py-4">
-        <Link href="/" className="flex items-center gap-3 text-lg font-semibold">
-          <div className="relative h-12 w-12 flex items-center justify-center flex-shrink-0">
+      <div className="container-custom flex items-center justify-between py-3 md:py-4">
+        <Link href="/" className="flex items-center gap-2 text-base md:text-lg font-semibold md:gap-3">
+          <div className="relative h-8 w-8 md:h-12 md:w-12 flex items-center justify-center flex-shrink-0">
             <Image
               src="/truxe-shield.svg"
               alt="Truxe Shield"
@@ -51,7 +51,7 @@ export function Header() {
           </div>
           <div className="flex flex-col leading-tight">
             <span>{SITE_CONFIG.name}</span>
-            <span className="text-sm font-normal text-muted">
+            <span className="text-xs md:text-sm font-normal text-muted hidden sm:block">
               {SITE_CONFIG.tagline}
             </span>
           </div>

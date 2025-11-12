@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 import { SITE_CONFIG, NAV_ITEMS } from "@/lib/constants";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 
 export function Header() {
@@ -98,14 +97,11 @@ interface MobileMenuProps {
 }
 
 function MobileMenu({ isOpen, onNavigate }: MobileMenuProps) {
+  if (!isOpen) return null;
+
   return (
-    <div
-      className={cn(
-        "md:hidden",
-        isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
-      )}
-    >
-      <div className="container-custom space-y-4 pb-6">
+    <div className="border-t bg-white/95 backdrop-blur-md md:hidden">
+      <div className="container-custom space-y-4 py-6">
         <div className="grid gap-3 text-base">
           {NAV_ITEMS.map((item) => (
             <button

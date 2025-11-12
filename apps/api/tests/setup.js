@@ -12,7 +12,7 @@ process.env.NODE_ENV = 'test'
 process.env.LOG_LEVEL = 'silent'
 
 // Mock configuration for testing - using default ports
-process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:truxe.io_password_change_me@localhost:5432/truxe.io'
+process.env.DATABASE_URL = process.env.DATABASE_URL || 'postgresql://postgres:truxe.io_password_change_me@localhost:5432/truxe_test'
 process.env.REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379/1'
 process.env.JWT_ISSUER = 'https://test.truxe.io'
 process.env.JWT_ALGORITHM = 'RS256'

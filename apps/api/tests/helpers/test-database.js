@@ -20,7 +20,7 @@ const { Pool } = pg
 export const testDatabase = new Pool({
   host: process.env.TEST_DB_HOST || 'localhost',
   port: process.env.TEST_DB_PORT || parseInt(process.env.TRUXE_DB_PORT) || 5432,
-  database: process.env.TEST_DB_NAME || 'truxe.io',
+  database: process.env.TEST_DB_NAME || 'truxe_test',
   user: process.env.TEST_DB_USER || 'postgres',
   password: process.env.TEST_DB_PASSWORD || 'truxe.io_password_change_me',
   max: 20,  // Max connections

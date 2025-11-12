@@ -28,26 +28,28 @@ Truxe uses a dual-registry strategy for Docker images to optimize for both produ
 - CI/CD pipelines
 - Private beta testing
 
-### 2. Docker Hub - Secondary (Future)
+### 2. Docker Hub - Secondary (Future, v1.0+)
 **Purpose**: Community distribution, public access, marketing
 
 **Images** (when public):
-- `truxeio/truxe:latest`
-- `docker.io/truxeio/truxe:latest`
+- `wundam/truxe:latest`
+- `docker.io/wundam/truxe:latest`
 
 **Advantages**:
 - ✅ Most popular registry (industry standard)
 - ✅ Better community visibility
 - ✅ Docker Desktop integration
-- ✅ Easy discovery (`docker pull truxeio/truxe`)
-- ✅ Trusted by enterprise users
+- ✅ Easy discovery (`docker pull wundam/truxe`)
+- ✅ **FREE for public repositories** - $0/month
 
 **Use Cases**:
-- Open source releases
+- Open source releases (public repos only)
 - Community adoption
 - Public documentation examples
 - Marketing and visibility
 - Enterprise evaluation
+
+**Note**: Using personal Docker Hub account (wundam) instead of paid organization to keep costs at $0/month while maintaining professional image distribution.
 
 ## Current Status
 

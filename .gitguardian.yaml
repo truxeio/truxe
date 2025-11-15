@@ -1,0 +1,54 @@
+# GitGuardian Configuration
+# Prevents false positive alerts for test fixtures and key generation utilities
+
+version: 2
+
+# Paths to exclude from scanning
+paths-ignore:
+  # Test files with mock keys
+  - "cli/tests/**/*.test.ts"
+  - "cli/tests/**/*.test.js"
+  - "apps/api/tests/**/*.test.js"
+  - "**/tests/**/*.test.ts"
+  - "**/tests/**/*.test.js"
+
+  # Test fixtures and helpers
+  - "**/tests/fixtures/**"
+  - "**/tests/helpers/**"
+  - "**/test-helpers.ts"
+
+  # Key generation utilities (not actual secrets)
+  - "apps/api/scripts/generate-keys.js"
+  - "cli/src/commands/keys.ts"
+  - "deployment/scripts/generate-secrets.sh"
+
+  # Build outputs
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/.next/**"
+  - "**/build/**"
+
+  # Virtual environments
+  - "**/.venv/**"
+  - "**/venv/**"
+
+# Specific secrets to ignore (by fingerprint or pattern)
+# These are test/development-only keys, not production secrets
+matches-ignore:
+  - name: "Mock test keys in CLI tests"
+    match: "MOCK_PRIVATE_KEY|MOCK_KEY"
+
+  - name: "Test key generation patterns"
+    match: "generateKeyPairSync|formatKeyForEnv"
+
+# Additional detector configuration
+minimum-severity: high
+
+# Exclude specific detectors for certain paths
+exclude:
+  paths:
+    - "cli/tests/**"
+    - "**/scripts/generate-*.js"
+  detectors:
+    - RSA Private Key
+    - Generic Private Key

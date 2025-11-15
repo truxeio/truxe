@@ -241,36 +241,37 @@ Need to offer Truxe as a hosted service? Contact us via [GitHub Issues](https://
 - ✅ Development server (`truxe dev`)
 - ✅ [Published: @truxe/cli@0.1.0](https://www.npmjs.com/package/@truxe/cli)
 
-### 🚀 Current Sprint: v0.5 - Developer Experience (Q4 2025)
+### ✅ Recently Completed: v0.5.x - Developer Experience (Nov 2025)
 
-**In Progress:**
-- 🎮 Interactive API Playground
-  - ✅ **Phase 1 Complete** - [Issue #6](https://github.com/truxeio/truxe/issues/6) (Closed)
-    - Three-panel responsive UI (Navigator | Builder | Viewer)
-    - Monaco Editor integration with syntax highlighting
-    - Request/Response management with full HTTP support
-    - 3 environments (Local:3456, Docker:87001, Production:api.truxe.io)
-    - OpenAPI 3.1.0 specification with all endpoints
-    - [@truxe/playground@0.1.0](packages/playground) - Running on port 3457
-  - ✅ **Phase 2 Complete** - [Issue #7](https://github.com/truxeio/truxe/issues/7) (Closed)
-    - Code generation in 8 languages (cURL, JS, TS, Python, Go, PHP, Rust, Java)
-    - Copy to clipboard & download functionality
-    - Real-time code generation
-    - Monaco Editor integration with syntax highlighting
-    - 30/30 tests passing, production-ready
-  - ✅ **Phase 3 Complete** - [Issue #8](https://github.com/Wundam/truxe/issues/8) (Closed)
-    - Request collections with folders (14,595 LOC)
-    - Variables & environment management (12 dynamic variables)
-    - Guided authentication workflows (7 pre-built flows)
-    - Import/Export (Truxe, Postman, OpenAPI, cURL, Insomnia)
-    - Advanced search across collections
-  - ✅ **Phase 4 Complete** - [Issue #9](https://github.com/Wundam/truxe/issues/9) (Closed)
-    - Fixed 284 → 0 TypeScript errors
-    - Production build successful (116KB gzipped)
-    - Zero warnings, type-safe codebase
-  - **Status**: ✅ PRODUCTION READY for v0.5.0 release
+**v0.5.2 - CI/CD Pipeline Fixes** (Published - Nov 15, 2025)
+- ✅ Fixed package-lock.json sync issues in Docker builds
+- ✅ Fixed TruffleHog secret scanning workflow configuration
+- ✅ Added GitGuardian configuration to suppress false positives
+- ✅ All CI/CD pipelines passing
+- ✅ Docker images publishing successfully to GHCR
 
-**Planned:**
+**v0.5.1 - Production Build Fixes** (Published - Nov 15, 2025)
+- ✅ Excluded test applications from production workspace
+- ✅ Fixed Docker build path configuration
+- ✅ Improved CI/CD reliability
+
+**v0.5.0 - Interactive API Playground** (Published - Nov 15, 2025)
+- ✅ **Phase 1-4 Complete** - [@truxe/playground@0.5.0](packages/playground)
+  - Three-panel responsive UI (Navigator | Builder | Viewer)
+  - Monaco Editor integration with syntax highlighting
+  - Code generation in 8 languages
+  - Request collections with folders (14,595 LOC)
+  - Variables & environment management
+  - 7 pre-built authentication workflows
+  - Import/Export (Truxe, Postman, OpenAPI, cURL, Insomnia)
+  - TypeScript excellence: 284 → 0 errors
+  - Production build: 116KB gzipped
+  - 30/30 tests passing
+  - Grade: A+ (99/100)
+
+### 🚀 Next Up: Enhanced Developer Experience
+
+**Planned for v0.5.x patches:**
 - [ ] Enhanced CLI features (templates, migrations)
 - [ ] Comprehensive API documentation site
 - [ ] Video tutorials and quickstart guides

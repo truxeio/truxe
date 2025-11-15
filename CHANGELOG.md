@@ -5,6 +5,62 @@ All notable changes to Truxe will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2025-11-15 - CI/CD Pipeline Fixes
+
+### Fixed
+
+- **Package Lockfile Sync**: Updated `apps/api/package-lock.json` to sync with `package.json` dependencies
+  - Fixed Docker build `npm ci` failure: "package.json and package-lock.json are not in sync"
+  - Updated argon2 0.31.2 → 0.44.0
+  - Added babel-plugin-transform-import-meta@2.3.3
+  - Added cross-env@10.1.0
+  - Updated node-addon-api 7.1.1 → 8.5.0
+  - Added @epic-web/invariant@1.0.0
+
+- **Security Workflow Configuration**: Fixed TruffleHog secret scanning workflow
+  - Changed `base: ${{ github.event.repository.default_branch }}` → `base: ${{ github.event.before }}`
+  - Changed `head: HEAD` → `head: ${{ github.event.after }}`
+  - Resolved "BASE and HEAD commits are the same" error
+  - Security Audit workflow now passing
+
+### Added
+
+- **GitGuardian Configuration**: Added `.gitguardian.yaml` to suppress false positive alerts
+  - Excludes test files with mock keys from scanning
+  - Excludes key generation utility scripts
+  - Documents legitimate test infrastructure
+  - Sets minimum severity to "high"
+
+### Infrastructure
+
+- ✅ All CI/CD pipelines now passing
+- ✅ Docker images successfully built and published to GHCR
+- ✅ GitHub releases created on both private and public repositories
+- ✅ Security scanning workflows functioning correctly
+
+---
+
+## [0.5.1] - 2025-11-15 - Production Build Fixes
+
+### Fixed
+
+- **React Test App Build**: Excluded test applications from production workspace
+  - Added `- '!packages/*-test-app'` to `pnpm-workspace.yaml`
+  - Prevents `@truxe/react-test-app` from breaking production builds
+  - Test apps no longer attempt to build before dependencies are ready
+
+- **Docker Build Path**: Added explicit Dockerfile path in release workflow
+  - Added `context: ./apps/api` to release.yml
+  - Added `file: ./apps/api/Dockerfile` to release.yml
+  - Resolved "Dockerfile not found" error in GitHub Actions
+
+### Changed
+
+- Updated workspace configuration for cleaner production builds
+- Improved Docker build reliability in CI/CD pipeline
+
+---
+
 ## [0.5.0] - 2025-11-15 - Developer Experience Release
 
 ### Added - Interactive API Playground 🎮

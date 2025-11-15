@@ -1,11 +1,23 @@
 /**
  * Enhanced Test Setup Configuration
- * 
+ *
  * Global test setup for RBAC tests with database, Redis, and service mocking.
  */
 
-import { beforeAll, afterAll, beforeEach, afterEach } from '@jest/globals'
+import { beforeAll, afterAll, beforeEach, afterEach, jest } from '@jest/globals'
 import { testDatabase, cleanupTestData } from './helpers/test-database.js'
+
+// BEST PRACTICE: Mock audit logger GLOBALLY to prevent real audit_logs writes during tests
+// This prevents FK violations during test cleanup
+jest.mock('../src/services/audit-logger.js', () => ({
+  __esModule: true,
+  default: {
+    log: jest.fn(async () => ({ id: 'mock-audit-id' })),
+    logEvent: jest.fn(async (event) => ({ id: 'mock-audit-id', ...event })),
+    logAuth: jest.fn(async (event) => ({ id: 'mock-auth-id' })),
+    logAccess: jest.fn(async (event) => ({ id: 'mock-access-id' })),
+  },
+}))
 
 // Set test environment
 process.env.NODE_ENV = 'test'

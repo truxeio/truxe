@@ -4,7 +4,7 @@
  * Basic integration test to verify RBAC system works with real database
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals'
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
 import { testDatabase, setupTestData, cleanupTestData } from '../../helpers/test-database.js'
 
 // Import RBAC services
@@ -23,21 +23,33 @@ describe('RBAC System Integration', () => {
   beforeEach(async () => {
     // Mock audit logger for tests
     const mockAuditLogger = {
-      logEvent: async (event) => {
+      logEvent: jest.fn(async (event) => {
         // Silent audit logging for tests
-      }
+        return { id: 'mock-audit-id', ...event }
+      }),
+      logAuth: jest.fn(async (event) => ({ id: 'mock-auth-id' })),
+      logAccess: jest.fn(async (event) => ({ id: 'mock-access-id' }))
+    }
+    
+    // Mock cache service
+    const mockCache = {
+      get: jest.fn(async (key) => null),
+      set: jest.fn(async (key, value, ttl) => true),
+      setex: jest.fn(async (key, ttl, value) => true),
+      delete: jest.fn(async (key) => true),
+      del: jest.fn(async (key) => true),
+      clear: jest.fn(async () => true),
+      ping: jest.fn(async () => 'PONG')
     }
     
     // Initialize services with real database
-    permissionService = new PermissionService(testDatabase, mockAuditLogger)
-    policyEngine = new PolicyEngine(testDatabase)
-    roleService = new RoleService(testDatabase)
+    permissionService = new PermissionService(testDatabase, mockAuditLogger, mockCache)
+    policyEngine = new PolicyEngine(testDatabase, mockAuditLogger, mockCache)
+    roleService = new RoleService(testDatabase, mockAuditLogger, mockCache)
     authService = new AuthorizationService(
-      permissionService,
-      policyEngine,
-      roleService,
-      null, // resourceRegistry
-      testDatabase
+      testDatabase,
+      mockAuditLogger,
+      mockCache
     )
 
     // Setup test data
@@ -126,8 +138,8 @@ describe('RBAC System Integration', () => {
       const result = await authService.authorize(
         users.alice.id,
         tenants.child.id,
-        'projects',
-        'read'
+        'read',
+        'projects'
       )
 
       expect(result.allowed).toBe(true)

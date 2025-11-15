@@ -17,13 +17,37 @@ describe('Authorization Service Integration Tests', () => {
   let testData
 
   beforeEach(async () => {
-    // Setup test services with real database
-    permissionService = new PermissionService(testDatabase)
-    policyEngine = new PolicyEngine(testDatabase)
+    // Mock audit logger
+    const mockAuditLogger = {
+      logEvent: jest.fn(async (event) => ({ id: 'mock-audit-id', ...event })),
+      logAuth: jest.fn(async (event) => ({ id: 'mock-auth-id' })),
+    }
+
+    // Mock cache
+    const mockCache = {
+      get: jest.fn(async (key) => null),
+      set: jest.fn(async (key, value, ttl) => true),
+      setex: jest.fn(async (key, ttl, value) => true),
+      delete: jest.fn(async (key) => true),
+      del: jest.fn(async (key) => true),
+      clear: jest.fn(async () => true),
+      ping: jest.fn(async () => 'PONG')
+    }
+
+    // Mock role service
+    const mockRoleService = {
+      getUserRoles: jest.fn(async (userId, tenantId) => []),
+      getRolePermissions: jest.fn(async (roleName, tenantId) => []),
+    }
+
+    // Initialize services
+    permissionService = new PermissionService(testDatabase, mockAuditLogger, mockCache)
+    policyEngine = new PolicyEngine(testDatabase, mockAuditLogger, mockCache)
     authService = new AuthorizationService(
-      permissionService,
-      policyEngine,
-      testDatabase
+      testDatabase,
+      mockAuditLogger,
+      mockCache,
+      null // tenantHierarchyService
     )
 
     // Setup test data
@@ -74,9 +98,8 @@ describe('Authorization Service Integration Tests', () => {
       const result = await authService.authorize(
         users.alice.id,
         tenants.child.id,
-        'documents',
         'read',
-        null,
+        'documents',
         context
       )
 
@@ -123,9 +146,8 @@ describe('Authorization Service Integration Tests', () => {
       const result = await authService.authorize(
         users.alice.id,
         tenants.child.id,
-        'documents',
         'read',
-        null,
+        'documents',
         context
       )
 
@@ -162,9 +184,8 @@ describe('Authorization Service Integration Tests', () => {
       const allowedResult = await authService.authorize(
         users.bob.id,
         tenants.child.id,
-        'settings',
         'admin',
-        null,
+        'settings',
         allowedContext
       )
 
@@ -178,9 +199,8 @@ describe('Authorization Service Integration Tests', () => {
       const blockedResult = await authService.authorize(
         users.bob.id,
         tenants.child.id,
-        'settings',
         'admin',
-        null,
+        'settings',
         blockedContext
       )
 
@@ -365,8 +385,8 @@ describe('Authorization Service Integration Tests', () => {
       const result1 = await authService.authorize(
         users.alice.id,
         tenants.child.id,
-        'documents',
-        'read'
+        'read',
+        'documents'
       )
       const firstCallTime = Date.now() - startTime
 
@@ -375,8 +395,8 @@ describe('Authorization Service Integration Tests', () => {
       const result2 = await authService.authorize(
         users.alice.id,
         tenants.child.id,
-        'documents',
-        'read'
+        'read',
+        'documents'
       )
       const cachedCallTime = Date.now() - cachedStartTime
 
@@ -401,8 +421,8 @@ describe('Authorization Service Integration Tests', () => {
         authService.authorize(
           users.alice.id,
           tenants.child.id,
-          'documents',
-          'read'
+          'read',
+          'documents'
         )
       )
 
@@ -425,8 +445,8 @@ describe('Authorization Service Integration Tests', () => {
       const result = await authService.authorize(
         'invalid-user-id',
         tenants.child.id,
-        'documents',
-        'read'
+        'read',
+        'documents'
       )
 
       expect(result).toEqual({
@@ -443,8 +463,8 @@ describe('Authorization Service Integration Tests', () => {
       const result = await authService.authorize(
         users.alice.id,
         'invalid-tenant-id',
-        'documents',
-        'read'
+        'read',
+        'documents'
       )
 
       expect(result).toEqual({
@@ -473,8 +493,8 @@ describe('Authorization Service Integration Tests', () => {
       const result = await authService.authorize(
         users.alice.id,
         tenants.child.id,
-        'documents',
-        'read'
+        'read',
+        'documents'
       )
 
       expect(result).toEqual({

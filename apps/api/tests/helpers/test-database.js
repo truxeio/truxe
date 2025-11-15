@@ -231,12 +231,42 @@ export async function setupLargeTestData(config = {}) {
     }
     
     // Create permissions (depends on users and tenants existing)
+    // Use unique resource types to avoid duplicate key violations on (user_id, tenant_id, resource_type)
+    const resourceTypes = ['documents', 'projects', 'tasks', 'files', 'settings']
+    const actions = ['read', 'write', 'delete', 'admin', 'share', 'invite', 'manage']
+    const createdCombinations = new Set() // Track (user_id, tenant_id, resource_type) to prevent duplicates
+    
     for (let i = 0; i < permissionCount; i++) {
-      const user = users[Math.floor(Math.random() * users.length)]
-      const tenant = tenants[Math.floor(Math.random() * tenants.length)]
-      const resourceTypes = ['documents', 'projects', 'settings', 'integrations']
-      const resourceType = resourceTypes[Math.floor(Math.random() * resourceTypes.length)]
-      const actions = ['read', 'write', 'delete', 'admin', 'share', 'invite', 'manage']
+      const user = users[i % users.length]
+      const tenant = tenants[i % tenants.length]
+      // Cycle through resource types deterministically
+      const resourceType = resourceTypes[i % resourceTypes.length]
+      const combinationKey = `${user.id}:${tenant.id}:${resourceType}`
+      
+      // Skip if this combination already exists
+      if (createdCombinations.has(combinationKey)) {
+        // Try next resource type to avoid duplicate
+        for (let j = 0; j < resourceTypes.length; j++) {
+          const altResourceType = resourceTypes[(i + j) % resourceTypes.length]
+          const altKey = `${user.id}:${tenant.id}:${altResourceType}`
+          if (!createdCombinations.has(altKey)) {
+            const actionCount = Math.floor(Math.random() * 3) + 1
+            const selectedActions = actions.slice(0, actionCount)
+            
+            permissions.push(await createTestPermission(
+              user.id,
+              tenant.id,
+              altResourceType,
+              selectedActions,
+              client
+            ))
+            createdCombinations.add(altKey)
+            break
+          }
+        }
+        continue
+      }
+      
       const actionCount = Math.floor(Math.random() * 3) + 1
       const selectedActions = actions.slice(0, actionCount)
       
@@ -247,6 +277,7 @@ export async function setupLargeTestData(config = {}) {
         selectedActions,
         client
       ))
+      createdCombinations.add(combinationKey)
     }
     
     // Create policies (depends on tenants existing)
@@ -287,14 +318,27 @@ export async function cleanupTestData(testId = null) {
     if (testId) {
       // Clean up specific test data by metadata
       // Order matters: delete from child tables first, then parent tables
+      // BEST PRACTICE: Disable triggers and set FK to NULL to avoid violations
+      await client.query(`ALTER TABLE audit_logs DISABLE TRIGGER ALL`)
 
-      // 0. Delete audit_logs first (has FK to users)
-      await client.query(
-        `DELETE FROM audit_logs WHERE actor_user_id IN (
+      // 0. Set actor_user_id to NULL FIRST (while triggers disabled)
+      await client.query(`
+        UPDATE audit_logs
+        SET actor_user_id = NULL
+        WHERE actor_user_id IN (
           SELECT id FROM users WHERE metadata->>'testId' = $1
-        )`,
-        [testId]
-      )
+        )
+      `, [testId])
+
+      // 0.1. Delete audit_logs for test users
+      await client.query(`
+        DELETE FROM audit_logs
+        WHERE actor_user_id IN (
+          SELECT id FROM users WHERE metadata->>'testId' = $1
+        )
+      `, [testId])
+
+      await client.query(`ALTER TABLE audit_logs ENABLE TRIGGER ALL`)
 
       // 1. Delete permissions (references users and tenants)
       await client.query(
@@ -330,25 +374,42 @@ export async function cleanupTestData(testId = null) {
         [testId]
       )
       
-      // 5. Delete tenants (CASCADE will handle children)
+      // 5. Delete any remaining audit_logs that reference test users (already done above but be safe)
+      // Since we already deleted audit_logs in step 0, this should be minimal
+      // No need to drop FK constraint - just ensure audit_logs are cleaned first
+
+      // 6. Delete tenants (CASCADE will handle children)
       await client.query(
         `DELETE FROM tenants WHERE metadata->>'testId' = $1`,
         [testId]
       )
-      
-      // 6. Delete users last
+
+      // 7. Delete users last - no FK violations since audit_logs cleaned in step 0
       await client.query(
         `DELETE FROM users WHERE metadata->>'testId' = $1`,
         [testId]
       )
     } else {
       // Clean up all test data - correct ordering to avoid foreign key violations
-      // 1. Delete ALL audit_logs for test isolation (best practice for tests)
-      // This prevents FK violations when deleting users
+      // 0. Truncate audit_logs FIRST to prevent FK violations when deleting users
+      // Note: audit_logs has immutable rules preventing DELETE, so TRUNCATE is used for test cleanup
+      // BEST PRACTICE: Temporarily disable FK constraints during cleanup to handle race conditions
+      await client.query(`ALTER TABLE audit_logs DISABLE TRIGGER ALL`)
       await client.query(`
         TRUNCATE TABLE audit_logs RESTART IDENTITY CASCADE
       `)
-      // 2. Delete child records
+      await client.query(`ALTER TABLE audit_logs ENABLE TRIGGER ALL`)
+
+      // 0.5. Set actor_user_id to NULL for remaining audit_logs to avoid FK violations
+      await client.query(`
+        UPDATE audit_logs
+        SET actor_user_id = NULL
+        WHERE actor_user_id IN (
+          SELECT id FROM users WHERE metadata->>'isTestUser' = 'true'
+        )
+      `)
+
+      // 1. Delete child records
       await client.query(`
         DELETE FROM permissions WHERE user_id IN (
           SELECT id FROM users WHERE metadata->>'isTestUser' = 'true'
@@ -371,7 +432,10 @@ export async function cleanupTestData(testId = null) {
           SELECT id FROM tenants WHERE metadata->>'isTestTenant' = 'true'
         )
       `)
-      // 3. Delete parent records last
+
+      // 2. Delete parent records last
+      // BEST PRACTICE: No need to drop FK constraint - audit_logs already truncated above
+      // This prevents statement timeouts from DDL operations
       await client.query(`
         DELETE FROM tenants WHERE metadata->>'isTestTenant' = 'true'
       `)

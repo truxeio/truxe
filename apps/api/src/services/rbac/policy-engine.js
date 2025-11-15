@@ -176,16 +176,17 @@ export class PolicyEngine {
 
     try {
       // NOTE: policies table does NOT have a description column
+      // BEST PRACTICE: resources and actions are text[] (PostgreSQL arrays), send as JS arrays directly
       const result = await this.db.query(`
         INSERT INTO policies (
-          tenant_id, name, effect, resources, actions, 
+          tenant_id, name, effect, resources, actions,
           conditions, priority, created_by, created_at, updated_at
         )
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
         RETURNING *
       `, [
-        tenantId, name, effect, 
-        JSON.stringify(resources), JSON.stringify(actions),
+        tenantId, name, effect,
+        resources, actions,  // Send as arrays, not JSON strings
         JSON.stringify(conditions), priority, createdBy
       ])
 
@@ -248,9 +249,14 @@ export class PolicyEngine {
     let paramIndex = 2
 
     for (const [field, value] of Object.entries(filteredUpdates)) {
-      if (['resources', 'actions', 'conditions'].includes(field)) {
+      // BEST PRACTICE: Only stringify conditions (JSONB), not resources/actions (text[])
+      if (field === 'conditions') {
         setClauses.push(`${field} = $${paramIndex}`)
         values.push(JSON.stringify(value))
+      } else if (['resources', 'actions'].includes(field)) {
+        // resources and actions are PostgreSQL arrays, send as JS arrays
+        setClauses.push(`${field} = $${paramIndex}`)
+        values.push(value)  // Send as array, not JSON string
       } else {
         setClauses.push(`${field} = $${paramIndex}`)
         values.push(value)

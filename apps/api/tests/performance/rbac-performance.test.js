@@ -1,10 +1,10 @@
 /**
  * RBAC Performance Tests
- * 
+ *
  * Performance benchmarks for RBAC system components
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals'
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
 import AuthorizationService from '../../src/services/rbac/authorization-service.js'
 import PermissionService from '../../src/services/rbac/permission-service.js'
 import { testDatabase, setupLargeTestData, cleanupTestData } from '../helpers/test-database.js'
@@ -15,8 +15,22 @@ describe('RBAC Performance Tests', () => {
   let testData
 
   beforeEach(async () => {
-    permissionService = new PermissionService(testDatabase)
-    authService = new AuthorizationService(permissionService, null, testDatabase)
+    // Mock audit logger for performance tests
+    const mockAuditLogger = {
+      logEvent: jest.fn(async (event) => ({ id: 'mock-audit-id', ...event })),
+      logAuth: jest.fn(async (event) => ({ id: 'mock-auth-id' })),
+      logAccess: jest.fn(async (event) => ({ id: 'mock-access-id' }))
+    }
+
+    // Mock cache service
+    const mockCache = {
+      get: jest.fn(async (key) => null),
+      set: jest.fn(async (key, value, ttl) => true),
+      delete: jest.fn(async (key) => true),
+    }
+
+    permissionService = new PermissionService(testDatabase, mockAuditLogger, mockCache)
+    authService = new AuthorizationService(testDatabase, mockAuditLogger, mockCache)
     
     // Setup large dataset for performance testing
     testData = await setupLargeTestData({
@@ -37,31 +51,31 @@ describe('RBAC Performance Tests', () => {
       
       // Test single permission check
       const startTime = process.hrtime.bigint()
-      
+
       const result = await authService.authorize(
         users[0].id,
         tenants[0].id,
-        'documents',
-        'read'
+        'read',
+        'documents'
       )
-      
+
       const endTime = process.hrtime.bigint()
       const executionTime = Number(endTime - startTime) / 1000000 // Convert to milliseconds
-      
+
       expect(result).toBeDefined()
       expect(executionTime).toBeLessThan(10) // Should complete within 10ms
     })
 
     it('should handle concurrent permission checks efficiently', async () => {
       const { users, tenants } = testData
-      
+
       // Test 100 concurrent permission checks
       const requests = Array(100).fill().map((_, index) =>
         authService.authorize(
           users[index % users.length].id,
           tenants[index % tenants.length].id,
-          'documents',
-          'read'
+          'read',
+          'documents'
         )
       )
       
@@ -90,8 +104,8 @@ describe('RBAC Performance Tests', () => {
         await authService.authorize(
           users[0].id,
           tenant.id,
-          'documents',
-          'read'
+          'read',
+          'documents'
         )
         const endTime = process.hrtime.bigint()
         
@@ -116,13 +130,13 @@ describe('RBAC Performance Tests', () => {
       
       // First call (cache miss)
       const coldStartTime = process.hrtime.bigint()
-      await authService.authorize(users[0].id, tenants[0].id, 'documents', 'read')
+      await authService.authorize(users[0].id, tenants[0].id, 'read', 'documents')
       const coldEndTime = process.hrtime.bigint()
       const coldTime = Number(coldEndTime - coldStartTime) / 1000000
       
       // Second call (cache hit)
       const warmStartTime = process.hrtime.bigint()
-      await authService.authorize(users[0].id, tenants[0].id, 'documents', 'read')
+      await authService.authorize(users[0].id, tenants[0].id, 'read', 'documents')
       const warmEndTime = process.hrtime.bigint()
       const warmTime = Number(warmEndTime - warmStartTime) / 1000000
       
@@ -134,7 +148,7 @@ describe('RBAC Performance Tests', () => {
       const { users, tenants } = testData
       
       // Initial authorization
-      await authService.authorize(users[0].id, tenants[0].id, 'documents', 'read')
+      await authService.authorize(users[0].id, tenants[0].id, 'read', 'documents')
       
       // Grant new permission (should invalidate cache)
       const invalidationStart = process.hrtime.bigint()
@@ -152,8 +166,8 @@ describe('RBAC Performance Tests', () => {
       const result = await authService.authorize(
         users[0].id,
         tenants[0].id,
-        'documents',
-        'write'
+        'write',
+        'documents'
       )
       
       expect(result.allowed).toBe(true)
@@ -181,7 +195,7 @@ describe('RBAC Performance Tests', () => {
       }
       
       try {
-        await authService.authorize(users[0].id, tenants[0].id, 'documents', 'read')
+        await authService.authorize(users[0].id, tenants[0].id, 'read', 'documents')
         
         // Verify query efficiency
         expect(queryTracker.queries.length).toBeLessThan(5) // Should use minimal queries
@@ -198,7 +212,7 @@ describe('RBAC Performance Tests', () => {
 
     it('should handle bulk operations efficiently', async () => {
       const { users, tenants } = testData
-      
+
       // Test bulk permission grant
       const bulkGrants = Array(50).fill().map((_, index) => ({
         userId: users[index % users.length].id,
@@ -206,9 +220,10 @@ describe('RBAC Performance Tests', () => {
         resource: 'documents',
         actions: ['read']
       }))
-      
+
       const startTime = process.hrtime.bigint()
-      await permissionService.bulkGrantPermissions(bulkGrants, 'admin-123')
+      // Use first user as grantedBy (valid UUID)
+      await permissionService.bulkGrantPermissions(bulkGrants, users[0].id)
       const endTime = process.hrtime.bigint()
       
       const totalTime = Number(endTime - startTime) / 1000000
@@ -232,8 +247,8 @@ describe('RBAC Performance Tests', () => {
           authService.authorize(
             users[i % users.length].id,
             tenants[i % tenants.length].id,
-            'documents',
-            'read'
+            'read',
+            'documents'
           )
         )
       }
@@ -271,8 +286,8 @@ describe('RBAC Performance Tests', () => {
           await authService.authorize(
             users[requestCount % users.length].id,
             tenants[requestCount % tenants.length].id,
-            'documents',
-            'read'
+            'read',
+            'documents'
           )
           requestCount++
         }
@@ -297,8 +312,8 @@ describe('RBAC Performance Tests', () => {
         authService.authorize(
           users[index % users.length].id,
           tenants[index % tenants.length].id,
-          'documents',
-          'read'
+          'read',
+          'documents'
         )
       )
       
@@ -312,7 +327,7 @@ describe('RBAC Performance Tests', () => {
       
       // Test normal operation after high load
       const normalStart = process.hrtime.bigint()
-      await authService.authorize(users[0].id, tenants[0].id, 'documents', 'read')
+      await authService.authorize(users[0].id, tenants[0].id, 'read', 'documents')
       const normalEnd = process.hrtime.bigint()
       
       const normalTime = Number(normalEnd - normalStart) / 1000000

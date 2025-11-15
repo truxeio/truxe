@@ -441,6 +441,25 @@ export class RoleService {
   }
 
   /**
+   * Get roles assigned to a user in a tenant
+   */
+  async getUserRoles(userId, tenantId) {
+    try {
+      const result = await this.db.query(`
+        SELECT r.*
+        FROM roles r
+        INNER JOIN user_roles ur ON r.id = ur.role_id
+        WHERE ur.user_id = $1 AND r.tenant_id = $2
+        ORDER BY r.created_at ASC
+      `, [userId, tenantId])
+
+      return result.rows.map(row => this._mapRoleRow(row))
+    } catch (error) {
+      throw new Error(`Failed to get user roles: ${error.message}`)
+    }
+  }
+
+  /**
    * Get permissions for a specific role
    */
   async getRolePermissions(tenantId, roleName) {

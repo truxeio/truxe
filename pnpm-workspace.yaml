@@ -8,6 +8,9 @@ packages:
   # Shared packages (libraries, utilities, types)
   - 'packages/*'
 
+  # Exclude test applications (not for production)
+  - '!packages/*-test-app'
+
   # Exclude build outputs and node_modules
   - '!**/node_modules/**'
   - '!**/dist/**'
